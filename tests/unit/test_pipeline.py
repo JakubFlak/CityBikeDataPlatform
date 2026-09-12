@@ -3,9 +3,9 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
-from scripts import run_pipeline as pipeline_script
 from test_gold import _populate_raw
 
+from bike_data import pipeline as pipeline_module
 from bike_data.config import Settings
 from bike_data.pipeline import run_pipeline
 from bike_data.raw_quality import RawFileReport
@@ -103,9 +103,9 @@ def test_cli_returns_nonzero_when_pipeline_fails(monkeypatch):
     def fail(settings):
         raise RuntimeError("pipeline failed")
 
-    monkeypatch.setattr(pipeline_script, "run_pipeline", fail)
+    monkeypatch.setattr(pipeline_module, "run_pipeline", fail)
 
-    assert pipeline_script.main() == 1
+    assert pipeline_module.main() == 1
 
 
 def test_pipeline_real_incremental_run_is_idempotent(tmp_path):

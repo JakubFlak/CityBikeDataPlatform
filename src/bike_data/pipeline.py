@@ -23,6 +23,22 @@ from bike_data.storage import RawSnapshotStore
 LOGGER = logging.getLogger(__name__)
 
 
+def main() -> int:
+    """Run the pipeline CLI and return a process exit status."""
+
+    from bike_data.config import load_settings
+    from bike_data.logging import configure_logging
+
+    settings = load_settings()
+    configure_logging(settings.log_level)
+    try:
+        run_pipeline(settings)
+    except Exception:
+        LOGGER.exception("pipeline_failed")
+        return 1
+    return 0
+
+
 @dataclass(frozen=True)
 class PipelineSummary:
     """Run-level counts emitted after a successful pipeline run."""
