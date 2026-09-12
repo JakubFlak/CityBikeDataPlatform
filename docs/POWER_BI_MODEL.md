@@ -21,6 +21,28 @@ snapshots than the current local sample contains.
 - Counts are availability counts, not ride counts or utilization.
 - Snapshot dimensions are not joined to facts by entity ID alone.
 
+## Snapshot semantic contract
+
+The fact tables are periodic state facts, not additive event facts. Their
+numeric columns describe a state at `observed_at` and must not be summed across
+timestamps and presented as a current state. This applies to bikes, docks,
+capacity, vehicle-type counts, and free-bike rows.
+
+The v1 semantic model uses three explicit consumption modes:
+
+1. **Latest-state mode:** KPI cards, maps, and ranked current station visuals
+   resolve the maximum `observed_at` in the active filter context. They show one
+   state, not a period total.
+2. **Per-snapshot mode:** trend tables and lines retain `observed_at` as their
+   grain. Each point is one system, station, station/vehicle, or bike state.
+3. **Period-summary mode:** period visuals use explicitly named averages,
+   minimums, maximums, or snapshot counts. A raw `SUM` across timestamps is not
+   a valid generic KPI for these facts.
+
+The model should expose these meanings in measure names and visual subtitles.
+`observed_at` remains visible in detail tables and tooltips even when a latest
+snapshot measure is used.
+
 ## Tables and roles
 
 ### Recommended report tables
@@ -81,6 +103,11 @@ attributes. Historical facts retain their observed `region_id`, station ID,
 and vehicle type ID, but a later rename or move would be labelled with the
 latest identity attribute. This is acceptable for a v1 operational report only
 if the report documents that limitation.
+
+The helper relationships do not define snapshot identity. They are descriptive
+filters by stable entity ID. A measure that needs a point-in-time result must
+still apply the latest `observed_at` policy on the relevant fact; a date
+relationship alone intentionally permits multiple snapshots in context.
 
 `FactSystemAvailability` has no station relationship. It is already aggregated
 at system/timestamp grain and should be filtered by date and hour only.
