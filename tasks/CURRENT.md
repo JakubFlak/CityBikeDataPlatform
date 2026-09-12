@@ -2,7 +2,7 @@
 
 ## Task
 
-Silver/Staging Representation
+Analytical/Gold Model
 
 ## Status
 
@@ -28,10 +28,14 @@ Completed.
 - Normalize station vehicle-type availability and pricing tiers into child
     tables without flattening unrelated nested structures.
 - Add deterministic multi-snapshot Silver transformation tests.
+- Design and implement the analytical Gold model from Silver Parquet tables.
+- Add temporal snapshot dimensions, station availability facts, free-bike
+    snapshots, and reusable system/station metrics.
+- Add deterministic multi-snapshot Gold transformation tests and documentation.
 
 ## Constraints Honoured
 
-- No DuckDB, dbt, orchestration, or analytical models were added.
+- No DuckDB, dbt, orchestration, or BI semantic model was added.
 - No Wroclaw-specific filtering or trip inference occurs during ingestion.
 - Runtime raw data remains excluded from Git.
 
@@ -45,9 +49,15 @@ Completed.
 - Silver output contains eight deterministic tables: six canonical tables and
     two nested child tables.
 - Two timestamp fixtures preserve time-varying rows and source lineage.
+- Gold uses snapshot-grained dimensions keyed by entity plus `observed_at`.
+- Station availability is the central fact at `station_id + observed_at`.
+- Vehicle-type availability remains a separate child fact to avoid repeating
+    station-level measures.
+- Free-bike snapshots remain state observations and are not interpreted as
+    trips or utilization.
 
 ## Next Task
 
-Design the analytical/Gold model, including explicit decisions about which
-Silver fields become dimensions, facts, or later derived models.
+Evaluate orchestration and incremental processing only when the next phase
+requires them; do not introduce them as part of the Gold model.
 
