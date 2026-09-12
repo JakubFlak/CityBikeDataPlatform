@@ -2,58 +2,52 @@
 
 ## Task
 
-Project Foundation
+Silver/Staging Representation
 
-## Objective
+## Status
 
-Turn the repository skeleton into a clean, reproducible Python project that is ready for implementing the GBFS ingestion layer.
+Completed.
 
-## Tasks
+## Completed Work
 
-- [x] Configure `pyproject.toml`
-- [x] Configure project metadata and dependencies
-- [x] Configure `uv`
-- [x] Configure Ruff
-- [x] Configure pytest
-- [x] Verify `src` package structure
-- [x] Create basic configuration module if required
-- [x] Create basic logging setup
-- [x] Add initial meaningful tests
-- [x] Verify package installation/import
-- [x] Run tests
-- [x] Run Ruff
-- [x] Update documentation if required
-- [x] Update task status
+- Discover the Polish GBFS feeds dynamically from `gbfs.json`.
+- Retrieve and validate the six required GBFS feed envelopes.
+- Preserve provider metadata and nested raw payloads.
+- Attach a separate timezone-aware UTC `observed_at` timestamp.
+- Persist one raw Parquet snapshot per feed observation.
+- Add deterministic tests for discovery, HTTP failures, validation, timestamps,
+  and persistence.
+- Add a separate live smoke command in `scripts/gbfs_live_smoke.py`.
+- Inspect all current raw Parquet files and report schema, grain, metadata,
+  JSON, equivalence, and collection findings.
+- Add reusable raw-layer validation in `bike_data.raw_quality`.
+- Add a repeatable inspection command in `scripts/inspect_raw_quality.py`.
+- Define the Silver table grains, keys, typed columns, lineage, and nested-data
+    decisions.
+- Transform all six canonical collections into typed Silver Parquet tables.
+- Normalize station vehicle-type availability and pricing tiers into child
+    tables without flattening unrelated nested structures.
+- Add deterministic multi-snapshot Silver transformation tests.
 
-## Constraints
+## Constraints Honoured
 
-- Do not implement GBFS ingestion yet.
-- Do not implement API clients yet.
-- Do not introduce Airflow yet.
-- Do not introduce DuckDB yet.
-- Do not introduce dbt yet.
-- Do not introduce Docker yet.
-- Do not add unnecessary dependencies.
-- Do not create infrastructure for future phases without a current requirement.
+- No DuckDB, dbt, orchestration, or analytical models were added.
+- No Wroclaw-specific filtering or trip inference occurs during ingestion.
+- Runtime raw data remains excluded from Git.
 
-## Definition of Done
+## Current Findings
 
-- Project installs successfully with `uv`.
-- Package can be imported.
-- Tests run successfully.
-- Ruff passes.
-- Basic logging/configuration foundation exists if justified.
-- No unnecessary dependencies were introduced.
-- Documentation reflects the actual project state.
-- `CURRENT.md` reflects the completed work.
+- Six files inspected, each with exactly one snapshot row.
+- All files use the expected eight-column schema.
+- Zero fatal errors and zero warnings.
+- Canonical `data_json` matches `source_payload_json.data` in every file.
+- Provider metadata agrees with the extracted Parquet metadata in every file.
+- Silver output contains eight deterministic tables: six canonical tables and
+    two nested child tables.
+- Two timestamp fixtures preserve time-varying rows and source lineage.
 
 ## Next Task
 
-After completion:
-
-**GBFS Client and Initial Ingestion**
-
-The next task should focus on creating a small, testable GBFS client and retrieving the first GBFS feed.
-
-The exact implementation should be defined before work begins.
+Design the analytical/Gold model, including explicit decisions about which
+Silver fields become dimensions, facts, or later derived models.
 

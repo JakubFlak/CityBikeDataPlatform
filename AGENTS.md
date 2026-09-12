@@ -44,9 +44,10 @@ starting locally and potentially evolving toward cloud architecture.
 
 Before starting work:
 1. Read AGENTS.md.
-2. Read relevant documentation in docs/.
-3. Read tasks/CURRENT.md.
-4. Understand existing architecture and decisions.
+2. Read ROADMAP.md
+3. Read relevant documentation in docs/.
+4. Read tasks/CURRENT.md.
+5. Understand existing architecture and decisions.
 
 During work:
 - Work only on the current task unless a dependency requires otherwise.

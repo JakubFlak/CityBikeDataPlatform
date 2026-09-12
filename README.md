@@ -1,8 +1,8 @@
 # City Bike Data Platform
 
 This project is a local data platform for collecting and analysing Wroclaw
-bike-sharing data. The current phase provides the Python package foundation;
-GBFS ingestion is the next task.
+bike-sharing data. The current phase provides a GBFS discovery and raw
+ingestion layer. See [GBFS ingestion](docs/GBFS_INGESTION.md) for its contract.
 
 ## Development
 

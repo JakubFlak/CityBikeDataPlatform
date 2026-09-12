@@ -8,28 +8,32 @@ Only the current phase should be implemented. Future phases are intentionally no
 
 ## Phase 1 — Foundation
 
-- [ ] Project structure
-- [ ] Python environment and packaging
-- [ ] Configuration
-- [ ] Logging
-- [ ] Testing foundation
-- [ ] Development tooling
+- [x] Project structure
+- [x] Python environment and packaging
+- [x] Configuration
+- [x] Logging
+- [x] Testing foundation
+- [x] Development tooling
 
 ---
 
 ## Phase 2 — GBFS Ingestion
 
-- [ ] GBFS client
-- [ ] GBFS feed discovery
-- [ ] `station_information` ingestion
-- [ ] `station_status` ingestion
-- [ ] `free_bike_status` ingestion
-- [ ] `vehicle_types` ingestion
-- [ ] `system_pricing_plans` ingestion
-- [ ] Raw Parquet storage
-- [ ] Schema validation
-- [ ] Ingestion tests
-- [ ] Error handling
+- [x] GBFS client
+- [x] GBFS feed discovery
+- [x] `station_information` ingestion
+- [x] `station_status` ingestion
+- [x] `free_bike_status` ingestion
+- [x] `vehicle_types` ingestion
+- [x] `system_pricing_plans` ingestion
+- [x] `system_regions` ingestion
+- [x] Raw Parquet storage
+- [x] Schema validation
+- [x] Ingestion tests
+- [x] Error handling
+- [x] Silver/staging table definitions
+- [x] Raw-to-Silver transformation
+- [x] Silver transformation tests
 
 ---
 
