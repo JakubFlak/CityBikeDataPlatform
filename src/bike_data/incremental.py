@@ -109,6 +109,7 @@ def incremental_raw_to_silver(
             known[snapshot["identity"]] = {
                 "payload_hash": snapshot["payload_hash"],
                 "source_url": snapshot["source_url"],
+                "status": "silver_complete",
             }
         _write_state(state_path, state)
     elif not all((silver_root / f"{name}.parquet").exists() for name in SILVER_TABLES):
@@ -249,3 +250,15 @@ def _write_state(path: Path, state: dict[str, Any]) -> None:
         encoding="utf-8",
     )
     os.replace(temporary, path)
+
+
+def mark_snapshots_complete(silver_root: Path, identities: set[str]) -> None:
+    """Mark Silver-processed snapshots complete after downstream success."""
+
+    state_path = silver_root / DEFAULT_STATE_PATH
+    state = _read_state(state_path)
+    known = state.setdefault("raw_snapshots", {})
+    for identity in identities:
+        if identity in known:
+            known[identity]["status"] = "complete"
+    _write_state(state_path, state)

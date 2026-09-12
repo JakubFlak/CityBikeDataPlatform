@@ -42,10 +42,10 @@ Only the current phase should be implemented. Future phases are intentionally no
 - [ ] Docker
 - [ ] Airflow
 - [ ] Ingestion DAG
-- [ ] Scheduling
-- [ ] Retries
-- [ ] Failure handling
-- [ ] Basic monitoring
+- [x] Scheduling
+- [x] Retries
+- [x] Failure handling
+- [x] Basic monitoring
 
 ---
 

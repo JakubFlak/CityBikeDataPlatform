@@ -36,7 +36,9 @@ data/silver/_incremental_state.json
 It is a processed-snapshot manifest, not a time-only watermark. This avoids
 missing late-arriving snapshots and supports multiple feeds with independent
 collection times. A raw file is pending when its identity is absent from the
-manifest. Existing Silver rows are also deduplicated by their declared natural
+manifest or its status is not `complete`. Silver-stage entries use
+`silver_complete` until downstream Gold processing succeeds. Existing Silver
+rows are also deduplicated by their declared natural
 keys, so the process remains safe if the state file is lost and snapshots are
 replayed.
 

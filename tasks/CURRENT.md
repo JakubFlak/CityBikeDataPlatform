@@ -36,6 +36,11 @@ Completed.
 - Process only unseen Raw snapshots into idempotent Silver outputs.
 - Add atomic, key-deduplicated Gold updates and derived-model rebuild semantics.
 - Add incremental append, rerun, failure-restart, temporal, and conflict tests.
+- Add a one-command lightweight pipeline coordinator with structured run
+    summaries and fail-fast stage handling.
+- Add separate CI and scheduled/manual GitHub Actions workflows.
+- Document scheduling, configuration, retry behavior, and generated artifact
+    handling.
 
 ## Constraints Honoured
 
@@ -62,9 +67,18 @@ Completed.
 - Raw identity is `feed_name + observed_at`, with a payload hash to reject
     conflicting replays.
 - Incremental output commits are staged and state is written last.
+- The complete execution graph is ingestion -> Raw quality -> incremental
+    Silver -> incremental Gold -> output row-count summary.
+- The data workflow runs hourly at minute 17 and supports `workflow_dispatch`;
+    CI remains separate and never calls the live GBFS service.
+- Generated data is uploaded as a short-lived GitHub Actions artifact and is
+    never committed to Git.
+- Scheduled and manual runs restore the latest successful pipeline-state
+    artifact before ingestion; failed runs cannot replace that artifact.
+- The first run starts empty when no successful state artifact exists.
 
 ## Next Task
 
-Evaluate orchestration only when the next phase requires it; do not introduce
-an orchestration framework as part of local incremental processing.
+Evaluate durable artifact storage and alerting only when long-term collection
+requires them; do not add a heavyweight orchestration framework yet.
 
