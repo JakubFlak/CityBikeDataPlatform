@@ -54,11 +54,11 @@ Only the current phase should be implemented. Future phases are intentionally no
 - [ ] DuckDB
 - [ ] dbt
 - [ ] Staging models
-- [ ] Dimensions
-- [ ] Fact models
+- [x] Dimensions
+- [x] Fact models
 - [ ] Incremental processing
 - [ ] dbt tests
-- [ ] Analytical aggregations
+- [x] Analytical aggregations
 
 ---
 
