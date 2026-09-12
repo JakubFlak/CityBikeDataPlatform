@@ -34,10 +34,7 @@ def _write_raw_snapshot(raw_root: Path, feed_name: str, observed_at, data):
         "source_payload_json": json.dumps(payload),
     }
     path = (
-        raw_root
-        / feed_name
-        / observed_at.strftime("%Y%m%d%H%M%S")
-        / "snapshot.parquet"
+        raw_root / feed_name / observed_at.strftime("%Y%m%d%H%M%S") / "snapshot.parquet"
     )
     path.parent.mkdir(parents=True)
     pq.write_table(pa.table({key: [value] for key, value in row.items()}), path)
@@ -186,8 +183,7 @@ def test_gold_foreign_keys_and_determinism(tmp_path):
     second = transform_silver_to_gold(tmp_path / "silver", tmp_path / "gold_two")
 
     station_keys = {
-        (row["station_id"], row["observed_at"])
-        for row in _read(first, "dim_station")
+        (row["station_id"], row["observed_at"]) for row in _read(first, "dim_station")
     }
     vehicle_keys = {
         (row["vehicle_type_id"], row["observed_at"])

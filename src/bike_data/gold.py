@@ -66,9 +66,7 @@ GOLD_SCHEMAS = {
             "is_ebike": pa.bool_(),
         }
     ),
-    "dim_region": pa.schema(
-        {"region_id": pa.string(), **_BASE, "name": pa.string()}
-    ),
+    "dim_region": pa.schema({"region_id": pa.string(), **_BASE, "name": pa.string()}),
     "dim_pricing_plan": pa.schema(
         {
             "plan_id": pa.string(),
@@ -162,9 +160,7 @@ GOLD_SCHEMAS = {
 }
 
 
-def transform_silver_to_gold(
-    silver_root: Path, gold_root: Path
-) -> dict[str, Path]:
+def transform_silver_to_gold(silver_root: Path, gold_root: Path) -> dict[str, Path]:
     """Build deterministic Gold tables from Silver table Parquet files."""
     silver = {
         name: pq.read_table(silver_root / f"{name}.parquet").to_pylist()
@@ -297,9 +293,7 @@ def transform_silver_to_gold(
         "fact_station_vehicle_type_availability": vehicle_facts,
         "fact_free_bike_snapshot": free_bike_facts,
     }
-    tables["gold_system_availability"] = _system_metrics(
-        station_facts, vehicle_facts
-    )
+    tables["gold_system_availability"] = _system_metrics(station_facts, vehicle_facts)
     tables["gold_station_availability_metrics"] = _station_metrics(station_facts)
 
     paths = {}
@@ -334,9 +328,7 @@ def _snapshot_key(row: dict[str, Any], identifier: str) -> tuple[Any, Any]:
 def _required_snapshot(index, key, table_name):
     candidates = index.get(key[0], [])
     if not candidates:
-        raise ValueError(
-            f"missing temporal foreign key in {table_name}: {key}"
-        )
+        raise ValueError(f"missing temporal foreign key in {table_name}: {key}")
     distances = [abs(row["observed_at"] - key[1]) for row in candidates]
     nearest_distance = min(distances)
     if nearest_distance > TEMPORAL_JOIN_TOLERANCE:

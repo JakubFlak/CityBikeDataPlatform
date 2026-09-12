@@ -116,9 +116,7 @@ def incremental_raw_to_silver(
         _commit_parquet_tables(silver_root, combined)
         _write_state(state_path, state)
 
-    return {
-        name: silver_root / f"{name}.parquet" for name in SILVER_TABLES
-    }
+    return {name: silver_root / f"{name}.parquet" for name in SILVER_TABLES}
 
 
 def incremental_silver_to_gold(
@@ -142,8 +140,7 @@ def incremental_silver_to_gold(
                 candidate_rows
                 if name in REBUILT_GOLD_TABLES
                 else _merge_rows(
-                    _read_existing(gold_root / f"{name}.parquet")
-                    + candidate_rows,
+                    _read_existing(gold_root / f"{name}.parquet") + candidate_rows,
                     GOLD_KEYS[name],
                 )
             )
@@ -155,9 +152,7 @@ def _snapshot_metadata(path: Path) -> dict[str, Any]:
     row = pq.read_table(path).to_pylist()[0]
     observed_at = row["observed_at"]
     identity = f"{row['feed_name']}|{observed_at}"
-    payload_hash = hashlib.sha256(
-        row["data_json"].encode("utf-8")
-    ).hexdigest()
+    payload_hash = hashlib.sha256(row["data_json"].encode("utf-8")).hexdigest()
     return {
         "path": path,
         "identity": identity,
@@ -223,9 +218,7 @@ def _commit_parquet_tables(
                 schema = pq.read_schema(source)
             else:
                 schema = (
-                    TABLE_SCHEMAS[name]
-                    if name in TABLE_SCHEMAS
-                    else GOLD_SCHEMAS[name]
+                    TABLE_SCHEMAS[name] if name in TABLE_SCHEMAS else GOLD_SCHEMAS[name]
                 )
             table = pa.Table.from_pylist(rows, schema=schema)
             path = staging / f"{name}.parquet"

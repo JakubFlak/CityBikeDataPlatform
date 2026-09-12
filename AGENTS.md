@@ -62,6 +62,9 @@ After work:
 4. Update tasks/CURRENT.md.
 5. Summarize what was changed and what remains.
 
+Before finishing a coding task, run `uv run pytest`, `uv run ruff check .`,
+and `uv run ruff format --check .` locally.
+
 ## Git
 
 - `main` is the stable branch and must remain working and tested.
