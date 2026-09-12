@@ -64,6 +64,22 @@ After work:
 
 ## Git
 
+- `main` is the stable branch and must remain working and tested.
+- Do not implement features directly on `main`.
+- Implement each meaningful bounded task on a dedicated focused branch, using
+  names such as `feature/raw-quality-checks`, `feature/silver-layer`,
+  `feature/gold-model`, or `feature/power-bi-model`.
+- Before starting implementation, create or switch to the appropriate feature
+  branch. Do not push directly to `main`.
+- Commit bounded work with clear, meaningful commit messages.
+- Before considering a task complete, run the relevant tests, run Ruff, verify
+  the affected pipeline or command, inspect `git diff`, and confirm that no
+  generated data, secrets, temporary files, or unrelated changes are included.
+- Do not merge branches automatically. The human reviews and merges the PR
+  into `main`.
+- For completed bounded tasks, report the current branch, commits made, files
+  changed, tests and checks passed, a recommended PR title and summary, and
+  any concerns before merging.
 - Never commit secrets.
 - Never commit .env files.
 - Never commit generated datasets unless explicitly requested.
