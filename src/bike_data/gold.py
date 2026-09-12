@@ -337,14 +337,15 @@ def _required_snapshot(index, key, table_name):
         raise ValueError(
             f"missing temporal foreign key in {table_name}: {key}"
         )
-    match = min(
-        candidates,
-        key=lambda row: abs(row["observed_at"] - key[1]),
-    )
-    if abs(match["observed_at"] - key[1]) > TEMPORAL_JOIN_TOLERANCE:
+    distances = [abs(row["observed_at"] - key[1]) for row in candidates]
+    nearest_distance = min(distances)
+    if nearest_distance > TEMPORAL_JOIN_TOLERANCE:
         raise ValueError(
             f"temporal foreign key outside tolerance in {table_name}: {key}"
         )
+    if distances.count(nearest_distance) > 1:
+        raise ValueError(f"ambiguous temporal foreign key in {table_name}: {key}")
+    match = candidates[distances.index(nearest_distance)]
     return match
 
 

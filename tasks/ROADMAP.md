@@ -59,6 +59,7 @@ Only the current phase should be implemented. Future phases are intentionally no
 - [ ] Incremental processing
 - [ ] dbt tests
 - [x] Analytical aggregations
+- [x] Incremental local processing
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Task
 
-Analytical/Gold Model
+Incremental Processing
 
 ## Status
 
@@ -32,6 +32,10 @@ Completed.
 - Add temporal snapshot dimensions, station availability facts, free-bike
     snapshots, and reusable system/station metrics.
 - Add deterministic multi-snapshot Gold transformation tests and documentation.
+- Define Raw snapshot identity and a restartable incremental state manifest.
+- Process only unseen Raw snapshots into idempotent Silver outputs.
+- Add atomic, key-deduplicated Gold updates and derived-model rebuild semantics.
+- Add incremental append, rerun, failure-restart, temporal, and conflict tests.
 
 ## Constraints Honoured
 
@@ -55,9 +59,12 @@ Completed.
     station-level measures.
 - Free-bike snapshots remain state observations and are not interpreted as
     trips or utilization.
+- Raw identity is `feed_name + observed_at`, with a payload hash to reject
+    conflicting replays.
+- Incremental output commits are staged and state is written last.
 
 ## Next Task
 
-Evaluate orchestration and incremental processing only when the next phase
-requires them; do not introduce them as part of the Gold model.
+Evaluate orchestration only when the next phase requires it; do not introduce
+an orchestration framework as part of local incremental processing.
 

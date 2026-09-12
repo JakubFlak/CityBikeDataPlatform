@@ -95,9 +95,9 @@ Presentation-specific aggregations remain out of scope.
 - Every fact and snapshot dimension is keyed with `observed_at`.
 - Gold performs nearest temporal joins between feeds within a five-minute
   tolerance because one collection cycle can produce slightly different
-  `observed_at` values per feed. Missing entities, duplicate keys, and matches
-  outside that tolerance fail the transform rather than silently mismatching
-  states.
+  `observed_at` values per feed. Missing entities, duplicate keys, ambiguous
+  nearest matches, and matches outside that tolerance fail the transform
+  rather than silently mismatching states.
 - Duplicate dimension keys and missing temporal foreign keys fail the transform.
 - Outputs are sorted and overwritten deterministically, so rerunning the same
   Silver inputs produces identical Parquet tables.

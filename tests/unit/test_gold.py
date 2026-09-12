@@ -4,8 +4,15 @@ from pathlib import Path
 
 import pyarrow as pa
 import pyarrow.parquet as pq
+import pytest
 
-from bike_data.gold import GOLD_SCHEMAS, GOLD_TABLES, transform_silver_to_gold
+from bike_data.gold import (
+    GOLD_SCHEMAS,
+    GOLD_TABLES,
+    _index,
+    _required_snapshot,
+    transform_silver_to_gold,
+)
 from bike_data.silver import transform_raw_to_silver
 
 
@@ -227,3 +234,18 @@ def test_gold_joins_feeds_with_collection_time_jitter(tmp_path):
 
     assert len(_read(paths, "fact_station_availability")) == 2
     assert len(_read(paths, "fact_free_bike_snapshot")) == 2
+
+
+def test_gold_rejects_ambiguous_temporal_match():
+    first = datetime(2026, 9, 12, 10, tzinfo=UTC).replace(tzinfo=None)
+    second = datetime(2026, 9, 12, 10, 2, tzinfo=UTC).replace(tzinfo=None)
+    target = datetime(2026, 9, 12, 10, 1, tzinfo=UTC).replace(tzinfo=None)
+    index = _index(
+        [
+            {"station_id": "S1", "observed_at": first},
+            {"station_id": "S1", "observed_at": second},
+        ],
+        "station_id",
+    )
+    with pytest.raises(ValueError, match="ambiguous temporal"):
+        _required_snapshot(index, ("S1", target), "station_information")
