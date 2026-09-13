@@ -18,7 +18,6 @@ GOLD_TABLES = (
     "fact_station_vehicle_type_availability",
     "fact_free_bike_snapshot",
     "gold_system_availability",
-    "gold_station_availability_metrics",
 )
 
 TEMPORAL_JOIN_TOLERANCE = timedelta(minutes=5)
@@ -139,22 +138,10 @@ GOLD_SCHEMAS = {
             "date_key": pa.int64(),
             "hour_of_day": pa.int64(),
             "station_count": pa.int64(),
-            "total_capacity": pa.int64(),
-            "total_bikes_available": pa.int64(),
-            "total_docks_available": pa.int64(),
-            "total_ebikes_available": pa.int64(),
-            "ebike_share_of_available_bikes": pa.float64(),
-        }
-    ),
-    "gold_station_availability_metrics": pa.schema(
-        {
-            "station_id": pa.string(),
-            "snapshot_count": pa.int64(),
-            "average_bikes_available": pa.float64(),
-            "minimum_bikes_available": pa.int64(),
-            "maximum_bikes_available": pa.int64(),
-            "empty_snapshot_count": pa.int64(),
-            "average_availability_ratio": pa.float64(),
+            "available_bikes": pa.int64(),
+            "empty_station_count": pa.int64(),
+            "visible_free_bikes": pa.int64(),
+            "available_ebikes": pa.int64(),
         }
     ),
 }
@@ -293,8 +280,9 @@ def transform_silver_to_gold(silver_root: Path, gold_root: Path) -> dict[str, Pa
         "fact_station_vehicle_type_availability": vehicle_facts,
         "fact_free_bike_snapshot": free_bike_facts,
     }
-    tables["gold_system_availability"] = _system_metrics(station_facts, vehicle_facts)
-    tables["gold_station_availability_metrics"] = _station_metrics(station_facts)
+    tables["gold_system_availability"] = _system_metrics(
+        station_facts, vehicle_facts, free_bike_facts
+    )
 
     paths = {}
     for name in GOLD_TABLES:
@@ -373,7 +361,7 @@ def _date_dimension(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     ]
 
 
-def _system_metrics(station_rows, vehicle_rows):
+def _system_metrics(station_rows, vehicle_rows, free_bike_rows):
     grouped = {}
     for row in station_rows:
         group = grouped.setdefault(row["observed_at"], [])
@@ -384,59 +372,40 @@ def _system_metrics(station_rows, vehicle_rows):
             ebikes[row["observed_at"]] = (
                 ebikes.get(row["observed_at"], 0) + row["count"]
             )
+    free_bikes = {}
+    system_observations = list(grouped)
+    for row in free_bike_rows:
+        matched_at = _nearest_observation(row["observed_at"], system_observations)
+        free_bikes[matched_at] = free_bikes.get(matched_at, 0) + 1
     metrics = []
     for observed_at, rows in grouped.items():
-        total_bikes = sum(row["num_bikes_available"] or 0 for row in rows)
+        available_bikes = sum(row["num_bikes_available"] or 0 for row in rows)
         metrics.append(
             {
                 "observed_at": observed_at,
                 **_time_keys(observed_at),
                 "station_count": len(rows),
-                "total_capacity": _sum_nullable(rows, "capacity"),
-                "total_bikes_available": total_bikes,
-                "total_docks_available": sum(
-                    row["num_docks_available"] or 0 for row in rows
+                "available_bikes": available_bikes,
+                "empty_station_count": sum(
+                    row["num_bikes_available"] == 0 for row in rows
                 ),
-                "total_ebikes_available": ebikes.get(observed_at, 0),
-                "ebike_share_of_available_bikes": (
-                    ebikes.get(observed_at, 0) / total_bikes if total_bikes else None
-                ),
+                "visible_free_bikes": free_bikes.get(observed_at, 0),
+                "available_ebikes": ebikes.get(observed_at, 0),
             }
         )
     return metrics
 
 
-def _station_metrics(rows):
-    grouped = {}
-    for row in rows:
-        grouped.setdefault(row["station_id"], []).append(row)
-    result = []
-    for station_id, values in grouped.items():
-        bikes = [row["num_bikes_available"] for row in values]
-        ratios = [
-            row["num_bikes_available"] / row["capacity"]
-            for row in values
-            if row["capacity"] not in (None, 0)
-        ]
-        result.append(
-            {
-                "station_id": station_id,
-                "snapshot_count": len(values),
-                "average_bikes_available": sum(bikes) / len(bikes),
-                "minimum_bikes_available": min(bikes),
-                "maximum_bikes_available": max(bikes),
-                "empty_snapshot_count": sum(value == 0 for value in bikes),
-                "average_availability_ratio": (
-                    sum(ratios) / len(ratios) if ratios else None
-                ),
-            }
+def _nearest_observation(observed_at, candidates):
+    distances = [abs(candidate - observed_at) for candidate in candidates]
+    nearest_distance = min(distances)
+    if nearest_distance > TEMPORAL_JOIN_TOLERANCE:
+        raise ValueError(
+            f"free-bike observation outside system tolerance: {observed_at}"
         )
-    return result
-
-
-def _sum_nullable(rows, key):
-    values = [row[key] for row in rows if row[key] is not None]
-    return sum(values) if values else None
+    if distances.count(nearest_distance) > 1:
+        raise ValueError(f"ambiguous system observation for free-bike: {observed_at}")
+    return candidates[distances.index(nearest_distance)]
 
 
 def _sort_row(row):

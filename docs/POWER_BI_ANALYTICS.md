@@ -16,8 +16,7 @@ authoritative rides, customers, revenue, or demand events.
 
 These are fields or aggregates directly represented by the current Gold data:
 
-- How many bikes and docks were available at each station snapshot?
-- What was the observed capacity of each station?
+- How many bikes were available at each station snapshot?
 - How many stations were represented in a system snapshot?
 - How many e-bikes were reported as available by station and timestamp?
 - Which vehicle types were available at a station snapshot?
@@ -32,11 +31,7 @@ These are fields or aggregates directly represented by the current Gold data:
 These are calculations from observed fields, with no claim that they represent
 trips:
 
-- Bike availability ratio: `num_bikes_available / capacity` where capacity is
-  non-null and non-zero.
-- Dock share of capacity: `num_docks_available / capacity` under the same
-  denominator rule.
-- E-bike share of available bikes.
+- E-bike composition of available bikes.
 - Empty-station snapshot count and rate.
 - Average, minimum, and maximum observed bikes per station across an explicitly
   selected set of snapshots.
@@ -52,12 +47,11 @@ trip, turnover event, or utilization measurement.
 
 These can be useful operational indicators only when labelled as proxies:
 
-- Low-availability station snapshots, using an explicit threshold such as
-  availability ratio <= 0.20.
+- Low-availability station snapshots, using an explicit bike-count threshold.
 - Empty-station-snapshot exposure, measured as the fraction of observed
   station snapshots with zero available bikes.
 - Availability imbalance, such as the difference between the highest and
-  lowest station availability ratio in the same observed system period.
+  lowest observed bike counts in the same system period.
 - Possible state transition flags between adjacent observations.
 
 These proxies describe observed operational state. They do not establish
@@ -113,19 +107,15 @@ fact filter context, then evaluate the inner expression only at that timestamp.
 | Measure | Single-snapshot meaning | More than one `observed_at` in context | Recommended definition |
 | --- | --- | --- | --- |
 | `Bikes Available - Latest Snapshot` | Bikes available across the selected stations at one timestamp | Uses the latest timestamp; does not add snapshots | `SUM(num_bikes_available)` after filtering fact rows to latest `observed_at` |
-| `Docks Available - Latest Snapshot` | Docks available at one timestamp | Uses the latest timestamp; does not add snapshots | Same latest-snapshot pattern over `num_docks_available` |
-| `Capacity - Latest Snapshot` | Capacity represented at one timestamp | Uses the latest timestamp; avoids repeated capacity | Same latest-snapshot pattern over `capacity` |
 | `Station Count - Latest Snapshot` | Stations represented at one timestamp | Counts distinct stations only at the latest timestamp | `DISTINCTCOUNT(station_id)` at latest timestamp |
-| `Bike Availability Ratio - Latest Snapshot` | Bikes divided by capacity at one timestamp | Recalculates from latest-snapshot totals; never averages row ratios by accident | `DIVIDE([Bikes Available - Latest Snapshot], [Capacity - Latest Snapshot])` |
-| `Average Availability Ratio Per Station Snapshot` | Mean station availability ratio over observed station states | Averages one ratio per station snapshot across the selected period; not a current-state ratio | Average `DIVIDE(num_bikes_available, capacity)` for non-null, non-zero capacities |
 | `Empty Station Count - Latest Snapshot` | Stations with zero bikes at one timestamp | Counts empty stations only at latest timestamp | Count station rows where bikes = 0 after latest filter |
 | `Empty Station Snapshot Count` | Number of empty station states | Counts empty station rows across all selected timestamps | `COUNTROWS` of station snapshots with bikes = 0; explicitly a state count |
 | `Empty Station Snapshot Rate` | Empty station states divided by all station states | Percentage of station snapshots empty across the selected period | `DIVIDE([Empty Station Snapshot Count], [Station Snapshot Count])` |
 | `E-bikes Available - Latest Snapshot` | E-bikes reported at one timestamp | Uses latest timestamp; does not add repeated vehicle states | Sum vehicle-type `count` for `is_ebike = TRUE` at latest timestamp |
-| `E-bike Share - Latest Snapshot` | E-bikes divided by bikes at one timestamp | Recalculates both components at latest timestamp | `DIVIDE([E-bikes Available - Latest Snapshot], [Bikes Available - Latest Snapshot])` |
-| `Average Bikes Available Per Snapshot` | Bikes at the one selected snapshot | Averages system snapshot totals, one total per `observed_at` | Average of `FactSystemAvailability[total_bikes_available]` by timestamp |
-| `Minimum Bikes Available Per Snapshot` | Same value for one snapshot | Minimum system snapshot total across selected timestamps | Minimum of system totals by timestamp |
-| `Maximum Bikes Available Per Snapshot` | Same value for one snapshot | Maximum system snapshot total across selected timestamps | Maximum of system totals by timestamp |
+| `E-bikes Available - Latest Snapshot` | E-bikes reported at one timestamp | Uses latest timestamp; does not add repeated vehicle states | Sum vehicle-type `count` for `is_ebike = TRUE` at latest timestamp |
+| `Average Bikes Available Per Snapshot` | Bikes at the selected snapshots | Averages system `available_bikes`, one row per `observed_at` | Average of `FactSystemAvailability[available_bikes]` by timestamp |
+| `Minimum Bikes Available Per Snapshot` | Minimum observed system bikes | Minimum system `available_bikes` across selected timestamps | Minimum of system available bikes by timestamp |
+| `Maximum Bikes Available Per Snapshot` | Maximum observed system bikes | Maximum system `available_bikes` across selected timestamps | Maximum of system available bikes by timestamp |
 | `Visible Bikes - Latest Snapshot` | Distinct publicly visible bikes at one timestamp | Uses latest timestamp, so a bike seen repeatedly is counted once | `DISTINCTCOUNT(bike_id)` after latest timestamp filter |
 | `Visible Bike Observations` | One visible-bike row at one timestamp | Counts bike observations across timestamps; the same bike can count repeatedly | `COUNTROWS(FactFreeBikeSnapshot)`; label as observations |
 | `Distinct Bikes Observed In Period` | Same as visible bikes for one timestamp | Counts unique bike IDs seen at least once in the period, not simultaneous availability | `DISTINCTCOUNT(bike_id)` across the period; never call this available bikes |
@@ -133,20 +123,19 @@ fact filter context, then evaluate the inner expression only at that timestamp.
 | `Reserved Bike Observations` | Reserved visible-bike rows at one timestamp | Counts reserved observations across timestamps | `COUNTROWS` filtered to reserved; label as observations |
 | `Disabled Visible Bikes - Latest Snapshot` | Distinct visible bikes marked disabled at one timestamp | Uses latest timestamp only | Distinct bike count filtered to `is_disabled = TRUE` |
 | `Disabled Bike Observations` | Disabled visible-bike rows at one timestamp | Counts disabled observations across timestamps | `COUNTROWS` filtered to disabled; label as observations |
-| `Low Availability Station Snapshot Count` | Low-availability station states at one timestamp | Counts station snapshots meeting the threshold across the period | `COUNTROWS` where bikes/capacity <= 0.20; proxy, not demand |
+| `Low Availability Station Snapshot Count` | Low-availability station states | Counts station snapshots meeting a declared bike-count threshold | `COUNTROWS` where bikes are below the threshold; proxy, not demand |
 | `Observed System Snapshot Count` | One system timestamp | Counts distinct timestamps; does not count station rows | `DISTINCTCOUNT(FactSystemAvailability[observed_at])` |
 | `Station Snapshot Count` | One station state | Counts station state rows across selected timestamps | `COUNTROWS(FactStationAvailability)` |
 
-The existing `gold_station_availability_metrics` contains all-history
-station-level average/min/max and empty counts. It is not suitable for date or
-hour-filtered KPIs because it has no `observed_at`. Use it only as a hidden
-validation or all-history supporting table. For report measures, calculate
-period averages/minimums/maximums from the periodic fact or system aggregate,
-with the snapshot aggregation stated in the measure name.
+The deprecated `gold_station_availability_metrics` contained all-history
+station-level summaries. It is not suitable for date or hour-filtered KPIs
+because it has no `observed_at`, so it is not imported. Calculate period
+averages/minimums/maximums from the periodic fact or system aggregate, with the
+snapshot aggregation stated in the measure name.
 
 `gold_system_availability` is the preferred source for system-level snapshot
-totals. Do not combine its totals with station-fact totals in one visual unless
-the visual deliberately chooses one source.
+state. Do not combine its state counts with station-fact counts in one visual
+unless the visual deliberately chooses one source.
 
 ## 3. Visual grain rules
 
@@ -172,16 +161,16 @@ timestamp. A trend chart may contain multiple snapshots only when
 
 ### Page 1: System Availability
 
-**Purpose:** Answer whether the system had observed bikes and docks available
+**Purpose:** Monitor observed system bike availability and empty-station state
 through time.
 
 **KPI cards:**
 
 - Bikes Available - Latest Snapshot
-- Docks Available - Latest Snapshot
-- Capacity - Latest Snapshot
-- Bike Availability Ratio - Latest Snapshot
-- E-bike Share - Latest Snapshot
+- Station Count - Latest Snapshot
+- Empty Stations - Latest Snapshot
+- Visible Free Bikes - Latest Snapshot
+- E-bikes Available - Latest Snapshot
 
 Each card is a **system snapshot** KPI from `FactSystemAvailability` and uses
 the latest `observed_at` in the active date/hour context. It must display the
@@ -190,15 +179,15 @@ selected/latest timestamp in a subtitle or tooltip.
 **Visuals:**
 
 - Line chart, grain **system snapshot**: one point per `observed_at`, showing
-  `total_bikes_available` and `total_docks_available` from
+  `available_bikes`, `empty_station_count`, and `available_ebikes` from
   `FactSystemAvailability`. This is a per-snapshot state trend, not a sum over
   the selected period.
 - Column chart, grain **period aggregation by hour**: average system bikes and
-  docks per snapshot grouped by `hour_of_day`. Label the values as averages,
-  not totals.
-- Detail table, grain **system snapshot**: timestamp, station count, capacity,
-  bikes, docks, and e-bikes. Do not use a card or chart that hides timestamp
-  grain while summing this table.
+  empty stations per snapshot grouped by `hour_of_day`. Label the values as
+  averages, not totals.
+- Detail table, grain **system snapshot**: timestamp, station count, available
+  bikes, empty stations, visible free bikes, and e-bikes. Do not use a card or
+  chart that hides timestamp grain while summing this table.
 
 **Slicers:** date, weekday/weekend, and hour. Region and vehicle-type slicers
 belong on the station and vehicle pages; they do not filter the already
@@ -220,7 +209,7 @@ state, not demand.
 - Station Count - Latest Snapshot
 - Empty Stations - Latest Snapshot
 - Empty Station Snapshot Rate
-- Average Bike Availability Ratio Per Snapshot
+- Average Bikes Available Per Snapshot
 - Low Availability Station Snapshot Count
 
 The first two are **station snapshot** state KPIs at the latest timestamp.
@@ -231,14 +220,15 @@ period.
 **Visuals:**
 
 - Map, grain **station snapshot**: one point per station at the selected/latest
-  `observed_at`, sized by bikes available and colored by availability ratio.
+  `observed_at`, sized by observed bikes available and marked when empty.
 - Ranked bar chart, grain **station snapshot**: one bar per station at the
-  selected/latest timestamp, ranked by bikes or availability ratio.
+  selected/latest timestamp, ranked by observed bikes available.
 - Scatter plot, grain **station period aggregation**: one point per station,
-  with average bikes per snapshot on one axis and capacity on the other. The
-  title must say `Average Bikes Per Snapshot`; it must not imply current state.
-- Detail table, grain **station snapshot**: station, region, capacity, bikes,
-  docks, ratio, `observed_at`, and renting/returning flags.
+  with average bikes per snapshot on one axis and empty-state count on the
+  other. The title must say `Average Bikes Per Snapshot`; it must not imply
+  current state.
+- Detail table, grain **station snapshot**: station, region, bikes,
+  `observed_at`, and renting/returning flags.
 
 **Slicers:** date, hour, station, region, virtual-station flag, renting and
 returning status.

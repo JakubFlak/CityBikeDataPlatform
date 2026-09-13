@@ -9,10 +9,10 @@ available in the source layer. A row observed twice is two states, not a trip.
 
 The model supports:
 
-- system and station bikes, docks, capacity, and availability over time
-- station-level empty-state and availability-ratio indicators
+- observed system and station bike availability over time
+- station-level empty-state and availability-pattern indicators
 - availability by date, weekday/weekend, and hour of day
-- e-bike counts and e-bike share of observed available bikes
+- e-bike counts and composition of observed available bikes
 - station and free-bike geographic distribution
 - availability comparisons by region
 - pricing-plan configuration associated with free-bike snapshots
@@ -50,8 +50,9 @@ attributes yet. The timestamp itself always remains available.
 
 **Grain:** station + observed_at. This is the central periodic snapshot fact.
 
-Measures and attributes are `num_bikes_available`, `num_docks_available`,
-`capacity`, `is_installed`, `is_renting`, `is_returning`, and `last_reported`.
+Measures and attributes include the observed bike count, source dock and
+capacity fields, station status flags, and `last_reported`. Dock and capacity
+fields remain available for source lineage but are not report-facing metrics.
 Foreign keys are the temporal station key (`station_id`, `observed_at`),
 `region_id` from the matching station snapshot, and `date_key`.
 
@@ -77,18 +78,18 @@ availability and state analysis, but it is not a trip or movement fact.
 
 ### `gold_system_availability`
 
-**Grain:** observed_at. It aggregates station snapshots into station count,
-total capacity, total bikes, total docks, total e-bikes, and e-bike share. The
-share is `total_ebikes_available / total_bikes_available` when the denominator
-is positive; otherwise it is null.
+**Grain:** exactly one system observation per `observed_at`. It contains
+`station_count`, `available_bikes`, `empty_station_count`,
+`visible_free_bikes`, and `available_ebikes`, plus `date_key` and
+`hour_of_day`. These are observed state counts; they are not demand,
+utilization, rides, or inferred fleet totals.
 
-### `gold_station_availability_metrics`
-
-**Grain:** station across all processed snapshots. It contains snapshot count,
-average/minimum/maximum bikes, empty-snapshot count, and average availability
-ratio. The ratio is `num_bikes_available / capacity` only where capacity is
-present and non-zero. These are reusable descriptive metrics, not utilization.
-Presentation-specific aggregations remain out of scope.
+Station history metrics are intentionally not materialized as a separate Gold
+table. Snapshot counts, averages, minimums, maximums, and empty-state counts
+can be calculated from `fact_station_availability` after selecting the desired
+date, hour, station, or region context. This preserves timestamp-grain
+analytical value and avoids an all-history table that cannot be filtered by
+observation time.
 
 ## Temporal and quality rules
 

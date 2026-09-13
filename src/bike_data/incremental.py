@@ -55,13 +55,9 @@ GOLD_KEYS = {
     ),
     "fact_free_bike_snapshot": ("bike_id", "observed_at"),
     "gold_system_availability": ("observed_at",),
-    "gold_station_availability_metrics": ("station_id",),
 }
 
-REBUILT_GOLD_TABLES = {
-    "gold_system_availability",
-    "gold_station_availability_metrics",
-}
+REBUILT_GOLD_TABLES = {"gold_system_availability"}
 
 
 def incremental_raw_to_silver(

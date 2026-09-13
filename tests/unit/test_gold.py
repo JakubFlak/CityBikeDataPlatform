@@ -170,9 +170,11 @@ def test_gold_grains_temporal_joins_and_metrics(tmp_path):
         == 4
     )
     assert [row["capacity"] for row in station_facts] == [5, 6]
-    assert [row["total_bikes_available"] for row in system] == [2, 3]
-    assert [row["total_ebikes_available"] for row in system] == [1, 2]
-    assert system[0]["ebike_share_of_available_bikes"] == 0.5
+    assert [row["available_bikes"] for row in system] == [2, 3]
+    assert [row["available_ebikes"] for row in system] == [1, 2]
+    assert [row["empty_station_count"] for row in system] == [0, 0]
+    assert [row["visible_free_bikes"] for row in system] == [1, 1]
+    assert set(system[0]) == set(GOLD_SCHEMAS["gold_system_availability"].names)
 
 
 def test_gold_foreign_keys_and_determinism(tmp_path):
@@ -230,6 +232,12 @@ def test_gold_joins_feeds_with_collection_time_jitter(tmp_path):
 
     assert len(_read(paths, "fact_station_availability")) == 2
     assert len(_read(paths, "fact_free_bike_snapshot")) == 2
+    assert [
+        row["visible_free_bikes"] for row in _read(paths, "gold_system_availability")
+    ] == [
+        1,
+        1,
+    ]
 
 
 def test_gold_rejects_ambiguous_temporal_match():

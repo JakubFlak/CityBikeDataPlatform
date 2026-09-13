@@ -25,8 +25,9 @@ snapshots than the current local sample contains.
 
 The fact tables are periodic state facts, not additive event facts. Their
 numeric columns describe a state at `observed_at` and must not be summed across
-timestamps and presented as a current state. This applies to bikes, docks,
-capacity, vehicle-type counts, and free-bike rows.
+timestamps and presented as a current state. This applies to bikes,
+vehicle-type counts, and free-bike rows. Capacity and dock fields remain in
+the source facts for lineage, but are excluded from Power BI-facing metrics.
 
 The v1 semantic model uses three explicit consumption modes:
 
@@ -50,13 +51,13 @@ snapshot measure is used.
 | Report table | Gold source | Role | Grain | Important columns | Purpose |
 | --- | --- | --- | --- | --- | --- |
 | `DimDate` | `dim_date` | Dimension | One calendar date | `date_key`, `calendar_date`, `year`, `month`, `week`, `day_name`, `is_weekend` | Date slicing and calendar labels |
-| `DimStationIdentity` | latest rows from `dim_station` | Helper dimension | One current identity row per `station_id` | `station_id`, `name`, `short_name`, `lat`, `lon`, `region_id`, `capacity`, `is_virtual_station` | Safe station slicers and map labels without duplicate snapshot IDs |
+| `DimStationIdentity` | latest rows from `dim_station` | Helper dimension | One current identity row per `station_id` | `station_id`, `name`, `short_name`, `lat`, `lon`, `region_id`, `is_virtual_station` | Safe station slicers and map labels without duplicate snapshot IDs |
 | `DimVehicleTypeIdentity` | latest rows from `dim_vehicle_type` | Helper dimension | One current identity row per `vehicle_type_id` | `vehicle_type_id`, `name`, `form_factor`, `propulsion_type`, `is_ebike` | Vehicle type and e-bike slicing |
 | `DimRegionIdentity` | latest rows from `dim_region` | Helper dimension | One current identity row per `region_id` | `region_id`, `name` | Region slicing for current labels |
-| `FactStationAvailability` | `fact_station_availability` | Periodic snapshot fact | One station state per `station_id + observed_at` | `station_id`, `observed_at`, `date_key`, `hour_of_day`, `region_id`, `capacity`, `num_bikes_available`, `num_docks_available`, status flags | Central operational availability fact |
+| `FactStationAvailability` | `fact_station_availability` | Periodic snapshot fact | One station state per `station_id + observed_at` | `station_id`, `observed_at`, `date_key`, `hour_of_day`, `region_id`, `num_bikes_available`, status flags | Central operational availability fact |
 | `FactStationVehicleTypeAvailability` | `fact_station_vehicle_type_availability` | Child periodic fact | One station/vehicle state per `station_id + vehicle_type_id + observed_at` | IDs, `observed_at`, `date_key`, `hour_of_day`, `count`, `is_ebike` | Vehicle-type availability without repeating station measures |
 | `FactFreeBikeSnapshot` | `fact_free_bike_snapshot` | Periodic state fact | One publicly listed bike per `bike_id + observed_at` | IDs, `observed_at`, station and coordinates, reserved/disabled flags, fuel/range | Available-bike inventory and spatial state analysis |
-| `FactSystemAvailability` | `gold_system_availability` | Aggregate periodic fact | One system aggregate per `observed_at` | `observed_at`, `date_key`, `hour_of_day`, station/capacity/bike/dock/e-bike totals | Fast system KPI visuals |
+| `FactSystemAvailability` | `gold_system_availability` | Aggregate periodic fact | One system aggregate per `observed_at` | `observed_at`, `date_key`, `hour_of_day`, `station_count`, `available_bikes`, `empty_station_count`, `visible_free_bikes`, `available_ebikes` | Fast system state and trend visuals |
 
 `DimStationIdentity`, `DimVehicleTypeIdentity`, and `DimRegionIdentity` are
 Power Query helper queries created from Gold imports by retaining the latest
@@ -72,7 +73,7 @@ many-to-many relationships caused by the snapshot dimensions.
 | `dim_region` | Hidden | Keep for lineage and future historical relationship keys. |
 | `dim_pricing_plan` | Hidden | Pricing is source context for free-bike snapshots, not a current report focus. |
 | `dim_pricing_plan_tier` | Hidden | Pricing child detail is not needed for the three-page availability report. |
-| `gold_station_availability_metrics` | Hidden or separate supporting query | It is station-grain across all history and has no timestamp, so it cannot safely relate to snapshot dimensions or date filters. Its metrics can be recomputed from the fact for a selected period. |
+| `gold_station_availability_metrics` | Deprecated and not imported | Its all-history station grain has no timestamp and cannot safely support date/hour filtering. Recompute named period summaries from `FactStationAvailability`. |
 
 Silver tables should not be exposed to report authors. They contain lineage,
 implementation details, JSON fields, and child-table structures that are useful
@@ -126,8 +127,9 @@ many-to-many filtering and duplicate or ambiguous totals.
 Do not create a bidirectional relationship between facts. The station and
 vehicle-type facts have different grains and would multiply rows.
 
-Do not relate `gold_station_availability_metrics` to `DimDate`; it has no date
-and is aggregated across all processed snapshots.
+Do not recreate `gold_station_availability_metrics` in Power BI or relate an
+all-history station summary to `DimDate`; period summaries belong on the
+timestamp-grain station fact.
 
 ### Target historical model prerequisite
 
@@ -176,6 +178,42 @@ helpers for stable operational labels, document their current-state meaning,
 and defer historical attribute slicing until explicit Gold snapshot keys exist.
 
 ## Power BI import shaping
+
+## Report pages
+
+### 1. System Availability
+
+Use `FactSystemAvailability` for current state cards and historical system
+trends. Show latest `available_bikes`, `station_count`,
+`empty_station_count`, `visible_free_bikes`, and `available_ebikes` for
+current state. Historical visuals use `observed_at` on the axis and explicitly
+label averages, minimums, maximums, or snapshot counts when summarizing a
+period. Do not expose capacity, docks, utilization, demand, rides, or revenue
+measures.
+
+### 2. Station Availability
+
+Use `FactStationAvailability` for the latest station ranking, map/spatial
+distribution, and station history. Current visuals resolve the maximum
+`observed_at` in context. Historical visuals retain station plus
+`observed_at` grain and can calculate average, minimum, maximum, and
+empty-state summaries directly from the fact. These visuals identify
+persistent or unusual observed availability patterns; they do not claim
+demand or utilization.
+
+### 3. Vehicle State
+
+Use `FactStationVehicleTypeAvailability` for vehicle-type composition and
+history, and `FactFreeBikeSnapshot` for visible-bike state and location.
+Current visuals resolve one selected/latest timestamp. Historical composition
+keeps `observed_at` visible. Free-bike cards and maps must say visible or
+observed bikes because absence from the feed is not evidence of a trip or
+utilization.
+
+Across all pages, keep `observed_at` in tooltips and detail tables, use the
+identity helpers for descriptive slicing, and avoid relationships between
+facts. Power BI should consume Gold Parquet outputs directly; it should not
+duplicate Raw-to-Silver or Silver-to-Gold transformations.
 
 For each identity helper:
 

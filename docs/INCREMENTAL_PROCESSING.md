@@ -70,12 +70,12 @@ facts and preserves historical dimension rows. Temporal joins still use the
 existing nearest-feed match within the bounded five-minute tolerance; a match
 outside the tolerance or an ambiguous/conflicting key fails.
 
-Because the current derived tables are small, non-partitioned aggregates,
-`gold_system_availability` and `gold_station_availability_metrics` are
-recomputed from the complete fact set. This is deliberately simple and
-correct. Their source facts remain key-deduplicated. A future partitioned
-format can update only affected timestamps/stations once scale justifies the
-additional state and validation.
+Because the current derived table is a small, non-partitioned aggregate,
+`gold_system_availability` is recomputed from the complete fact set. This is
+deliberately simple and correct. Station history metrics are not materialized;
+they are calculated from `fact_station_availability` in the selected report
+context. A future partitioned format can update only affected timestamps once
+scale justifies the additional state and validation.
 
 Gold output is also staged and atomically replaced. A failed candidate build
 cannot partially overwrite the previous Gold output.

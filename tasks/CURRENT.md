@@ -38,6 +38,8 @@ Completed.
 - Add incremental append, rerun, failure-restart, temporal, and conflict tests.
 - Add a one-command lightweight pipeline coordinator with structured run
     summaries and fail-fast stage handling.
+- Redesign the Gold system consumption table around observed availability
+    state and deprecate redundant all-history station metrics.
 - Add separate CI and scheduled/manual GitHub Actions workflows.
 - Document scheduling, configuration, retry behavior, and generated artifact
     handling.
@@ -76,6 +78,10 @@ Completed.
 - Scheduled and manual runs restore the latest successful pipeline-state
     artifact before ingestion; failed runs cannot replace that artifact.
 - The first run starts empty when no successful state artifact exists.
+- `gold_system_availability` is one row per `observed_at` and excludes
+    capacity-, dock-, utilization-, and demand-based metrics.
+- Station history summaries are calculated from the timestamp-grain station
+    fact instead of maintained as redundant Gold output.
 
 ## Next Task
 
