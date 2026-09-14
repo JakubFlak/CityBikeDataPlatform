@@ -10,7 +10,9 @@ from bike_data.gold import (
     GOLD_SCHEMAS,
     GOLD_TABLES,
     _index,
+    _nearest_observation,
     _required_snapshot,
+    _system_metrics,
     transform_silver_to_gold,
 )
 from bike_data.silver import transform_raw_to_silver
@@ -114,7 +116,15 @@ def _populate_raw(raw_root):
                         "pricing_plan_id": "P1",
                         "lat": 51.1,
                         "lon": 17.0,
-                    }
+                    },
+                    {
+                        "bike_id": f"F{minute}",
+                        "station_id": None,
+                        "vehicle_type_id": "ebike",
+                        "pricing_plan_id": "P1",
+                        "lat": 51.2,
+                        "lon": 17.1,
+                    },
                 ]
             },
         )
@@ -170,10 +180,13 @@ def test_gold_grains_temporal_joins_and_metrics(tmp_path):
         == 4
     )
     assert [row["capacity"] for row in station_facts] == [5, 6]
-    assert [row["available_bikes"] for row in system] == [2, 3]
-    assert [row["available_ebikes"] for row in system] == [1, 2]
+    assert len({row["observed_at"] for row in system}) == 2
+    assert [row["station_count"] for row in system] == [1, 1]
+    assert [row["available_station_bikes"] for row in system] == [2, 3]
+    assert [row["available_station_ebikes"] for row in system] == [1, 2]
+    assert [row["available_station_regular_bikes"] for row in system] == [1, 1]
     assert [row["empty_station_count"] for row in system] == [0, 0]
-    assert [row["visible_free_bikes"] for row in system] == [1, 1]
+    assert [row["available_free_bikes"] for row in system] == [1, 1]
     assert set(system[0]) == set(GOLD_SCHEMAS["gold_system_availability"].names)
 
 
@@ -231,9 +244,9 @@ def test_gold_joins_feeds_with_collection_time_jitter(tmp_path):
     paths = transform_silver_to_gold(tmp_path / "silver", tmp_path / "gold")
 
     assert len(_read(paths, "fact_station_availability")) == 2
-    assert len(_read(paths, "fact_free_bike_snapshot")) == 2
+    assert len(_read(paths, "fact_free_bike_snapshot")) == 4
     assert [
-        row["visible_free_bikes"] for row in _read(paths, "gold_system_availability")
+        row["available_free_bikes"] for row in _read(paths, "gold_system_availability")
     ] == [
         1,
         1,
@@ -253,3 +266,41 @@ def test_gold_rejects_ambiguous_temporal_match():
     )
     with pytest.raises(ValueError, match="ambiguous temporal"):
         _required_snapshot(index, ("S1", target), "station_information")
+
+
+def test_gold_rejects_free_bike_observation_outside_tolerance():
+    observation = datetime(2026, 9, 12, 10, tzinfo=UTC).replace(tzinfo=None)
+    with pytest.raises(ValueError, match="outside system tolerance"):
+        _nearest_observation(observation + timedelta(minutes=6), [observation])
+
+
+def test_gold_rejects_ambiguous_free_bike_system_observation():
+    first = datetime(2026, 9, 12, 10, tzinfo=UTC).replace(tzinfo=None)
+    second = datetime(2026, 9, 12, 10, 2, tzinfo=UTC).replace(tzinfo=None)
+    with pytest.raises(ValueError, match="ambiguous system observation"):
+        _nearest_observation(first + timedelta(minutes=1), [first, second])
+
+
+def test_system_metrics_counts_stations_and_empty_stations():
+    observed_at = datetime(2026, 9, 12, 10, tzinfo=UTC).replace(tzinfo=None)
+    metrics = _system_metrics(
+        [
+            {"observed_at": observed_at, "num_bikes_available": 3},
+            {"observed_at": observed_at, "num_bikes_available": 0},
+        ],
+        [],
+        [],
+    )
+    assert metrics == [
+        {
+            "observed_at": observed_at,
+            "date_key": 20260912,
+            "hour_of_day": 10,
+            "station_count": 2,
+            "empty_station_count": 1,
+            "available_station_bikes": 3,
+            "available_station_ebikes": 0,
+            "available_station_regular_bikes": 3,
+            "available_free_bikes": 0,
+        }
+    ]

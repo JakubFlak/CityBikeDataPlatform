@@ -106,16 +106,16 @@ fact filter context, then evaluate the inner expression only at that timestamp.
 
 | Measure | Single-snapshot meaning | More than one `observed_at` in context | Recommended definition |
 | --- | --- | --- | --- |
-| `Bikes Available - Latest Snapshot` | Bikes available across the selected stations at one timestamp | Uses the latest timestamp; does not add snapshots | `SUM(num_bikes_available)` after filtering fact rows to latest `observed_at` |
+| `Station Bikes Available - Latest Snapshot` | Bikes available across the selected stations at one timestamp | Uses the latest timestamp; does not add snapshots | `SUM(num_bikes_available)` after filtering fact rows to latest `observed_at` |
 | `Station Count - Latest Snapshot` | Stations represented at one timestamp | Counts distinct stations only at the latest timestamp | `DISTINCTCOUNT(station_id)` at latest timestamp |
 | `Empty Station Count - Latest Snapshot` | Stations with zero bikes at one timestamp | Counts empty stations only at latest timestamp | Count station rows where bikes = 0 after latest filter |
 | `Empty Station Snapshot Count` | Number of empty station states | Counts empty station rows across all selected timestamps | `COUNTROWS` of station snapshots with bikes = 0; explicitly a state count |
 | `Empty Station Snapshot Rate` | Empty station states divided by all station states | Percentage of station snapshots empty across the selected period | `DIVIDE([Empty Station Snapshot Count], [Station Snapshot Count])` |
 | `E-bikes Available - Latest Snapshot` | E-bikes reported at one timestamp | Uses latest timestamp; does not add repeated vehicle states | Sum vehicle-type `count` for `is_ebike = TRUE` at latest timestamp |
 | `E-bikes Available - Latest Snapshot` | E-bikes reported at one timestamp | Uses latest timestamp; does not add repeated vehicle states | Sum vehicle-type `count` for `is_ebike = TRUE` at latest timestamp |
-| `Average Bikes Available Per Snapshot` | Bikes at the selected snapshots | Averages system `available_bikes`, one row per `observed_at` | Average of `FactSystemAvailability[available_bikes]` by timestamp |
-| `Minimum Bikes Available Per Snapshot` | Minimum observed system bikes | Minimum system `available_bikes` across selected timestamps | Minimum of system available bikes by timestamp |
-| `Maximum Bikes Available Per Snapshot` | Maximum observed system bikes | Maximum system `available_bikes` across selected timestamps | Maximum of system available bikes by timestamp |
+| `Average Station Bikes Available Per Snapshot` | Station bikes at the selected snapshots | Averages system `available_station_bikes`, one row per `observed_at` | Average of `FactSystemAvailability[available_station_bikes]` by timestamp |
+| `Minimum Station Bikes Available Per Snapshot` | Minimum observed station bikes | Minimum system `available_station_bikes` across selected timestamps | Minimum of system station bikes by timestamp |
+| `Maximum Station Bikes Available Per Snapshot` | Maximum observed station bikes | Maximum system `available_station_bikes` across selected timestamps | Maximum of system station bikes by timestamp |
 | `Visible Bikes - Latest Snapshot` | Distinct publicly visible bikes at one timestamp | Uses latest timestamp, so a bike seen repeatedly is counted once | `DISTINCTCOUNT(bike_id)` after latest timestamp filter |
 | `Visible Bike Observations` | One visible-bike row at one timestamp | Counts bike observations across timestamps; the same bike can count repeatedly | `COUNTROWS(FactFreeBikeSnapshot)`; label as observations |
 | `Distinct Bikes Observed In Period` | Same as visible bikes for one timestamp | Counts unique bike IDs seen at least once in the period, not simultaneous availability | `DISTINCTCOUNT(bike_id)` across the period; never call this available bikes |
@@ -166,11 +166,11 @@ through time.
 
 **KPI cards:**
 
-- Bikes Available - Latest Snapshot
+- Station Bikes Available - Latest Snapshot
 - Station Count - Latest Snapshot
 - Empty Stations - Latest Snapshot
-- Visible Free Bikes - Latest Snapshot
-- E-bikes Available - Latest Snapshot
+- Free Bikes Outside Stations - Latest Snapshot
+- Station E-bikes Available - Latest Snapshot
 
 Each card is a **system snapshot** KPI from `FactSystemAvailability` and uses
 the latest `observed_at` in the active date/hour context. It must display the
@@ -179,15 +179,18 @@ selected/latest timestamp in a subtitle or tooltip.
 **Visuals:**
 
 - Line chart, grain **system snapshot**: one point per `observed_at`, showing
-  `available_bikes`, `empty_station_count`, and `available_ebikes` from
+  `available_station_bikes`, `available_station_regular_bikes`,
+  `available_station_ebikes`, `available_free_bikes`, and
+  `empty_station_count` from
   `FactSystemAvailability`. This is a per-snapshot state trend, not a sum over
   the selected period.
-- Column chart, grain **period aggregation by hour**: average system bikes and
+- Column chart, grain **period aggregation by hour**: average station bikes and
   empty stations per snapshot grouped by `hour_of_day`. Label the values as
   averages, not totals.
-- Detail table, grain **system snapshot**: timestamp, station count, available
-  bikes, empty stations, visible free bikes, and e-bikes. Do not use a card or
-  chart that hides timestamp grain while summing this table.
+- Detail table, grain **system snapshot**: timestamp, station count, station
+  bikes, regular station bikes, station e-bikes, empty stations, and free bikes
+  outside stations. Do not use a card or chart that hides timestamp grain while
+  summing this table.
 
 **Slicers:** date, weekday/weekend, and hour. Region and vehicle-type slicers
 belong on the station and vehicle pages; they do not filter the already

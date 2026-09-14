@@ -138,10 +138,11 @@ GOLD_SCHEMAS = {
             "date_key": pa.int64(),
             "hour_of_day": pa.int64(),
             "station_count": pa.int64(),
-            "available_bikes": pa.int64(),
             "empty_station_count": pa.int64(),
-            "visible_free_bikes": pa.int64(),
-            "available_ebikes": pa.int64(),
+            "available_station_bikes": pa.int64(),
+            "available_station_ebikes": pa.int64(),
+            "available_station_regular_bikes": pa.int64(),
+            "available_free_bikes": pa.int64(),
         }
     ),
 }
@@ -375,22 +376,28 @@ def _system_metrics(station_rows, vehicle_rows, free_bike_rows):
     free_bikes = {}
     system_observations = list(grouped)
     for row in free_bike_rows:
+        if row["station_id"] is not None:
+            continue
         matched_at = _nearest_observation(row["observed_at"], system_observations)
         free_bikes[matched_at] = free_bikes.get(matched_at, 0) + 1
     metrics = []
     for observed_at, rows in grouped.items():
-        available_bikes = sum(row["num_bikes_available"] or 0 for row in rows)
+        available_station_bikes = sum(row["num_bikes_available"] or 0 for row in rows)
+        available_station_ebikes = ebikes.get(observed_at, 0)
         metrics.append(
             {
                 "observed_at": observed_at,
                 **_time_keys(observed_at),
                 "station_count": len(rows),
-                "available_bikes": available_bikes,
                 "empty_station_count": sum(
                     row["num_bikes_available"] == 0 for row in rows
                 ),
-                "visible_free_bikes": free_bikes.get(observed_at, 0),
-                "available_ebikes": ebikes.get(observed_at, 0),
+                "available_station_bikes": available_station_bikes,
+                "available_station_ebikes": available_station_ebikes,
+                "available_station_regular_bikes": (
+                    available_station_bikes - available_station_ebikes
+                ),
+                "available_free_bikes": free_bikes.get(observed_at, 0),
             }
         )
     return metrics

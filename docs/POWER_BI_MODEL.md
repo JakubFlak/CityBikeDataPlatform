@@ -57,7 +57,7 @@ snapshot measure is used.
 | `FactStationAvailability` | `fact_station_availability` | Periodic snapshot fact | One station state per `station_id + observed_at` | `station_id`, `observed_at`, `date_key`, `hour_of_day`, `region_id`, `num_bikes_available`, status flags | Central operational availability fact |
 | `FactStationVehicleTypeAvailability` | `fact_station_vehicle_type_availability` | Child periodic fact | One station/vehicle state per `station_id + vehicle_type_id + observed_at` | IDs, `observed_at`, `date_key`, `hour_of_day`, `count`, `is_ebike` | Vehicle-type availability without repeating station measures |
 | `FactFreeBikeSnapshot` | `fact_free_bike_snapshot` | Periodic state fact | One publicly listed bike per `bike_id + observed_at` | IDs, `observed_at`, station and coordinates, reserved/disabled flags, fuel/range | Available-bike inventory and spatial state analysis |
-| `FactSystemAvailability` | `gold_system_availability` | Aggregate periodic fact | One system aggregate per `observed_at` | `observed_at`, `date_key`, `hour_of_day`, `station_count`, `available_bikes`, `empty_station_count`, `visible_free_bikes`, `available_ebikes` | Fast system state and trend visuals |
+| `FactSystemAvailability` | `gold_system_availability` | Aggregate periodic fact | One system aggregate per `observed_at` | `observed_at`, `date_key`, `hour_of_day`, `station_count`, `empty_station_count`, `available_station_bikes`, `available_station_ebikes`, `available_station_regular_bikes`, `available_free_bikes` | Fast system state and trend visuals |
 
 `DimStationIdentity`, `DimVehicleTypeIdentity`, and `DimRegionIdentity` are
 Power Query helper queries created from Gold imports by retaining the latest
@@ -184,8 +184,9 @@ and defer historical attribute slicing until explicit Gold snapshot keys exist.
 ### 1. System Availability
 
 Use `FactSystemAvailability` for current state cards and historical system
-trends. Show latest `available_bikes`, `station_count`,
-`empty_station_count`, `visible_free_bikes`, and `available_ebikes` for
+trends. Show latest `available_station_bikes`, `station_count`,
+`empty_station_count`, `available_station_ebikes`,
+`available_station_regular_bikes`, and `available_free_bikes` for
 current state. Historical visuals use `observed_at` on the axis and explicitly
 label averages, minimums, maximums, or snapshot counts when summarizing a
 period. Do not expose capacity, docks, utilization, demand, rides, or revenue

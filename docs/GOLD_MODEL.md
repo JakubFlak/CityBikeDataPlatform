@@ -79,10 +79,14 @@ availability and state analysis, but it is not a trip or movement fact.
 ### `gold_system_availability`
 
 **Grain:** exactly one system observation per `observed_at`. It contains
-`station_count`, `available_bikes`, `empty_station_count`,
-`visible_free_bikes`, and `available_ebikes`, plus `date_key` and
-`hour_of_day`. These are observed state counts; they are not demand,
-utilization, rides, or inferred fleet totals.
+`station_count`, `empty_station_count`, `available_station_bikes`,
+`available_station_ebikes`, `available_station_regular_bikes`, and
+`available_free_bikes`, plus `date_key` and `hour_of_day`. Station bike totals
+are sums of station observations; e-bike totals come from the matched
+station-vehicle availability rows, and regular bikes are the difference. Free
+bikes count only rows with a null `station_id`, which is the Silver-layer
+outside-station indicator. These are observed state counts; they are not
+demand, utilization, rides, or inferred fleet totals.
 
 Station history metrics are intentionally not materialized as a separate Gold
 table. Snapshot counts, averages, minimums, maximums, and empty-state counts
