@@ -29,6 +29,10 @@ Completed.
     tables without flattening unrelated nested structures.
 - Add deterministic multi-snapshot Silver transformation tests.
 - Design and implement the analytical Gold model from Silver Parquet tables.
+- Add `observed_at_local` to Gold using IANA `Europe/Warsaw`; derive Gold
+    calendar attributes from local time while retaining UTC snapshot identity.
+- Update the Power BI semantic/report definitions to use local time for
+    presentation and time-series axes.
 - Add temporal snapshot dimensions, station availability facts, free-bike
     snapshots, and reusable system/station metrics.
 - Add deterministic multi-snapshot Gold transformation tests and documentation.
@@ -61,6 +65,9 @@ Completed.
     two nested child tables.
 - Two timestamp fixtures preserve time-varying rows and source lineage.
 - Gold uses snapshot-grained dimensions keyed by entity plus `observed_at`.
+- Gold stores `observed_at_local` as the `Europe/Warsaw` representation of the
+    same instant; it is never used for keys, joins, incremental identity, or
+    latest-snapshot selection.
 - Station availability is the central fact at `station_id + observed_at`.
 - Vehicle-type availability remains a separate child fact to avoid repeating
     station-level measures.
@@ -82,6 +89,9 @@ Completed.
     capacity-, dock-, utilization-, and demand-based metrics.
 - Station history summaries are calculated from the timestamp-grain station
     fact instead of maintained as redundant Gold output.
+- Gold `date_key`, calendar attributes, and `hour_of_day` describe the local
+    `Europe/Warsaw` observation date and time, including midnight and CET/CEST
+    transitions.
 
 ## Next Task
 

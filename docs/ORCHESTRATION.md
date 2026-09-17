@@ -11,6 +11,7 @@ GBFS discovery and ingestion
     -> Raw quality validation
     -> incremental Raw -> Silver
     -> incremental Silver -> Gold
+    -> Gold schema validation
     -> Parquet output row-count validation and run summary
 ```
 
@@ -56,6 +57,12 @@ The successful-state upload runs only when the pipeline succeeds. A failed run
 can upload a separate `pipeline-failure-<run_id>` diagnostic artifact, but it
 cannot replace `pipeline-state`; downstream failures therefore leave the last
 known-good state available for the next run.
+
+The workflow runs the repository version of the pipeline on every scheduled or
+manual job. Before publishing `pipeline-state`, it validates every Gold table
+against the current `GOLD_SCHEMAS`, including `observed_at_local` on snapshot
+tables. This prevents an old restored artifact from being republished with a
+stale Gold schema after a model change.
 
 ## Configuration
 

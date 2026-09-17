@@ -17,7 +17,10 @@ snapshots than the current local sample contains.
 - A row is a state observed at a timestamp, not a trip or transaction.
 - Gold is the only analytical layer exposed to the report.
 - Silver and Raw remain engineering/debugging layers.
-- `observed_at` remains available in every snapshot fact.
+- `observed_at` remains available in every snapshot fact as the canonical UTC
+   timestamp.
+- `observed_at_local` is a planned Gold presentation column; it is not present
+   in the currently generated Parquet export or the current report definition.
 - Counts are availability counts, not ride counts or utilization.
 - Snapshot dimensions are not joined to facts by entity ID alone.
 
@@ -153,21 +156,26 @@ not implemented by this design task.
 station facts and relates through `date_key`. Mark it as the model's date
 table using `calendar_date` when building the report.
 
-Keep `observed_at` in every fact. It is needed to distinguish snapshots taken
-on the same date/hour and to calculate ordered observations. It should be
-shown as UTC in tooltips and detail tables.
+When the Gold export and report are explicitly migrated, keep both timestamps
+in every fact. Use canonical UTC `observed_at` to
+distinguish snapshots, order observations, drive relationships, and implement
+latest-snapshot measures. Use `observed_at_local` for local time-series axes,
+tooltips, and local-time detail views.
 
-Use each fact's existing `hour_of_day` integer for hourly charts and slicers.
+Use each fact's existing `date_key` and `hour_of_day` values for local-date and
+local-hour charts and slicers. They are derived from `observed_at_local`.
 A separate time dimension is not useful yet: there are no time attributes beyond
 hour in Gold, and adding one would add a relationship without adding meaning.
 A small 0-23 helper table can be added later if a reusable sort/display label
 is required; it should remain disconnected or relate separately to each fact,
 not bridge facts together.
 
-Power BI should not infer local time from the machine. The source collection
-is normalized to UTC. If Wroclaw local-time reporting is required, add an
-explicit timezone conversion during a future curated model step and retain UTC
-as the canonical timestamp.
+Power BI should not infer local time from the machine. The Gold generator
+defines an explicit `Europe/Warsaw` conversion, including CET/CEST and
+midnight crossings, but the current report continues to use UTC
+`observed_at` until that Gold export is regenerated and the report model is
+updated together. All snapshot identity, incremental processing, joins, and
+latest-state logic remain on UTC `observed_at`.
 
 ## Slowly changing attributes
 

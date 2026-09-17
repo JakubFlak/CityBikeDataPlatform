@@ -1,8 +1,9 @@
 """Deterministic analytical Gold models built from Silver Parquet tables."""
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -21,9 +22,11 @@ GOLD_TABLES = (
 )
 
 TEMPORAL_JOIN_TOLERANCE = timedelta(minutes=5)
+LOCAL_TIMEZONE = ZoneInfo("Europe/Warsaw")
 
 _BASE = {
     "observed_at": pa.timestamp("us"),
+    "observed_at_local": pa.timestamp("us"),
 }
 
 GOLD_SCHEMAS = {
@@ -135,6 +138,7 @@ GOLD_SCHEMAS = {
     "gold_system_availability": pa.schema(
         {
             "observed_at": pa.timestamp("us"),
+            "observed_at_local": pa.timestamp("us"),
             "date_key": pa.int64(),
             "hour_of_day": pa.int64(),
             "station_count": pa.int64(),
@@ -182,7 +186,7 @@ def transform_silver_to_gold(silver_root: Path, gold_root: Path) -> dict[str, Pa
             {
                 "station_id": status["station_id"],
                 "observed_at": status["observed_at"],
-                **_time_keys(status["observed_at"]),
+                **_local_time_fields(status["observed_at"]),
                 "region_id": info["region_id"],
                 "capacity": info["capacity"],
                 "num_bikes_available": status["num_bikes_available"],
@@ -206,7 +210,7 @@ def transform_silver_to_gold(silver_root: Path, gold_root: Path) -> dict[str, Pa
                 "station_id": row["station_id"],
                 "vehicle_type_id": row["vehicle_type_id"],
                 "observed_at": row["observed_at"],
-                **_time_keys(row["observed_at"]),
+                **_local_time_fields(row["observed_at"]),
                 "count": row["count"],
                 "is_ebike": _is_ebike(vehicle),
             }
@@ -235,7 +239,7 @@ def transform_silver_to_gold(silver_root: Path, gold_root: Path) -> dict[str, Pa
             {
                 "bike_id": row["bike_id"],
                 "observed_at": row["observed_at"],
-                **_time_keys(row["observed_at"]),
+                **_local_time_fields(row["observed_at"]),
                 "station_id": row["station_id"],
                 "vehicle_type_id": row["vehicle_type_id"],
                 "pricing_plan_id": row["pricing_plan_id"],
@@ -251,30 +255,30 @@ def transform_silver_to_gold(silver_root: Path, gold_root: Path) -> dict[str, Pa
     tables = {
         "dim_date": _date_dimension(station_facts),
         "dim_station": [
-            {key: row[key] for key in GOLD_SCHEMAS["dim_station"].names}
+            _snapshot_fields(row, GOLD_SCHEMAS["dim_station"])
             for row in silver["station_information"]
         ],
         "dim_vehicle_type": [
             {
-                **{
-                    key: row[key]
-                    for key in GOLD_SCHEMAS["dim_vehicle_type"].names
-                    if key != "is_ebike"
-                },
+                **_snapshot_fields(
+                    row,
+                    GOLD_SCHEMAS["dim_vehicle_type"],
+                    excluded={"is_ebike"},
+                ),
                 "is_ebike": _is_ebike(row),
             }
             for row in silver["vehicle_types"]
         ],
         "dim_region": [
-            {key: row[key] for key in GOLD_SCHEMAS["dim_region"].names}
+            _snapshot_fields(row, GOLD_SCHEMAS["dim_region"])
             for row in silver["system_regions"]
         ],
         "dim_pricing_plan": [
-            {key: row[key] for key in GOLD_SCHEMAS["dim_pricing_plan"].names}
+            _snapshot_fields(row, GOLD_SCHEMAS["dim_pricing_plan"])
             for row in silver["system_pricing_plans"]
         ],
         "dim_pricing_plan_tier": [
-            {key: row[key] for key in GOLD_SCHEMAS["dim_pricing_plan_tier"].names}
+            _snapshot_fields(row, GOLD_SCHEMAS["dim_pricing_plan_tier"])
             for row in silver["system_pricing_plan_tiers"]
         ],
         "fact_station_availability": station_facts,
@@ -330,10 +334,25 @@ def _required_snapshot(index, key, table_name):
     return match
 
 
-def _time_keys(observed_at: datetime) -> dict[str, int]:
+def _local_time_fields(observed_at: datetime) -> dict[str, Any]:
+    if observed_at.tzinfo is None or observed_at.utcoffset() is None:
+        observed_at = observed_at.replace(tzinfo=UTC)
+    local = observed_at.astimezone(LOCAL_TIMEZONE).replace(tzinfo=None)
     return {
-        "date_key": int(observed_at.strftime("%Y%m%d")),
-        "hour_of_day": observed_at.hour,
+        "observed_at_local": local,
+        "date_key": int(local.strftime("%Y%m%d")),
+        "hour_of_day": local.hour,
+    }
+
+
+def _snapshot_fields(
+    row: dict[str, Any], schema: pa.Schema, excluded: set[str] | None = None
+) -> dict[str, Any]:
+    local_fields = _local_time_fields(row["observed_at"])
+    return {
+        key: local_fields[key] if key in local_fields else row[key]
+        for key in schema.names
+        if not excluded or key not in excluded
     }
 
 
@@ -345,7 +364,7 @@ def _is_ebike(row: dict[str, Any]) -> bool:
 
 
 def _date_dimension(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    dates = {row["observed_at"].date() for row in rows}
+    dates = {row["observed_at_local"].date() for row in rows}
     return [
         {
             "date_key": int(day.strftime("%Y%m%d")),
@@ -363,6 +382,8 @@ def _date_dimension(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _system_metrics(station_rows, vehicle_rows, free_bike_rows):
+    for row in station_rows:
+        row.update(_local_time_fields(row["observed_at"]))
     grouped = {}
     for row in station_rows:
         group = grouped.setdefault(row["observed_at"], [])
@@ -387,7 +408,9 @@ def _system_metrics(station_rows, vehicle_rows, free_bike_rows):
         metrics.append(
             {
                 "observed_at": observed_at,
-                **_time_keys(observed_at),
+                "observed_at_local": rows[0]["observed_at_local"],
+                "date_key": rows[0]["date_key"],
+                "hour_of_day": rows[0]["hour_of_day"],
                 "station_count": len(rows),
                 "empty_station_count": sum(
                     row["num_bikes_available"] == 0 for row in rows

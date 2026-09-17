@@ -10,6 +10,7 @@ from bike_data.gold import (
     GOLD_SCHEMAS,
     GOLD_TABLES,
     _index,
+    _local_time_fields,
     _nearest_observation,
     _required_snapshot,
     _system_metrics,
@@ -294,8 +295,9 @@ def test_system_metrics_counts_stations_and_empty_stations():
     assert metrics == [
         {
             "observed_at": observed_at,
+            "observed_at_local": datetime(2026, 9, 12, 12),
             "date_key": 20260912,
-            "hour_of_day": 10,
+            "hour_of_day": 12,
             "station_count": 2,
             "empty_station_count": 1,
             "available_station_bikes": 3,
@@ -304,3 +306,36 @@ def test_system_metrics_counts_stations_and_empty_stations():
             "available_free_bikes": 0,
         }
     ]
+
+
+@pytest.mark.parametrize(
+    ("observed_at", "observed_at_local", "date_key", "hour_of_day"),
+    [
+        (
+            datetime(2026, 1, 31, 23, 30),
+            datetime(2026, 2, 1, 0, 30),
+            20260201,
+            0,
+        ),
+        (
+            datetime(2026, 1, 15, 12, 0),
+            datetime(2026, 1, 15, 13, 0),
+            20260115,
+            13,
+        ),
+        (
+            datetime(2026, 7, 15, 12, 0),
+            datetime(2026, 7, 15, 14, 0),
+            20260715,
+            14,
+        ),
+    ],
+)
+def test_local_time_fields_use_europe_warsaw_rules(
+    observed_at, observed_at_local, date_key, hour_of_day
+):
+    assert _local_time_fields(observed_at) == {
+        "observed_at_local": observed_at_local,
+        "date_key": date_key,
+        "hour_of_day": hour_of_day,
+    }

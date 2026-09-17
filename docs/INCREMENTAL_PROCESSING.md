@@ -18,6 +18,11 @@ UTC, and is already the Raw directory identity:
 data/raw/<feed_name>/observed_at=<timestamp>/snapshot.parquet
 ```
 
+Gold may also contain `observed_at_local`, which is the same instant converted
+with the IANA `Europe/Warsaw` timezone. It is presentation and calendar data
+only; incremental identities, natural keys, temporal joins, and latest-snapshot
+logic continue to use canonical UTC `observed_at`.
+
 The Raw `data_json` payload is hashed with SHA-256 and stored in the control
 file alongside the identity. Re-encountering the same identity with the same
 hash is an idempotent duplicate. Re-encountering it with a different hash

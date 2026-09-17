@@ -212,6 +212,8 @@ def _commit_parquet_tables(
             source = schemas_from[name] if schemas_from else root / f"{name}.parquet"
             if source.exists():
                 schema = pq.read_schema(source)
+                if name in GOLD_SCHEMAS:
+                    schema = GOLD_SCHEMAS[name]
             else:
                 schema = (
                     TABLE_SCHEMAS[name] if name in TABLE_SCHEMAS else GOLD_SCHEMAS[name]

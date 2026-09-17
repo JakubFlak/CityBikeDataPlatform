@@ -76,6 +76,20 @@ absence is not a trip event.
 
 ## 2. Snapshot KPI policy
 
+The target time contract has two representations of the same instant:
+
+- `observed_at` is canonical UTC and is used for snapshot identity, ordering,
+  relationships, and latest-snapshot measures.
+- `observed_at_local` is the IANA `Europe/Warsaw` representation and is used
+  for local time-series axes, tooltips, and detail presentation.
+- `date_key`, calendar attributes, and `hour_of_day` are derived from
+  `observed_at_local`.
+
+`observed_at_local` is not currently loaded by the report. After an explicit
+Gold export and model migration, it must remain only a presentation field: it
+is never a key, join key, incremental identity, or input to latest-snapshot
+selection.
+
 The facts are periodic snapshot facts. A `SUM` across multiple `observed_at`
 values is generally a sum of repeated states, not a system total over the
 period. The v1 report therefore uses this simple policy:
@@ -84,7 +98,7 @@ period. The v1 report therefore uses this simple policy:
   current filter context.** A date/hour/station filter may narrow the context;
   the measure then resolves the maximum available `observed_at` in that
   context.
-2. **Snapshot trend visuals place `observed_at` on the axis.** The measure is
+2. **Target snapshot trend visuals place `observed_at_local` on the axis.** The measure is
   evaluated independently for each timestamp, so each point is a snapshot
   state rather than an accumulation.
 3. **Period summary visuals use explicitly named snapshot aggregations.** Use
@@ -155,7 +169,9 @@ single selected/latest snapshot. If no timestamp is selected, they must use
 the latest-snapshot measures, never raw `SUM` across the date range. Free-bike
 maps follow the same rule: one point per visible bike at the selected/latest
 timestamp. A trend chart may contain multiple snapshots only when
-`observed_at` is its axis and its tooltip states the snapshot time.
+`observed_at` is its axis in the current report. A future migrated trend chart
+may use `observed_at_local` for display, while the underlying snapshot identity
+remains `observed_at`.
 
 ## 4. Maximum three-page report
 

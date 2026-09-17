@@ -2,8 +2,10 @@
 
 The Gold layer is a deterministic analytical projection of Silver Parquet tables.
 It preserves snapshot semantics: `observed_at` is the authoritative UTC
-observation timestamp, while provider `last_updated` and Silver lineage remain
-available in the source layer. A row observed twice is two states, not a trip.
+observation timestamp, while `observed_at_local` is the same instant represented
+in `Europe/Warsaw`. Calendar attributes are derived from the local timestamp.
+Provider `last_updated` and Silver lineage remain available in the source layer.
+A row observed twice is two states, not a trip.
 
 ## Supported analytical questions
 
@@ -40,9 +42,9 @@ keys. A future curated current-state view can select the latest row explicitly.
 | `dim_pricing_plan_tier` | plan + tier index + observed_at | start, interval, rate, end |
 | `dim_date` | calendar date | year, quarter, month, ISO week, weekday, weekend flag |
 
-`dim_date` is generated only for dates present in the facts. `hour_of_day` is a
-small integer on facts because a separate time dimension would add no useful
-attributes yet. The timestamp itself always remains available.
+`dim_date` is generated only for local dates present in the facts. `hour_of_day`
+is the local hour on facts because a separate time dimension would add no useful
+attributes yet. The UTC and local timestamps both remain available.
 
 ## Facts
 
@@ -54,7 +56,7 @@ Measures and attributes include the observed bike count, source dock and
 capacity fields, station status flags, and `last_reported`. Dock and capacity
 fields remain available for source lineage but are not report-facing metrics.
 Foreign keys are the temporal station key (`station_id`, `observed_at`),
-`region_id` from the matching station snapshot, and `date_key`.
+`region_id` from the matching station snapshot, and the local `date_key`.
 
 Station-level measures are not repeated once per vehicle type. Ratios are not
 stored here: they can be calculated from these direct measures with explicit
@@ -79,9 +81,10 @@ availability and state analysis, but it is not a trip or movement fact.
 ### `gold_system_availability`
 
 **Grain:** exactly one system observation per `observed_at`. It contains
-`station_count`, `empty_station_count`, `available_station_bikes`,
+`observed_at_local`, `date_key`, `hour_of_day`, `station_count`,
+`empty_station_count`, `available_station_bikes`,
 `available_station_ebikes`, `available_station_regular_bikes`, and
-`available_free_bikes`, plus `date_key` and `hour_of_day`. Station bike totals
+`available_free_bikes`. Station bike totals
 are sums of station observations; e-bike totals come from the matched
 station-vehicle availability rows, and regular bikes are the difference. Free
 bikes count only rows with a null `station_id`, which is the Silver-layer
@@ -97,7 +100,14 @@ observation time.
 
 ## Temporal and quality rules
 
-- Every fact and snapshot dimension is keyed with `observed_at`.
+- Every fact and snapshot dimension is keyed with `observed_at`; the local
+  timestamp is never part of a key or temporal join.
+- `observed_at_local` is computed with the IANA `Europe/Warsaw` timezone. No
+  fixed one- or two-hour offset is applied, so CET/CEST transitions are handled
+  by timezone rules.
+- Local calendar fields can cross midnight relative to UTC. This is intentional:
+  `date_key`, `year`, `quarter`, `month`, `week`, `day_of_week`, `day_name`,
+  `is_weekend`, and `hour_of_day` describe the local observation time.
 - Gold performs nearest temporal joins between feeds within a five-minute
   tolerance because one collection cycle can produce slightly different
   `observed_at` values per feed. Missing entities, duplicate keys, ambiguous

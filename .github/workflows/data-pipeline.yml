@@ -29,6 +29,8 @@ jobs:
           BIKE_DATA_ENV: github-actions
           BIKE_DATA_LOG_LEVEL: INFO
         run: uv run python scripts/run_pipeline.py
+      - name: Validate Gold schema
+        run: uv run python scripts/validate_gold_schema.py
       - name: Upload successful pipeline state
         if: success()
         uses: actions/upload-artifact@v4.6.2
