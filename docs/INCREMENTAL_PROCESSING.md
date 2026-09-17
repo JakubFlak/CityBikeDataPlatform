@@ -68,12 +68,14 @@ rewrite cost becomes material at larger scale.
 
 ## Gold strategy
 
-`incremental_silver_to_gold` creates a candidate Gold result from the updated
-Silver tables and merges it with existing Gold rows by each table's declared
-key. This guarantees no duplicate station, vehicle-type, or bike snapshot
-facts and preserves historical dimension rows. Temporal joins still use the
-existing nearest-feed match within the bounded five-minute tolerance; a match
-outside the tolerance or an ambiguous/conflicting key fails.
+`incremental_silver_to_gold` creates a complete candidate Gold result from all
+current Silver tables. It validates every candidate schema and atomically
+replaces the existing Gold output through the same staged Parquet commit used
+by Silver. It does not merge with or compare against the previous Gold output,
+so an older artifact can migrate to a new Gold schema without manual cleanup.
+Temporal joins still use the existing nearest-feed match within the bounded
+five-minute tolerance; a match outside the tolerance or an ambiguous/conflicting
+key fails.
 
 Because the current derived table is a small, non-partitioned aggregate,
 `gold_system_availability` is recomputed from the complete fact set. This is
@@ -82,8 +84,8 @@ they are calculated from `fact_station_availability` in the selected report
 context. A future partitioned format can update only affected timestamps once
 scale justifies the additional state and validation.
 
-Gold output is also staged and atomically replaced. A failed candidate build
-cannot partially overwrite the previous Gold output.
+Gold output is staged and atomically replaced. A failed candidate build or
+schema validation leaves the previous Gold output unchanged.
 
 ## Running the incremental pipeline
 

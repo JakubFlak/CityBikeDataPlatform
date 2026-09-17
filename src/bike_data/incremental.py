@@ -40,25 +40,6 @@ SILVER_KEYS = {
     "system_regions": ("region_id", "observed_at"),
 }
 
-GOLD_KEYS = {
-    "dim_date": ("date_key",),
-    "dim_station": ("station_id", "observed_at"),
-    "dim_vehicle_type": ("vehicle_type_id", "observed_at"),
-    "dim_region": ("region_id", "observed_at"),
-    "dim_pricing_plan": ("plan_id", "observed_at"),
-    "dim_pricing_plan_tier": ("plan_id", "tier_index", "observed_at"),
-    "fact_station_availability": ("station_id", "observed_at"),
-    "fact_station_vehicle_type_availability": (
-        "station_id",
-        "vehicle_type_id",
-        "observed_at",
-    ),
-    "fact_free_bike_snapshot": ("bike_id", "observed_at"),
-    "gold_system_availability": ("observed_at",),
-}
-
-REBUILT_GOLD_TABLES = {"gold_system_availability"}
-
 
 def incremental_raw_to_silver(
     raw_root: Path,
@@ -119,27 +100,12 @@ def incremental_silver_to_gold(
     silver_root: Path,
     gold_root: Path,
 ) -> dict[str, Path]:
-    """Update Gold idempotently from Silver, preserving historical keys.
-
-    The current Gold files are single Parquet tables. Candidate generation
-    therefore reads Silver once, while the commit merges by fact/dimension key.
-    Derived rollups are regenerated from the complete fact set because their
-    small aggregate tables have no partition-level state to update safely.
-    """
+    """Rebuild Gold atomically as a complete projection of Silver."""
     with tempfile.TemporaryDirectory(dir=gold_root.parent) as temporary:
         candidate_root = Path(temporary)
         candidate = transform_silver_to_gold(silver_root, candidate_root)
-        rows = {}
-        for name in GOLD_TABLES:
-            candidate_rows = _read_existing(candidate[name])
-            rows[name] = (
-                candidate_rows
-                if name in REBUILT_GOLD_TABLES
-                else _merge_rows(
-                    _read_existing(gold_root / f"{name}.parquet") + candidate_rows,
-                    GOLD_KEYS[name],
-                )
-            )
+        _validate_gold_candidate(candidate)
+        rows = {name: _read_existing(candidate[name]) for name in GOLD_TABLES}
         _commit_parquet_tables(gold_root, rows, candidate)
     return {name: gold_root / f"{name}.parquet" for name in GOLD_TABLES}
 
@@ -169,6 +135,19 @@ def _validate_snapshot_metadata(snapshots: list[dict[str, Any]]) -> None:
 
 def _read_existing(path: Path) -> list[dict[str, Any]]:
     return pq.read_table(path).to_pylist() if path.exists() else []
+
+
+def _validate_gold_candidate(candidate: dict[str, Path]) -> None:
+    missing = [name for name in GOLD_TABLES if name not in candidate]
+    if missing:
+        raise ValueError(f"Gold candidate is missing tables: {', '.join(missing)}")
+
+    for name in GOLD_TABLES:
+        path = candidate[name]
+        if not path.exists():
+            raise ValueError(f"Gold candidate is missing file: {path}")
+        if pq.read_schema(path) != GOLD_SCHEMAS[name]:
+            raise ValueError(f"Gold candidate schema mismatch: {path}")
 
 
 def _merge_rows(
