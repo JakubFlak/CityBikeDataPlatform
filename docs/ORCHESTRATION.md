@@ -21,11 +21,13 @@ the existing incremental transformation functions. It does not duplicate
 transformation logic.
 
 Ingestion, quality validation, Silver, and Gold are critical stages. Any
-exception stops the run and the command exits with status 1. Silver and Gold
-writes remain staged and atomic. The Raw-to-Silver manifest is written only
-after Silver commits, with a `silver_complete` status. The coordinator changes
-that status to `complete` only after Gold commits, so a failed Silver or Gold
-run retries its snapshots on the next run.
+exception stops the run and the command exits with status 1. Silver remains an
+incremental, key-deduplicated layer; Gold is rebuilt as a complete projection
+of the current Silver state. Both outputs use staged writes and validation
+before replacement. The Raw-to-Silver manifest is written only after Silver
+commits, with a `silver_complete` status. The coordinator changes that status
+to `complete` only after Gold commits, so a failed Silver or Gold run retries
+its snapshots on the next run.
 
 ## Scheduling and manual runs
 

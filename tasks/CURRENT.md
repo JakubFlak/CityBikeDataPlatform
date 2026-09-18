@@ -38,7 +38,8 @@ Completed.
 - Add deterministic multi-snapshot Gold transformation tests and documentation.
 - Define Raw snapshot identity and a restartable incremental state manifest.
 - Process only unseen Raw snapshots into idempotent Silver outputs.
-- Add atomic, key-deduplicated Gold updates and derived-model rebuild semantics.
+- Add atomic complete Gold projections from Silver and derived-model rebuild
+    semantics.
 - Add incremental append, rerun, failure-restart, temporal, and conflict tests.
 - Add a one-command lightweight pipeline coordinator with structured run
     summaries and fail-fast stage handling.
