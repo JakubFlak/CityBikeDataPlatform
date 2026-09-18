@@ -183,6 +183,7 @@ def test_gold_grains_temporal_joins_and_metrics(tmp_path):
     assert [row["capacity"] for row in station_facts] == [5, 6]
     assert len({row["observed_at"] for row in system}) == 2
     assert [row["station_count"] for row in system] == [1, 1]
+    assert [row["available_stations"] for row in system] == [1, 1]
     assert [row["available_station_bikes"] for row in system] == [2, 3]
     assert [row["available_station_ebikes"] for row in system] == [1, 2]
     assert [row["available_station_regular_bikes"] for row in system] == [1, 1]
@@ -300,12 +301,39 @@ def test_system_metrics_counts_stations_and_empty_stations():
             "hour_of_day": 12,
             "station_count": 2,
             "empty_station_count": 1,
+            "available_stations": 1,
             "available_station_bikes": 3,
             "available_station_ebikes": 0,
             "available_station_regular_bikes": 3,
             "available_free_bikes": 0,
         }
     ]
+
+
+@pytest.mark.parametrize(
+    ("bike_counts", "expected_available_stations"),
+    [
+        ([1, 2], 2),
+        ([0, 0], 0),
+    ],
+)
+def test_system_metrics_available_stations_boundary_cases(
+    bike_counts, expected_available_stations
+):
+    observed_at = datetime(2026, 9, 12, 10, tzinfo=UTC).replace(tzinfo=None)
+    metrics = _system_metrics(
+        [
+            {"observed_at": observed_at, "num_bikes_available": count}
+            for count in bike_counts
+        ],
+        [],
+        [],
+    )
+
+    assert metrics[0]["available_stations"] == expected_available_stations
+    assert metrics[0]["available_stations"] == (
+        metrics[0]["station_count"] - metrics[0]["empty_station_count"]
+    )
 
 
 @pytest.mark.parametrize(

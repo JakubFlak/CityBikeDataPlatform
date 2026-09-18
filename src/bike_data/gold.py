@@ -143,6 +143,7 @@ GOLD_SCHEMAS = {
             "hour_of_day": pa.int64(),
             "station_count": pa.int64(),
             "empty_station_count": pa.int64(),
+            "available_stations": pa.int64(),
             "available_station_bikes": pa.int64(),
             "available_station_ebikes": pa.int64(),
             "available_station_regular_bikes": pa.int64(),
@@ -405,6 +406,7 @@ def _system_metrics(station_rows, vehicle_rows, free_bike_rows):
     for observed_at, rows in grouped.items():
         available_station_bikes = sum(row["num_bikes_available"] or 0 for row in rows)
         available_station_ebikes = ebikes.get(observed_at, 0)
+        empty_stations = sum(row["num_bikes_available"] == 0 for row in rows)
         metrics.append(
             {
                 "observed_at": observed_at,
@@ -412,9 +414,8 @@ def _system_metrics(station_rows, vehicle_rows, free_bike_rows):
                 "date_key": rows[0]["date_key"],
                 "hour_of_day": rows[0]["hour_of_day"],
                 "station_count": len(rows),
-                "empty_station_count": sum(
-                    row["num_bikes_available"] == 0 for row in rows
-                ),
+                "empty_station_count": empty_stations,
+                "available_stations": len(rows) - empty_stations,
                 "available_station_bikes": available_station_bikes,
                 "available_station_ebikes": available_station_ebikes,
                 "available_station_regular_bikes": (

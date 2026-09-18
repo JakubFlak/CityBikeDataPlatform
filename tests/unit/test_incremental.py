@@ -112,6 +112,10 @@ def test_incremental_initial_and_append_are_idempotent(tmp_path):
     incremental_silver_to_gold(silver_root, gold_root)
     assert len(_rows(silver_root, "station_status")) == 3
     assert len(_rows(gold_root, "fact_station_availability")) == 3
+    assert all(
+        row["available_stations"] == row["station_count"] - row["empty_station_count"]
+        for row in _rows(gold_root, "gold_system_availability")
+    )
 
     expected = {
         name: _rows(gold_root, name)
@@ -150,6 +154,11 @@ def test_incremental_gold_migrates_legacy_schema_and_rebuilds_completely(tmp_pat
     assert station["date_key"] == int(station["observed_at_local"].strftime("%Y%m%d"))
     assert station["hour_of_day"] == station["observed_at_local"].hour
     assert all(row["station_id"] != "STALE" for row in _rows(gold_root, "dim_station"))
+    system = _rows(gold_root, "gold_system_availability")
+    assert all(
+        row["available_stations"] == row["station_count"] - row["empty_station_count"]
+        for row in system
+    )
 
 
 def test_incremental_gold_failure_preserves_previous_output(tmp_path, monkeypatch):

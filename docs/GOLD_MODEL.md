@@ -91,6 +91,11 @@ bikes count only rows with a null `station_id`, which is the Silver-layer
 outside-station indicator. These are observed state counts; they are not
 demand, utilization, rides, or inferred fleet totals.
 
+`available_stations` is the count of non-empty station observations:
+`station_count - empty_station_count`. Gold stores this count as an integer;
+availability percentages are calculated later as Power BI measures and are not
+materialized in Gold.
+
 Station history metrics are intentionally not materialized as a separate Gold
 table. Snapshot counts, averages, minimums, maximums, and empty-state counts
 can be calculated from `fact_station_availability` after selecting the desired

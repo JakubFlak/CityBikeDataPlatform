@@ -94,6 +94,11 @@ The facts are periodic snapshot facts. A `SUM` across multiple `observed_at`
 values is generally a sum of repeated states, not a system total over the
 period. The v1 report therefore uses this simple policy:
 
+`FactSystemAvailability[available_stations]` is the Gold count of non-empty
+stations. The report may calculate `Station Availability %` as
+`SUM(available_stations) / SUM(station_count)` in DAX. The percentage is not
+stored in Gold or calculated in Power Query.
+
 1. **State KPI cards and point-in-time maps use the latest snapshot in the
   current filter context.** A date/hour/station filter may narrow the context;
   the measure then resolves the maximum available `observed_at` in that
