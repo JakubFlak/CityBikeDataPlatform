@@ -1,0 +1,222 @@
+table _Measures
+	lineageTag: d3680519-8dbc-4c6f-ab97-11e4a0d61fad
+
+	measure 'Available station bikes - latest' =
+
+			VAR LatestSnapshot = MAX(gold_system_availability[observed_at_local])
+			RETURN
+			    CALCULATE(MAX(gold_system_availability[available_station_bikes]), gold_system_availability[observed_at_local] = LatestSnapshot
+			)
+		formatString: 0
+		lineageTag: 354ac6a9-8ad7-40ab-b15b-20b225cffe43
+
+	measure 'Available free bikes - latest' =
+
+			VAR LatestSnapshot =
+			    MAX(gold_system_availability[observed_at_local])
+			RETURN
+			    CALCULATE(
+			        MAX ( gold_system_availability[available_free_bikes]),
+			        gold_system_availability[observed_at_local] = LatestSnapshot
+			    )
+		formatString: 0
+		lineageTag: 71282855-62a8-42b2-9fb7-3267a097b956
+
+	measure 'Stations - latest' =
+
+			VAR LatestSnapshot =
+			    MAX(gold_system_availability[observed_at])
+			RETURN
+			    CALCULATE(
+			        MAX(gold_system_availability[station_count]),
+			        gold_system_availability[observed_at] = LatestSnapshot
+			    )
+		formatString: 0
+		lineageTag: de6253b7-5621-4627-82e2-c5343c79f2b3
+
+	measure 'Empty Stations - latest' =
+
+			VAR LatestSnapshot =
+			    MAX(gold_system_availability[observed_at] )
+			RETURN
+			    CALCULATE(
+			        MAX(gold_system_availability[empty_station_count]),
+			        gold_system_availability[observed_at] = LatestSnapshot
+			    )
+		formatString: 0
+		lineageTag: 452a1b06-0753-4970-9d1d-d12aeef90cce
+
+	measure 'Available regular bikes' =
+
+			SUM(gold_system_availability[available_station_regular_bikes])
+		formatString: 0
+		lineageTag: 2eda2903-7e0b-4656-a98f-7267a999ee6c
+
+	measure 'Available e-bikes' =
+
+			SUM(gold_system_availability[available_station_ebikes])
+		formatString: 0
+		lineageTag: e6f9b41d-43c4-4222-8338-764ae3455ac2
+
+	measure 'Empty stations' =
+
+			SUM(gold_system_availability[empty_station_count])
+		formatString: 0
+		lineageTag: cd49e36e-b4dd-4440-9313-429c65fccdb5
+
+	measure 'Available Station Bikes' = SUM(fact_station_availability[num_bikes_available])
+		formatString: 0
+		lineageTag: 0608e56a-7c01-43e7-9fc6-f8fa2a7a24c2
+
+	measure 'Empty Station Observation Rate' =
+			DIVIDE(
+			    [Empty Observation Count],
+			    [Station Snapshot Count]
+			)
+		formatString: 0.00%
+		lineageTag: 9da64a62-521d-4732-845b-50d241347f29
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Empty Observation Count' =
+			COUNTROWS(
+			    FILTER(
+			        fact_station_availability,
+			        fact_station_availability[num_bikes_available] = 0
+			    )
+			)
+		formatString: 0
+		lineageTag: 2f5f1df4-8ad3-4ea3-bd8b-95bca8aebf40
+
+	measure 'Station Snapshot Count' = COUNTROWS(fact_station_availability)
+		formatString: 0
+		lineageTag: 3e3f49f1-8854-420c-a3f0-d48f76ab7e8e
+
+	measure 'Station Availability Rate' =
+			DIVIDE(
+			    COUNTROWS(
+			        FILTER(
+			            fact_station_availability,
+			            fact_station_availability[num_bikes_available] > 0
+			        )
+			    ),
+			    [Station Snapshot Count]
+			)
+		formatString: 0.00%
+		lineageTag: a5ca3d7e-8b58-4ebc-93f2-1cf4cf7c6e45
+
+	measure 'Average Bikes per Station Observation' =
+			AVERAGE(fact_station_availability[num_bikes_available])
+		formatString: 0.00
+		lineageTag: 0ee8a9ac-5448-478f-9531-ea78fb4a7f6e
+
+	measure 'Minimum Bikes per Snapshot' =
+			MIN(fact_station_availability[num_bikes_available])
+		formatString: 0
+		lineageTag: 7b9864cc-07f9-4ee2-98ef-f4cd1ea7807a
+
+	measure 'Maximum Bikes per Snapshot' =
+			MAX(fact_station_availability[num_bikes_available])
+		formatString: 0
+		lineageTag: c8f347e1-55d5-40b9-bf45-88b48971d862
+
+	measure 'P90-P10 Bikes Range' =
+			PERCENTILEX.INC(
+			    fact_station_availability,
+			    fact_station_availability[num_bikes_available],
+			    0.9
+			)
+			-
+			PERCENTILEX.INC(
+			    fact_station_availability,
+			    fact_station_availability[num_bikes_available],
+			    0.1
+			)
+		formatString: 0.00
+		lineageTag: 4f2f2f04-95c4-48da-a7e6-6770af8d30ca
+
+	measure 'Available Station Bikes - Latest P2' =
+
+			VAR LatestSnapshot =
+			    CALCULATE (
+			        MAX ( fact_station_availability[observed_at_local] )
+			    )
+			RETURN
+			    CALCULATE (
+			        SUM ( fact_station_availability[num_bikes_available] ),
+			        fact_station_availability[observed_at_local] = LatestSnapshot
+			    )
+		formatString: 0
+		lineageTag: 36b2e7f7-16db-4830-955b-a076b5327e2c
+
+	measure 'Average Bikes per Station - Latest' =
+
+			VAR LatestSnapshot =
+			    CALCULATE (
+			        MAX ( fact_station_availability[observed_at_local] )
+			    )
+			RETURN
+			    CALCULATE (
+			        AVERAGEX (
+			            VALUES ( dim_station_identity[station_id] ),
+			            CALCULATE (
+			                MAX ( fact_station_availability[num_bikes_available] )
+			            )
+			        ),
+			        fact_station_availability[observed_at_local] = LatestSnapshot
+			    )
+		lineageTag: a0be57ea-8276-4ee6-b4ca-176c49380c65
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Available regular station bikes - latest' =
+
+			VAR LatestSnapshot =
+			    MAX(gold_system_availability[observed_at_local])
+			RETURN
+			    CALCULATE(
+			        MAX ( gold_system_availability[available_station_regular_bikes]),
+			        gold_system_availability[observed_at_local] = LatestSnapshot
+			    )
+		formatString: 0
+		lineageTag: ec64d17d-ed98-48fa-9be3-678ad77bc08f
+
+	measure 'Available regular station ebikes - latest' =
+
+			VAR LatestSnapshot =
+			    MAX(gold_system_availability[observed_at_local])
+			RETURN
+			    CALCULATE(
+			        MAX ( gold_system_availability[available_station_ebikes]),
+			        gold_system_availability[observed_at_local] = LatestSnapshot
+			    )
+		formatString: 0
+		lineageTag: dc7d337f-6c3b-4e0d-b07c-686ea479f034
+
+	measure 'Station Availability %' =
+
+			DIVIDE(
+			    SUM(gold_system_availability[available_stations]),
+			    SUM(gold_system_availability[station_count])
+			)
+		lineageTag: 9dd8152a-82f5-40c6-8133-65069c63145a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: 5425ccca-6aa7-4381-95d4-d282a4ebe927
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = 97e83bae072a423486ec1153bfbc2cbb
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}

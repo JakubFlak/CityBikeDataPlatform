@@ -129,7 +129,6 @@ fact filter context, then evaluate the inner expression only at that timestamp.
 | `Station Count - Latest Snapshot` | Stations represented at one timestamp | Counts distinct stations only at the latest timestamp | `DISTINCTCOUNT(station_id)` at latest timestamp |
 | `Empty Station Count - Latest Snapshot` | Stations with zero bikes at one timestamp | Counts empty stations only at latest timestamp | Count station rows where bikes = 0 after latest filter |
 | `Empty Station Snapshot Count` | Number of empty station states | Counts empty station rows across all selected timestamps | `COUNTROWS` of station snapshots with bikes = 0; explicitly a state count |
-| `Empty Station Snapshot Rate` | Empty station states divided by all station states | Percentage of station snapshots empty across the selected period | `DIVIDE([Empty Station Snapshot Count], [Station Snapshot Count])` |
 | `E-bikes Available - Latest Snapshot` | E-bikes reported at one timestamp | Uses latest timestamp; does not add repeated vehicle states | Sum vehicle-type `count` for `is_ebike = TRUE` at latest timestamp |
 | `E-bikes Available - Latest Snapshot` | E-bikes reported at one timestamp | Uses latest timestamp; does not add repeated vehicle states | Sum vehicle-type `count` for `is_ebike = TRUE` at latest timestamp |
 | `Average Station Bikes Available Per Snapshot` | Station bikes at the selected snapshots | Averages system `available_station_bikes`, one row per `observed_at` | Average of `FactSystemAvailability[available_station_bikes]` by timestamp |
@@ -142,7 +141,6 @@ fact filter context, then evaluate the inner expression only at that timestamp.
 | `Reserved Bike Observations` | Reserved visible-bike rows at one timestamp | Counts reserved observations across timestamps | `COUNTROWS` filtered to reserved; label as observations |
 | `Disabled Visible Bikes - Latest Snapshot` | Distinct visible bikes marked disabled at one timestamp | Uses latest timestamp only | Distinct bike count filtered to `is_disabled = TRUE` |
 | `Disabled Bike Observations` | Disabled visible-bike rows at one timestamp | Counts disabled observations across timestamps | `COUNTROWS` filtered to disabled; label as observations |
-| `Low Availability Station Snapshot Count` | Low-availability station states | Counts station snapshots meeting a declared bike-count threshold | `COUNTROWS` where bikes are below the threshold; proxy, not demand |
 | `Observed System Snapshot Count` | One system timestamp | Counts distinct timestamps; does not count station rows | `DISTINCTCOUNT(FactSystemAvailability[observed_at])` |
 | `Station Snapshot Count` | One station state | Counts station state rows across selected timestamps | `COUNTROWS(FactStationAvailability)` |
 
@@ -155,6 +153,34 @@ snapshot aggregation stated in the measure name.
 `gold_system_availability` is the preferred source for system-level snapshot
 state. Do not combine its state counts with station-fact counts in one visual
 unless the visual deliberately chooses one source.
+
+## Station Analysis measures
+
+The Station Analysis page answers:
+
+> Which stations have availability problems and how often do those problems occur?
+
+All measures in this section use `fact_station_availability` directly. They
+therefore respond to the current time, region, and station filter context
+through the existing `DimDate`, `DimRegionIdentity`, and
+`DimStationIdentity` relationships. They must not use
+`gold_system_availability`, which is aggregated at system and snapshot grain.
+
+| Measure | Definition and interpretation |
+| --- | --- |
+| `Empty Station Observation Rate` | `Empty Observation Count / Station Snapshot Count`, where an empty observation has `num_bikes_available = 0`. This is the share of station observations that were empty, not a percentage of elapsed time because snapshots are irregular. |
+| `Empty Observation Count` | Count of station observations with `num_bikes_available = 0`. |
+| `Station Snapshot Count` | Count of station observations in the current filter context. |
+| `Station Availability Rate` | Observations with `num_bikes_available > 0` divided by all station observations. |
+| `Average Bikes per Station Observation` | Direct average of `fact_station_availability[num_bikes_available]` in the current filter context. It is not an average of per-station maxima. |
+| `Minimum Bikes per Snapshot` | Minimum observed `num_bikes_available` in the current filter context. |
+| `Maximum Bikes per Snapshot` | Maximum observed `num_bikes_available` in the current filter context. |
+| `P90-P10 Bikes Range` | The 90th percentile minus the 10th percentile of observed `num_bikes_available`, describing availability variability. |
+
+These are observation/period summaries unless a visual supplies a single
+snapshot context. They must not be labelled as continuous-time metrics. In
+particular, empty observation rate must not be presented as the percentage of
+time a station was empty.
 
 ## 3. Visual grain rules
 
@@ -232,9 +258,9 @@ state, not demand.
 
 - Station Count - Latest Snapshot
 - Empty Stations - Latest Snapshot
-- Empty Station Snapshot Rate
-- Average Bikes Available Per Snapshot
-- Low Availability Station Snapshot Count
+- Empty Station Observation Rate
+- Average Bikes per Station Observation
+- P90-P10 Bikes Range
 
 The first two are **station snapshot** state KPIs at the latest timestamp.
 The rate and low-availability count are explicitly named state/period metrics;
@@ -248,9 +274,8 @@ period.
 - Ranked bar chart, grain **station snapshot**: one bar per station at the
   selected/latest timestamp, ranked by observed bikes available.
 - Scatter plot, grain **station period aggregation**: one point per station,
-  with average bikes per snapshot on one axis and empty-state count on the
-  other. The title must say `Average Bikes Per Snapshot`; it must not imply
-  current state.
+  with `Average Bikes per Station Observation` on one axis and
+  `Empty Observation Count` on the other. It must not imply current state.
 - Detail table, grain **station snapshot**: station, region, bikes,
   `observed_at`, and renting/returning flags.
 

@@ -116,6 +116,40 @@ relationship alone intentionally permits multiple snapshots in context.
 `FactSystemAvailability` has no station relationship. It is already aggregated
 at system/timestamp grain and should be filtered by date and hour only.
 
+### Station Analysis semantic-model audit
+
+The Station Analysis page answers: **Which stations have availability
+problems and how often do those problems occur?** Its historical metrics use
+`fact_station_availability`, whose grain is one station state per
+`station_id + observed_at`.
+
+The model already exposes the required base fields for the first metric set:
+`station_id`, `observed_at`, `observed_at_local`, `date_key`, `hour_of_day`,
+`region_id`, and `num_bikes_available`. Time filters flow through `DimDate`,
+while station and region filters flow through `DimStationIdentity` and
+`DimRegionIdentity` to the station fact. `gold_system_availability` remains a
+system/timestamp aggregate and must not be used for station- or region-level
+rates.
+
+The existing `Average Bikes per Station` measure used `MAX` per station and
+then averaged those values. It therefore did not mean the average bike count
+per station observation. Station Analysis uses the explicit measure
+`Average Bikes per Station Observation`, which averages
+`num_bikes_available` directly in the current fact context.
+
+Station Analysis adds measures for empty observation count and rate, station
+snapshot count, station availability rate, minimum and maximum bikes per
+snapshot, and the P90-P10 bikes range. Empty rate means empty observations
+divided by all station observations; it is not a percentage of elapsed time
+because collection snapshots are irregular. Station availability rate means
+observations with at least one available bike divided by all station
+observations. The P90-P10 range describes observed availability variability.
+
+The fact currently retains `num_docks_available`, `capacity`, and
+`is_installed` in Gold, but the Power Query import removes them. They are not
+needed for the initial Station Analysis measures and remain outside this
+semantic-model change. No report pages or visuals are changed here.
+
 `FactFreeBikeSnapshot[station_id]` is nullable, so the station relationship
 must allow unmatched/null fact rows. A missing station association is a source
 state, not a data-quality reason to invent a station.
