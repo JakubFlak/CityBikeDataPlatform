@@ -3,3 +3,6 @@ data/*
 !data/raw/.gitkeep
 data/raw/**
 !data/raw/.gitkeep
+__pycache__/
+*/Dashboard.Report/
+*/Dashboard.SemanticModel/
