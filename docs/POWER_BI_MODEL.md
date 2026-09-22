@@ -150,6 +150,13 @@ The fact currently retains `num_docks_available`, `capacity`, and
 needed for the initial Station Analysis measures and remain outside this
 semantic-model change. No report pages or visuals are changed here.
 
+Validation confirmed that all eight Station Analysis measures preserve the
+current filter context. They were checked against the full historical fact,
+one station, one region, a date filter, and an existing combined
+date/region/station context. The measures use no `ALL`, `REMOVEFILTERS`,
+`ALLEXCEPT`, or equivalent context-removing logic. The reference full-history
+result was 15,288 station observations and 394 empty observations (2.57718%).
+
 `FactFreeBikeSnapshot[station_id]` is nullable, so the station relationship
 must allow unmatched/null fact rows. A missing station association is a source
 state, not a data-quality reason to invent a station.
