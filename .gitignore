@@ -1,8 +1,4 @@
-data/*
-!data/raw/
-!data/raw/.gitkeep
-data/raw/**
-!data/raw/.gitkeep
+data/
 __pycache__/
 */Dashboard.Report/
 */Dashboard.SemanticModel/
