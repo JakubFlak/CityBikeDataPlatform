@@ -22,6 +22,10 @@ if (-not (Test-Path $Pipeline)) {
     exit 1
 }
 
+Start-Sleep -Seconds 30
+
+"Starting Python pipeline: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-File $LogFile -Append
+
 & $Python $Pipeline 1>> $LogFile 2>&1
 
 $ExitCode = $LASTEXITCODE
