@@ -83,8 +83,7 @@ class GBFSHTTPClient:
         delay = self.retry_delays[delay_index]
 
         logger.warning(
-            "Transient GBFS request failure for %s. "
-            "Retrying in %.0f seconds...",
+            "Transient GBFS request failure for %s. Retrying in %.0f seconds...",
             url,
             delay,
         )

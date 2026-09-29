@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from bike_data.logging import configure_logging
 
@@ -17,5 +18,6 @@ def test_configure_logging_sets_requested_level(monkeypatch):
         {
             "level": logging.DEBUG,
             "format": "%(asctime)s %(levelname)s %(name)s: %(message)s",
+            "stream": sys.stdout,
         }
     ]
