@@ -164,6 +164,31 @@ def test_http_client_handles_success(monkeypatch):
     assert GBFSHTTPClient(timeout=2).get_json("https://example.test") == {"ok": True}
 
 
+def test_http_client_sets_expected_headers(monkeypatch):
+    captured = {}
+
+    class Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return b'{"ok": true}'
+
+    def fake_urlopen(request, **kwargs):
+        captured["headers"] = dict(request.header_items())
+        return Response()
+
+    monkeypatch.setattr("bike_data.gbfs_client.urlopen", fake_urlopen)
+
+    GBFSHTTPClient().get_json("https://example.test")
+
+    assert captured["headers"]["Accept"] == "application/json"
+    assert captured["headers"]["User-agent"] == "CityBikeDataPlatform/1.0"
+
+
 def test_http_client_handles_malformed_json(monkeypatch):
     class Response:
         def __enter__(self):

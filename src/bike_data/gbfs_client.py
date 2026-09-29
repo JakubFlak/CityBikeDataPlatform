@@ -27,7 +27,13 @@ class GBFSHTTPClient:
 
     def get_json(self, url: str) -> dict:
         """Fetch ``url`` and return its JSON object."""
-        request = Request(url, headers={"Accept": "application/json"})
+        request = Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "CityBikeDataPlatform/1.0",
+            },
+        )
 
         for attempt in range(1, self.max_attempts + 1):
             logger.info(
