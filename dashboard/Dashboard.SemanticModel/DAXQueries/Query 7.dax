@@ -1,0 +1,4 @@
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Station Availability %", [Station Availability %]
+    )

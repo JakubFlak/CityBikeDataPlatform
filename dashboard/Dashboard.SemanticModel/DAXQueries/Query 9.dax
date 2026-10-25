@@ -1,0 +1,4 @@
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Station Snapshot Count", [Station Snapshot Count]
+    )

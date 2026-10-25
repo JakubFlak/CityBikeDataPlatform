@@ -1,0 +1,33 @@
+expression dim_region =
+		let
+		    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_region.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+		in
+		    Source
+	lineageTag: 6e6b5145-00f7-4020-a581-f29bd21f6ccd
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression dim_station =
+		let
+		    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_station.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+		in
+		    Source
+	lineageTag: 37d54a3f-ab81-4e2a-be3d-0b49c0185c94
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression dim_vehicle_type =
+		let
+		    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_vehicle_type.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+		in
+		    Source
+	lineageTag: 380fed80-2b03-419f-aa97-266c15db38d7
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

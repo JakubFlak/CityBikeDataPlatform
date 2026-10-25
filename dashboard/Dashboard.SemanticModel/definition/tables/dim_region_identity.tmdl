@@ -1,0 +1,48 @@
+table dim_region_identity
+	lineageTag: fcaca649-f731-415e-a61e-87be19322e1a
+
+	column region_id
+		dataType: string
+		lineageTag: 17a4b457-a0dc-4176-abbc-605261ad4242
+		summarizeBy: none
+		sourceColumn: region_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: b8fd3bf8-17db-4888-b478-08a9c9d70958
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at_local
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9fabb728-d3e2-42b3-8ca9-85f59fdb4f45
+		summarizeBy: none
+		sourceColumn: observed_at_local
+
+		variation Variation
+			isDefault
+			relationship: 42325de7-4684-43a8-9644-d8473695c062
+			defaultHierarchy: LocalDateTable_c023c74a-dcce-40fe-a6ad-75baf0c32974.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_region_identity = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_region.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
+				    #"Grouped Rows" = Table.Group(Source, {"region_id"}, {{"observed_at_local", each List.Max([observed_at_local]), type nullable datetime}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Grouped Rows", {"region_id", "observed_at_local"}, dim_region, {"region_id", "observed_at_local"}, "dim_region", JoinKind.LeftOuter),
+				    #"Expanded dim_region" = Table.ExpandTableColumn(#"Merged Queries", "dim_region", {"name"}, {"name"})
+				in
+				    #"Expanded dim_region"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

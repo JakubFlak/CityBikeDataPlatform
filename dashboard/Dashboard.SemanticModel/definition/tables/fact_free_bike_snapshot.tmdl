@@ -1,0 +1,116 @@
+table fact_free_bike_snapshot
+	lineageTag: 7979c41d-dd80-4326-9e32-aa7669fc3445
+
+	column bike_id
+		dataType: string
+		lineageTag: d6e04c3a-3457-4d47-9cae-2efa3c118bf2
+		summarizeBy: none
+		sourceColumn: bike_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7c367521-372a-4e52-89e9-ddae343d2770
+		summarizeBy: none
+		sourceColumn: observed_at
+
+		variation Variation
+			isDefault
+			relationship: f052e060-686b-4697-80f4-60ad21175f94
+			defaultHierarchy: LocalDateTable_0effdd91-c689-4e1f-a033-701e76a7a307.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 061ae63f-c5df-4616-ad9a-3500e6574a44
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column hour_of_day
+		dataType: int64
+		formatString: 0
+		lineageTag: 4b3fb471-8fd8-414a-9044-244026a24644
+		summarizeBy: sum
+		sourceColumn: hour_of_day
+
+		annotation SummarizationSetBy = Automatic
+
+	column station_id
+		dataType: string
+		lineageTag: a9f615d5-10b3-4c90-b374-9b9743ae6c48
+		summarizeBy: none
+		sourceColumn: station_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column vehicle_type_id
+		dataType: string
+		lineageTag: b84f009b-a6d4-4a2e-8fac-00fb40729d81
+		summarizeBy: none
+		sourceColumn: vehicle_type_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column pricing_plan_id
+		dataType: string
+		lineageTag: 573b696f-858d-4e96-9ec9-74e40f94698c
+		summarizeBy: none
+		sourceColumn: pricing_plan_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column lat
+		dataType: double
+		lineageTag: b0fe6102-fcfd-4773-95b9-bf4bb2c9c46f
+		summarizeBy: sum
+		sourceColumn: lat
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column lon
+		dataType: double
+		lineageTag: 20891e8e-76a0-47f8-b230-a22d6fa8a39b
+		summarizeBy: sum
+		sourceColumn: lon
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column observed_at_local
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 2da6cd1f-b9f6-4766-9621-2edd59cb72d1
+		summarizeBy: none
+		sourceColumn: observed_at_local
+
+		variation Variation
+			isDefault
+			relationship: bfa04d04-96be-4551-9616-d70ad7dfaa3b
+			defaultHierarchy: LocalDateTable_10096cb2-af19-40cf-94ce-52d541cd84f1.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_free_bike_snapshot = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\fact_free_bike_snapshot.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
+				    #"Removed Columns" = Table.RemoveColumns(Source,{"is_reserved", "is_disabled", "current_fuel_percent", "current_range_meters"}),
+				    #"Filtered Rows" = Table.SelectRows(#"Removed Columns", each [lat] >= 51 and [lat] <= 51.23),
+				    #"Filtered Rows1" = Table.SelectRows(#"Filtered Rows", each ([vehicle_type_id] = "183" or [vehicle_type_id] = "71"))
+				in
+				    #"Filtered Rows1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

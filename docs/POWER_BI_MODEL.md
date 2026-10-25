@@ -1,16 +1,30 @@
-# Power BI Semantic Model Design
+# Power BI Semantic Model
 
 ## Status and scope
 
-This document is a design for a future Power BI model. It does not create a
-`.pbix` file, change Parquet schemas, or add a new transformation engine.
-The design is based on the implemented Gold layer and its snapshot semantics.
+The implemented Power BI project is a PBIP report and semantic model under
+`dashboard/`. It contains System Overview, Station Analysis, and Bikes Analysis
+pages and imports the project's Gold Parquet tables. This guide describes the
+implemented model contract and the report's snapshot semantics; it does not
+add a new transformation engine or change Gold schemas.
 
-The current generated sample contains one collection cycle: 273 station
-availability rows, 2,869 free-bike snapshot rows, 352 station/vehicle rows,
-and one row in `gold_system_availability`. Tests cover multiple timestamps and
-feed timestamp jitter, but a useful time-series report requires more collected
-snapshots than the current local sample contains.
+The report's data volume depends on the local Gold output and can differ from
+the files available in a Git checkout. Raw, Silver, and Gold data are runtime
+artifacts and are not committed.
+
+## Open and refresh locally
+
+1. Install the Python environment with `uv sync`.
+2. From the repository root, run `uv run python scripts/run_pipeline.py` to
+   collect data and build/refresh Raw, Silver, and Gold outputs.
+3. Open `dashboard/Dashboard.pbip` in Power BI Desktop.
+4. Use **Refresh** in Power BI Desktop to reload the Gold Parquet tables.
+
+Power Query currently uses hard-coded local paths to files under
+`data/gold`. Keep those files available at the configured path on this machine;
+the paths are intentionally not parameterized in this version. A different
+machine requires local path configuration before refresh. This is a known
+portability limitation, not a cloud deployment setup.
 
 ## Modeling principles
 
@@ -19,8 +33,8 @@ snapshots than the current local sample contains.
 - Silver and Raw remain engineering/debugging layers.
 - `observed_at` remains available in every snapshot fact as the canonical UTC
    timestamp.
-- `observed_at_local` is a planned Gold presentation column; it is not present
-   in the currently generated Parquet export or the current report definition.
+- `observed_at_local` is present in Gold and imported by the report for local
+   time-series presentation and tooltips.
 - Counts are availability counts, not ride counts or utilization.
 - Snapshot dimensions are not joined to facts by entity ID alone.
 

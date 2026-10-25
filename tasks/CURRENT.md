@@ -51,7 +51,8 @@ Completed.
 
 ## Constraints Honoured
 
-- No DuckDB, dbt, orchestration, or BI semantic model was added.
+- No DuckDB, dbt, or heavyweight orchestration framework was added. The PBIP
+    report and semantic model were added as the project's BI layer.
 - No Wroclaw-specific filtering or trip inference occurs during ingestion.
 - Runtime raw data remains excluded from Git.
 

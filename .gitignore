@@ -1,5 +1,8 @@
 data/
 __pycache__/
-*/Dashboard.Report/
-*/Dashboard.SemanticModel/
 logs/
+
+# Power BI Desktop local state and model cache
+dashboard/**/.pbi/
+dashboard/**/localSettings.json
+dashboard/**/*.abf

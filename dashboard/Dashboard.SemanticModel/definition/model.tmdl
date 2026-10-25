@@ -1,0 +1,40 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pl-PL
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["dim_date","dim_region","dim_region_identity","dim_station","dim_station_identity","dim_vehicle_type","dim_vehicle_type_identity","fact_free_bike_snapshot","fact_station_availability","fact_station_vehicle_type_availability","gold_system_availability"]
+
+annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
+
+ref table DateTableTemplate_f05c138d-adc9-4ba3-b141-ca1fae70be88
+ref table fact_free_bike_snapshot
+ref table LocalDateTable_0effdd91-c689-4e1f-a033-701e76a7a307
+ref table fact_station_availability
+ref table LocalDateTable_73ac55fa-f3c9-468b-97cb-6c721a9d5c0d
+ref table fact_station_vehicle_type_availability
+ref table LocalDateTable_d9b8c75c-dfcc-4ba0-8fdf-d40d00564508
+ref table gold_system_availability
+ref table LocalDateTable_bbbb732a-6c2b-48d3-873c-2436c2d7dd81
+ref table dim_region_identity
+ref table dim_station_identity
+ref table dim_vehicle_type_identity
+ref table dim_date
+ref table _Measures
+ref table LocalDateTable_10096cb2-af19-40cf-94ce-52d541cd84f1
+ref table LocalDateTable_370c0c49-9777-43ae-9213-89b2873b4974
+ref table LocalDateTable_e49c25cc-afc2-4a66-9e71-4c80abfa2f2d
+ref table LocalDateTable_0108501a-be20-4044-9f23-08a6cd6d9e77
+ref table LocalDateTable_c023c74a-dcce-40fe-a6ad-75baf0c32974
+ref table LocalDateTable_7cb5fb94-88e0-413c-917c-423be3edce48
+ref table LocalDateTable_d6fa6492-f7b6-49f7-aa09-f856a27a458a
+ref table 'Date Period Selector'
+ref table LocalDateTable_f7732683-1bb4-4c21-bf21-59ca0a7d63af
+
+ref cultureInfo en-US
+

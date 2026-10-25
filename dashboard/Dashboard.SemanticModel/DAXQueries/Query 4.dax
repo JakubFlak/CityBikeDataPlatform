@@ -1,0 +1,4 @@
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Available e-bikes", [Available e-bikes]
+    )

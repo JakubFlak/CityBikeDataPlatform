@@ -1,0 +1,119 @@
+table 'Date Period Selector'
+	lineageTag: 272e6111-0da6-4287-9261-1f1922368659
+
+	column Date
+		formatString: General Date
+		lineageTag: a5ae5f0b-f898-445e-ba32-51a8592855e3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		variation Variation
+			isDefault
+			relationship: 330908d4-97b2-4406-b4a6-a7b71ea21753
+			defaultHierarchy: LocalDateTable_f7732683-1bb4-4c21-bf21-59ca0a7d63af.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Period
+		lineageTag: d8cac622-724d-4e28-ba4c-bb57ac09df8b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Period]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Grain
+		lineageTag: 37761cfb-be3a-414e-8079-850389b73459
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Grain]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Date Period Selector' = calculated
+		mode: import
+		source =
+				
+				VAR MaxDataDate =
+				    CALCULATE(
+				        MAX('dim_date'[calendar_date]),
+				        REMOVEFILTERS('dim_date')
+				    )
+				
+				VAR CurrentDayStart = MaxDataDate
+				VAR CurrentDayEnd = MaxDataDate
+				
+				VAR CurrentWeekStart =
+				    MaxDataDate - WEEKDAY(MaxDataDate, 2) + 1
+				VAR CurrentWeekEnd =
+				    CurrentWeekStart + 6
+				
+				VAR CurrentMonthStart =
+				    DATE(YEAR(MaxDataDate), MONTH(MaxDataDate), 1)
+				VAR CurrentMonthEnd =
+				    EOMONTH(MaxDataDate, 0)
+				
+				VAR CurrentYearStart =
+				    DATE(YEAR(MaxDataDate), 1, 1)
+				VAR CurrentYearEnd =
+				    DATE(YEAR(MaxDataDate), 12, 31)
+				
+				VAR PreviousDayStart = CurrentDayStart - 1
+				VAR PreviousDayEnd = PreviousDayStart
+				
+				VAR PreviousWeekStart = CurrentWeekStart - 7
+				VAR PreviousWeekEnd = CurrentWeekStart - 1
+				
+				VAR PreviousMonthStart = EDATE(CurrentMonthStart, -1)
+				VAR PreviousMonthEnd = CurrentMonthStart - 1
+				
+				VAR PreviousYearStart = DATE(YEAR(MaxDataDate) - 1, 1, 1)
+				VAR PreviousYearEnd = CurrentYearStart - 1
+				
+				RETURN
+				UNION(
+				    ADDCOLUMNS(
+				        CALENDAR(CurrentDayStart, CurrentDayEnd),
+				        "Period", "Current",
+				        "Grain", "Day"
+				    ),
+				    ADDCOLUMNS(
+				        CALENDAR(PreviousDayStart, PreviousDayEnd),
+				        "Period", "Previous",
+				        "Grain", "Day"
+				    ),
+				    ADDCOLUMNS(
+				        CALENDAR(CurrentWeekStart, CurrentWeekEnd),
+				        "Period", "Current",
+				        "Grain", "Week"
+				    ),
+				    ADDCOLUMNS(
+				        CALENDAR(PreviousWeekStart, PreviousWeekEnd),
+				        "Period", "Previous",
+				        "Grain", "Week"
+				    ),
+				    ADDCOLUMNS(
+				        CALENDAR(CurrentMonthStart, CurrentMonthEnd),
+				        "Period", "Current",
+				        "Grain", "Month"
+				    ),
+				    ADDCOLUMNS(
+				        CALENDAR(PreviousMonthStart, PreviousMonthEnd),
+				        "Period", "Previous",
+				        "Grain", "Month"
+				    ),
+				    ADDCOLUMNS(
+				        CALENDAR(CurrentYearStart, CurrentYearEnd),
+				        "Period", "Current",
+				        "Grain", "Year"
+				    ),
+				    ADDCOLUMNS(
+				        CALENDAR(PreviousYearStart, PreviousYearEnd),
+				        "Period", "Previous",
+				        "Grain", "Year"
+				    )
+				)
+
+	annotation PBI_Id = 899628ce71e64b2d85dc0812129e5b07
+

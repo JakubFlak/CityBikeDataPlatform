@@ -1,0 +1,95 @@
+table fact_station_vehicle_type_availability
+	lineageTag: 8f14e778-9057-4603-b5b0-081f97bf2e5c
+
+	column station_id
+		dataType: string
+		lineageTag: d7f6a55b-8b70-4230-918c-82d2de137b81
+		summarizeBy: none
+		sourceColumn: station_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column vehicle_type_id
+		dataType: string
+		lineageTag: a864f958-7e39-49ce-9720-d1cc5cd256f2
+		summarizeBy: none
+		sourceColumn: vehicle_type_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3a013940-c51d-4cd9-b8fe-4cb0b1e1b42e
+		summarizeBy: none
+		sourceColumn: observed_at
+
+		variation Variation
+			isDefault
+			relationship: b47552c0-717d-4500-89bb-174f66ea924e
+			defaultHierarchy: LocalDateTable_d9b8c75c-dfcc-4ba0-8fdf-d40d00564508.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: cc2ca3a3-ce88-4f92-81e2-09bab7362067
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column hour_of_day
+		dataType: int64
+		formatString: 0
+		lineageTag: 6470b423-4368-4829-b13f-79e7e890bb68
+		summarizeBy: sum
+		sourceColumn: hour_of_day
+
+		annotation SummarizationSetBy = Automatic
+
+	column count
+		dataType: int64
+		formatString: 0
+		lineageTag: 4dd1d9d1-26ba-4264-b29c-6e3fb529e8f0
+		summarizeBy: sum
+		sourceColumn: count
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_ebike
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ce6f1f88-2312-4dc4-8efb-7f5c04e3e982
+		summarizeBy: none
+		sourceColumn: is_ebike
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at_local
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 385335ee-ce45-4124-bb5a-4d5742b97cf9
+		summarizeBy: none
+		sourceColumn: observed_at_local
+
+		variation Variation
+			isDefault
+			relationship: 67dff577-67d7-41e3-b173-33a6d8d352fc
+			defaultHierarchy: LocalDateTable_e49c25cc-afc2-4a66-9e71-4c80abfa2f2d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_station_vehicle_type_availability = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\fact_station_vehicle_type_availability.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

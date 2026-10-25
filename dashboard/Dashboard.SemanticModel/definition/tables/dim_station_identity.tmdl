@@ -1,0 +1,85 @@
+table dim_station_identity
+	lineageTag: 6c97d9af-5d00-44b2-8bb9-803d73fb5749
+
+	column station_id
+		dataType: string
+		lineageTag: 01e6e238-9530-43d3-950d-b74573030483
+		summarizeBy: none
+		sourceColumn: station_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 61c41baa-f81a-4874-a0eb-0e2b4f6aa155
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column short_name
+		dataType: string
+		lineageTag: 0d30c7fa-0dc9-4796-ba55-2a5054629df0
+		summarizeBy: none
+		sourceColumn: short_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column lat
+		dataType: double
+		lineageTag: 116ad609-f13d-4881-85be-ddb6e1acde1e
+		summarizeBy: none
+		sourceColumn: lat
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column lon
+		dataType: double
+		lineageTag: 8d564ab7-73be-4d9b-9933-9b0f7222a709
+		summarizeBy: none
+		sourceColumn: lon
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column region_id
+		dataType: string
+		lineageTag: 83b6b2c0-ca21-4546-9ffa-9b1ec808218e
+		summarizeBy: none
+		sourceColumn: region_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at_local
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3b67e404-5aaa-44f9-b070-8fe8d3eeb41f
+		summarizeBy: none
+		sourceColumn: observed_at_local
+
+		variation Variation
+			isDefault
+			relationship: defb805f-4d5b-46ce-97b6-52b7539d6b8f
+			defaultHierarchy: LocalDateTable_7cb5fb94-88e0-413c-917c-423be3edce48.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_station_identity = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_station.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
+				    #"Grouped Rows" = Table.Group(Source, {"station_id"}, {{"observed_at_local", each List.Max([observed_at_local]), type nullable datetime}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Grouped Rows", {"station_id", "observed_at_local"}, dim_station, {"station_id", "observed_at_local"}, "dim_station", JoinKind.LeftOuter),
+				    #"Expanded dim_station" = Table.ExpandTableColumn(#"Merged Queries", "dim_station", {"name", "short_name", "lat", "lon", "region_id", "capacity", "is_virtual_station"}, {"name", "short_name", "lat", "lon", "region_id", "capacity", "is_virtual_station"}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Expanded dim_station",{"is_virtual_station", "capacity"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

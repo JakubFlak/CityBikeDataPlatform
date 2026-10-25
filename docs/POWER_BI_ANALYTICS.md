@@ -1,10 +1,11 @@
-# Power BI Analytics Design
+# Power BI Analytics
 
 ## Status
 
-This is a design-only proposal for a future Power BI report. It does not
-create a `.pbix`, generate data, add DAX to the repository, or introduce
-DuckDB, dbt, or another infrastructure component.
+This document records analytical conventions and report guidance for the
+implemented PBIP report in `dashboard/`. Some sections describe design rules or
+candidate patterns; the current report visuals and measures are defined in the
+PBIR and TMDL files under `dashboard/`.
 
 The report must describe observed bike-sharing state honestly. GBFS provides
 periodic snapshots of what was visible at collection time; it does not provide
@@ -85,10 +86,9 @@ The target time contract has two representations of the same instant:
 - `date_key`, calendar attributes, and `hour_of_day` are derived from
   `observed_at_local`.
 
-`observed_at_local` is not currently loaded by the report. After an explicit
-Gold export and model migration, it must remain only a presentation field: it
-is never a key, join key, incremental identity, or input to latest-snapshot
-selection.
+`observed_at_local` is loaded for local time-series presentation. It remains a
+presentation field, not a snapshot key, temporal join key, or incremental
+identity; those continue to use canonical UTC `observed_at`.
 
 The facts are periodic snapshot facts. A `SUM` across multiple `observed_at`
 values is generally a sum of repeated states, not a system total over the
@@ -119,7 +119,9 @@ no calculation groups or advanced time-intelligence layer is required.
 
 ### Measures and behavior across multiple timestamps
 
-The following are conceptual DAX designs, not code to add in this task. The
+The following table is a metric catalogue, not a claim that every listed
+measure exists in the current report. Implemented measures are stored in
+`dashboard/Dashboard.SemanticModel/definition/tables/_Measures.tmdl`. The
 `Latest Snapshot` pattern means: find the maximum `observed_at` in the current
 fact filter context, then evaluate the inner expression only at that timestamp.
 

@@ -1,0 +1,97 @@
+table dim_date
+	lineageTag: 46ef32db-dc44-4a38-a81a-911881b00bf2
+
+	column date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 9758c86d-5d56-4ad4-95e5-a68e25bd0a9d
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column calendar_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 601a71be-5308-4720-8941-3e95c8578579
+		summarizeBy: none
+		sourceColumn: calendar_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: 843e3a06-8cbb-4c2c-86c4-d5601c5a26ca
+		summarizeBy: sum
+		sourceColumn: year
+
+		annotation SummarizationSetBy = Automatic
+
+	column quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: b67b0919-a4c4-4383-ae29-e9ce3f616168
+		summarizeBy: sum
+		sourceColumn: quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		dataType: int64
+		formatString: 0
+		lineageTag: 68a22163-6a23-49c9-9ce6-632e6201b997
+		summarizeBy: sum
+		sourceColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column week
+		dataType: int64
+		formatString: 0
+		lineageTag: 9da86384-300a-459b-b76d-09348c36c22d
+		summarizeBy: sum
+		sourceColumn: week
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_of_week
+		dataType: int64
+		formatString: 0
+		lineageTag: 7e8d9d8d-c8c8-4b74-a407-871e67f3ef0e
+		summarizeBy: sum
+		sourceColumn: day_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_name
+		dataType: string
+		lineageTag: 22e9f9ac-7206-4c9a-9294-a346f719fef5
+		summarizeBy: none
+		sourceColumn: day_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_weekend
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0978c0da-8c34-4af9-b477-a1e1226b22f4
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_date = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_date.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

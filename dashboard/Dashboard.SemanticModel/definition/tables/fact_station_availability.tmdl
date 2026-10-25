@@ -1,0 +1,114 @@
+table fact_station_availability
+	lineageTag: 840861f5-f5c3-4372-9b3b-09cf710a5563
+
+	column station_id
+		dataType: string
+		lineageTag: cbb9d461-870b-4403-a509-23dadd767f1d
+		summarizeBy: none
+		sourceColumn: station_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f7b14385-dc45-4fed-85d1-423aab7e194e
+		summarizeBy: none
+		sourceColumn: observed_at
+
+		variation Variation
+			isDefault
+			relationship: a939561c-6f11-40b0-a5d6-c4ae1cd0802b
+			defaultHierarchy: LocalDateTable_73ac55fa-f3c9-468b-97cb-6c721a9d5c0d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: b95fc5d9-e0bf-4c13-b0f3-320f1422e7c0
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column hour_of_day
+		dataType: int64
+		formatString: 0
+		lineageTag: 8c400a63-f7e0-4d21-92e3-2e3e4b91ee62
+		summarizeBy: sum
+		sourceColumn: hour_of_day
+
+		annotation SummarizationSetBy = Automatic
+
+	column region_id
+		dataType: string
+		lineageTag: 9b44e0b8-a34c-4926-b51e-37c50d1db345
+		summarizeBy: none
+		sourceColumn: region_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column num_bikes_available
+		dataType: int64
+		formatString: 0
+		lineageTag: 57e20fd6-4d67-4c92-aac6-36944bd9d584
+		summarizeBy: sum
+		sourceColumn: num_bikes_available
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_renting
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: e1803495-a151-474e-b55b-50d2155da4a5
+		summarizeBy: none
+		sourceColumn: is_renting
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_returning
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 8ec1b009-9464-4308-b6b4-8201e99dd83c
+		summarizeBy: none
+		sourceColumn: is_returning
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_reported
+		dataType: int64
+		formatString: 0
+		lineageTag: 2313e2bf-5ef7-434c-a674-b4dc32334bc3
+		summarizeBy: sum
+		sourceColumn: last_reported
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at_local
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a3aabe5d-5f55-487a-8999-649483ab6906
+		summarizeBy: none
+		sourceColumn: observed_at_local
+
+		variation Variation
+			isDefault
+			relationship: 7e8c07e4-fa2d-45c4-a08a-25cd82003488
+			defaultHierarchy: LocalDateTable_370c0c49-9777-43ae-9213-89b2873b4974.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_station_availability = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\fact_station_availability.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
+				    #"Removed Columns" = Table.RemoveColumns(Source,{"capacity", "num_docks_available", "is_installed"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

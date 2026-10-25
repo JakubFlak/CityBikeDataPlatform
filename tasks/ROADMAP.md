@@ -65,13 +65,13 @@ Only the current phase should be implemented. Future phases are intentionally no
 
 ## Phase 5 — BI
 
-- [ ] Power BI semantic model
-- [ ] Measures/KPIs
-- [ ] Station availability analysis
-- [ ] Bike availability analysis
-- [ ] Time-based analysis
+- [x] Power BI semantic model
+- [x] Measures/KPIs
+- [x] Station availability analysis
+- [x] Bike availability analysis
+- [x] Time-based analysis
 - [ ] Trip analysis when authoritative trip data is available
-- [ ] Dashboard
+- [x] Dashboard
 
 ---
 

@@ -1,0 +1,106 @@
+relationship f052e060-686b-4697-80f4-60ad21175f94
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_free_bike_snapshot.observed_at
+	toColumn: LocalDateTable_0effdd91-c689-4e1f-a033-701e76a7a307.Date
+
+relationship a939561c-6f11-40b0-a5d6-c4ae1cd0802b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_station_availability.observed_at
+	toColumn: LocalDateTable_73ac55fa-f3c9-468b-97cb-6c721a9d5c0d.Date
+
+relationship b47552c0-717d-4500-89bb-174f66ea924e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_station_vehicle_type_availability.observed_at
+	toColumn: LocalDateTable_d9b8c75c-dfcc-4ba0-8fdf-d40d00564508.Date
+
+relationship 8dbccbb8-282b-4f2e-834c-75f4b9132179
+	joinOnDateBehavior: datePartOnly
+	fromColumn: gold_system_availability.observed_at
+	toColumn: LocalDateTable_bbbb732a-6c2b-48d3-873c-2436c2d7dd81.Date
+
+relationship AutoDetected_471284b2-58fc-4dcf-804a-3c3f8d6c17bb
+	fromColumn: fact_station_availability.region_id
+	toColumn: dim_region_identity.region_id
+
+relationship AutoDetected_c9c05604-1ec7-4bf0-80ae-247faa05727c
+	fromColumn: fact_station_availability.station_id
+	toColumn: dim_station_identity.station_id
+
+relationship AutoDetected_7a14f21b-e252-4dd6-b629-3d89c4ddef9c
+	fromColumn: fact_station_vehicle_type_availability.station_id
+	toColumn: dim_station_identity.station_id
+
+relationship AutoDetected_6534ac7d-cc60-466d-8186-5824cb621d73
+	fromColumn: fact_free_bike_snapshot.vehicle_type_id
+	toColumn: dim_vehicle_type_identity.vehicle_type_id
+
+relationship AutoDetected_2c4a4383-38a2-4ac1-ae18-dced8ef9c8ac
+	fromColumn: fact_station_vehicle_type_availability.vehicle_type_id
+	toColumn: dim_vehicle_type_identity.vehicle_type_id
+
+relationship b8d3a686-3495-2ad9-22c0-045617dab25d
+	fromColumn: fact_free_bike_snapshot.station_id
+	toColumn: dim_station_identity.station_id
+
+relationship AutoDetected_ab43672c-ebd7-4831-8605-c98ea98f332d
+	fromColumn: fact_free_bike_snapshot.date_key
+	toColumn: dim_date.date_key
+
+relationship AutoDetected_8d32a294-5be8-4838-8a7b-93f2f9f1eef9
+	fromColumn: fact_station_availability.date_key
+	toColumn: dim_date.date_key
+
+relationship AutoDetected_e041d31d-f18f-4a4f-a723-b90147c389b6
+	fromColumn: fact_station_vehicle_type_availability.date_key
+	toColumn: dim_date.date_key
+
+relationship AutoDetected_70a9f4ad-73ea-49ff-b042-f716a28f02ef
+	fromColumn: gold_system_availability.date_key
+	toColumn: dim_date.date_key
+
+relationship bfa04d04-96be-4551-9616-d70ad7dfaa3b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_free_bike_snapshot.observed_at_local
+	toColumn: LocalDateTable_10096cb2-af19-40cf-94ce-52d541cd84f1.Date
+
+relationship 7e8c07e4-fa2d-45c4-a08a-25cd82003488
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_station_availability.observed_at_local
+	toColumn: LocalDateTable_370c0c49-9777-43ae-9213-89b2873b4974.Date
+
+relationship 67dff577-67d7-41e3-b173-33a6d8d352fc
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_station_vehicle_type_availability.observed_at_local
+	toColumn: LocalDateTable_e49c25cc-afc2-4a66-9e71-4c80abfa2f2d.Date
+
+relationship bfa273af-a276-4646-ae55-cfc33a664bd4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: gold_system_availability.observed_at_local
+	toColumn: LocalDateTable_0108501a-be20-4044-9f23-08a6cd6d9e77.Date
+
+relationship 42325de7-4684-43a8-9644-d8473695c062
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_region_identity.observed_at_local
+	toColumn: LocalDateTable_c023c74a-dcce-40fe-a6ad-75baf0c32974.Date
+
+relationship defb805f-4d5b-46ce-97b6-52b7539d6b8f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_station_identity.observed_at_local
+	toColumn: LocalDateTable_7cb5fb94-88e0-413c-917c-423be3edce48.Date
+
+relationship a5b4a450-21c2-410b-8c01-e3b7490fb496
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_vehicle_type_identity.observed_at_local
+	toColumn: LocalDateTable_d6fa6492-f7b6-49f7-aa09-f856a27a458a.Date
+
+relationship 330908d4-97b2-4406-b4a6-a7b71ea21753
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Date Period Selector'.Date
+	toColumn: LocalDateTable_f7732683-1bb4-4c21-bf21-59ca0a7d63af.Date
+
+relationship 81c10397-e7de-2235-cef4-af0db0920ad0
+	toCardinality: many
+	crossFilteringBehavior: bothDirections
+	fromColumn: dim_date.calendar_date
+	toColumn: 'Date Period Selector'.Date
+

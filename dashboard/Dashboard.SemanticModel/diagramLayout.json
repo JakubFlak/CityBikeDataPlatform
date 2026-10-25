@@ -1,0 +1,151 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 1964.065727650267
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1131.481295820606,
+            "y": 2814.2312609573528
+          },
+          "nodeIndex": "fact_free_bike_snapshot",
+          "nodeLineageTag": "7979c41d-dd80-4326-9e32-aa7669fc3445",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 569.222363985824,
+            "y": 2141.7662445036995
+          },
+          "nodeIndex": "fact_station_availability",
+          "nodeLineageTag": "840861f5-f5c3-4372-9b3b-09cf710a5563",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 1072.9999328176693,
+            "y": 2109.4005811644329
+          },
+          "nodeIndex": "fact_station_vehicle_type_availability",
+          "nodeLineageTag": "8f14e778-9057-4603-b5b0-081f97bf2e5c",
+          "size": {
+            "height": 248,
+            "width": 318.62177913649975
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 156.10555005528892,
+            "y": 2158.465996990989
+          },
+          "nodeIndex": "gold_system_availability",
+          "nodeLineageTag": "d6ef3bf7-1c76-4da4-9b91-fd62d7582be2",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 931.8129188192454,
+            "y": 2634.5248391078439
+          },
+          "nodeIndex": "dim_region_identity",
+          "nodeLineageTag": "fcaca649-f731-415e-a61e-87be19322e1a",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 578.77731210499758,
+            "y": 2554.5021224095726
+          },
+          "nodeIndex": "dim_station_identity",
+          "nodeLineageTag": "6c97d9af-5d00-44b2-8bb9-803d73fb5749",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 1423.968153166659,
+            "y": 2532.6934957402818
+          },
+          "nodeIndex": "dim_vehicle_type_identity",
+          "nodeLineageTag": "7b91226f-9798-4614-989c-66960315441e",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 753.9115230925571,
+            "y": 1675.3063321239358
+          },
+          "nodeIndex": "dim_date",
+          "nodeLineageTag": "46ef32db-dc44-4a38-a81a-911881b00bf2",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 1551.8626031113702,
+            "y": 1963.8440889606075
+          },
+          "nodeIndex": "_Measures",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 1327.7105002813712,
+            "y": 1582.4038024873591
+          },
+          "nodeIndex": "Date Period Selector",
+          "nodeLineageTag": "272e6111-0da6-4287-9261-1f1922368659",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 63.287087723234073,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

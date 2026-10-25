@@ -1,0 +1,78 @@
+DEFINE
+    MEASURE '_Measures'[Is Selected Period] = VAR SelectedPeriod =
+    SELECTEDVALUE('_Period Selector'[Period], "Current")
+
+VAR SelectedGrain =
+    SELECTEDVALUE('_Grain Selector'[Grain], "Day")
+
+VAR MaxDate =
+    CALCULATE(
+        MAX('dim_date'[calendar_date]),
+        REMOVEFILTERS('dim_date')
+    )
+
+VAR CurrentStart =
+    SWITCH(
+        SelectedGrain,
+        "Day", DATE(YEAR(MaxDate), MONTH(MaxDate), DAY(MaxDate)),
+        "Week", MaxDate - WEEKDAY(MaxDate, 2) + 1,
+        "Month", DATE(YEAR(MaxDate), MONTH(MaxDate), 1),
+        "Year", DATE(YEAR(MaxDate), 1, 1)
+    )
+
+VAR CurrentEnd =
+    SWITCH(
+        SelectedGrain,
+        "Day", MaxDate,
+        "Week", CurrentStart + 6,
+        "Month", EOMONTH(MaxDate, 0),
+        "Year", DATE(YEAR(MaxDate), 12, 31)
+    )
+
+VAR PreviousStart =
+    SWITCH(
+        SelectedGrain,
+        "Day", CurrentStart - 1,
+        "Week", CurrentStart - 7,
+        "Month", EDATE(CurrentStart, -1),
+        "Year", DATE(YEAR(MaxDate) - 1, 1, 1)
+    )
+
+VAR PreviousEnd =
+    SWITCH(
+        SelectedGrain,
+        "Day", CurrentStart - 1,
+        "Week", CurrentStart - 1,
+        "Month", CurrentStart - 1,
+        "Year", CurrentStart - 1
+    )
+
+VAR SelectedStart =
+    IF(
+        SelectedPeriod = "Current",
+        CurrentStart,
+        PreviousStart
+    )
+
+VAR SelectedEnd =
+    IF(
+        SelectedPeriod = "Current",
+        CurrentEnd,
+        PreviousEnd
+    )
+
+VAR CurrentDate =
+    MAX('dim_date'[calendar_date])
+
+RETURN
+    IF(
+        CurrentDate >= SelectedStart &&
+        CurrentDate <= SelectedEnd,
+        1,
+        0
+    )
+
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Is Selected Period", [Is Selected Period]
+    )

@@ -1,0 +1,4 @@
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Is Selected Period", [Is Selected Period]
+    )

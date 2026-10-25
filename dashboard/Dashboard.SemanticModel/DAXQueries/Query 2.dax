@@ -1,0 +1,4 @@
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Available station bikes - latest", [Available station bikes - latest]
+    )

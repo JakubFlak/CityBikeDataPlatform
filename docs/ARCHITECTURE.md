@@ -1,150 +1,70 @@
 # Architecture
 
-## Project Goal
+## Current implementation
 
-The project is a data platform for collecting and analysing Wrocław Bike Sharing data.
-
-The primary goal is to build a realistic end-to-end data engineering and analytics workflow using real operational data from the Wrocław bike-sharing system.
-
-The project starts as a local platform. It should remain simple until there is a clear reason to introduce additional infrastructure.
-
-## Current V1 Architecture
+The platform collects Wrocław Nextbike GBFS snapshots, preserves them as Raw
+Parquet, incrementally builds typed Silver Parquet tables, and generates Gold
+analytical Parquet tables for Power BI.
 
 ```text
-                 Nextbike GBFS
-                      │
-                      ▼
-               Python ingestion
-                      │
-                      ▼
-                Raw Parquet
-                      │
-                      ▼
-                   DuckDB
-                      │
-                      ▼
-                    dbt
-                      │
-                      ▼
-                 Power BI
+Nextbike GBFS
+    -> Python ingestion
+    -> Raw Parquet + quality checks
+    -> incremental Raw-to-Silver
+    -> Silver Parquet
+    -> complete Silver-to-Gold projection
+    -> Gold Parquet
+    -> Power BI PBIP report
 ```
 
-This represents the planned V1 architecture.
+Python implements ingestion and transformations. DuckDB, dbt, Docker, and
+Airflow are not part of the current runtime. The pipeline uses local files and
+is intentionally kept simple. See [incremental processing](INCREMENTAL_PROCESSING.md)
+and [orchestration](ORCHESTRATION.md) for operational details.
 
-Individual components should only be considered implemented when they actually exist in the repository.
+## Data layers
 
-## Data Flow
+### Raw
 
-### 1. Source
+Raw preserves provider payloads and application `observed_at` timestamps as
+one Parquet snapshot per GBFS feed observation. It is append-oriented and
+supports reprocessing and audit. Generated Raw data is excluded from Git.
 
-The primary live source is the Nextbike GBFS API.
+### Silver
 
-The API provides:
+Silver converts the six canonical GBFS feeds into typed tables and normalizes
+station vehicle-type availability and pricing tiers into child tables. The
+incremental manifest identifies completed snapshots; replay is idempotent and
+conflicting replays fail explicitly.
 
-- station metadata
-- current station availability
-- current bike availability
-- vehicle type metadata
-- pricing information
+### Gold
 
-The API provides snapshots of the current system state. It is not a trip-event API.
+Gold is rebuilt as a deterministic analytical projection from the current
+Silver state. It contains snapshot-grained dimensions and facts plus the
+system-level availability aggregate. `observed_at` is canonical UTC identity;
+`observed_at_local` is the `Europe/Warsaw` presentation timestamp. A snapshot
+is an observed state, not a trip or utilization event. See [Gold model](GOLD_MODEL.md).
 
-### 2. Ingestion
+### Power BI
 
-Python is responsible for retrieving GBFS data and converting API responses into structured records.
+The PBIP project is in `dashboard/`. It contains System Overview, Station
+Analysis, and Bikes Analysis pages and consumes Gold Parquet directly. Power
+Query currently references local absolute Gold paths; the local report requires
+the expected files and path on the developer machine. See [Power BI model](POWER_BI_MODEL.md)
+for opening and refreshing it.
 
-The ingestion layer should:
+## Execution and retention
 
-- retrieve data from the API
-- validate HTTP/API responses
-- preserve source information
-- attach an observation timestamp
-- write raw data without applying analytical transformations
+`python scripts/run_pipeline.py` runs the one-shot pipeline locally. GitHub
+Actions runs it hourly at minute 17 and supports manual dispatch. Successful
+workflow artifacts preserve pipeline state for subsequent scheduled runs, but
+they expire after 14 days and are not durable historical storage. See
+[orchestration](ORCHESTRATION.md).
 
-The ingestion layer should not contain business logic that belongs to the transformation layer.
+## Future evolution
 
-### 3. Raw Storage
-
-Raw GBFS snapshots are initially stored as Parquet files.
-
-Raw data should remain as close as reasonably possible to the source data.
-
-The raw layer is intended to provide:
-
-- reproducibility
-- historical snapshots
-- debugging capability
-- the ability to reprocess data later
-
-Raw data should not be committed to Git.
-
-### 4. Analytical Storage
-
-DuckDB is used as the initial analytical database.
-
-DuckDB reads the raw Parquet data and provides the analytical layer used by dbt.
-
-### 5. Transformation
-
-dbt is responsible for transforming raw data into analytical models.
-
-The transformation layer should contain:
-
-- staging models
-- dimensions
-- fact tables
-- data quality tests
-- analytical aggregations where justified
-
-Business logic should primarily live in this layer rather than in the ingestion code.
-
-### 6. BI
-
-Power BI is the presentation layer.
-
-It should consume curated analytical models rather than raw API snapshots.
-
-The Power BI model should focus on:
-
-- operational availability
-- station utilisation
-- bike availability
-- temporal patterns
-- trip analysis when authoritative trip data becomes available
-
-## Important Architectural Principles
-
-### Separate ingestion from transformation
-
-Python ingestion retrieves and stores source data.
-
-dbt transformations turn stored data into analytical models.
-
-Do not mix these responsibilities without a clear reason.
-
-### Preserve raw data
-
-Raw source data should be retained before analytical transformations are applied.
-
-### Define table grain explicitly
-
-Every analytical table must have a clearly defined grain.
-
-### Do not invent data
-
-The system must distinguish between:
-
-- authoritative source data
-- observed snapshot data
-- derived analytical metrics
-- inferred events
-
-Inferred trips must never be presented as authoritative trips.
-
-### Prefer simple solutions
-
-Technology should be introduced because the project needs it, not simply to demonstrate that the technology was used.
-
-The initial platform is intentionally local.
-
-Future infrastructure should be introduced only when the project's requirements justify it.
+The future cloud migration is not implemented. When long-term retention,
+reliable refresh, or operational requirements justify it, evaluate durable
+object storage, backup/retention, alerting, and a Power BI-accessible refresh
+path. Preserve Raw/Silver/Gold boundaries and snapshot semantics during that
+migration; do not introduce infrastructure only to match a technology list.

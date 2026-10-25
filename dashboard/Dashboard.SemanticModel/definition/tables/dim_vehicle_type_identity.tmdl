@@ -1,0 +1,92 @@
+table dim_vehicle_type_identity
+	lineageTag: 7b91226f-9798-4614-989c-66960315441e
+
+	column vehicle_type_id
+		dataType: string
+		lineageTag: d0152fc8-d01d-4095-afb0-e5f0036565f7
+		summarizeBy: none
+		sourceColumn: vehicle_type_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 5277ab19-178b-4c55-ac81-ab60318ea64d
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column form_factor
+		dataType: string
+		lineageTag: f2a8a82d-8ca6-4ab8-be1f-81e9129192ba
+		summarizeBy: none
+		sourceColumn: form_factor
+
+		annotation SummarizationSetBy = Automatic
+
+	column propulsion_type
+		dataType: string
+		lineageTag: e88320e6-4f21-42b2-96bd-eafb4e55edc8
+		summarizeBy: none
+		sourceColumn: propulsion_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column rider_capacity
+		dataType: int64
+		formatString: 0
+		lineageTag: fa410d1a-a0d5-4596-b6e9-196dd2fd320a
+		summarizeBy: sum
+		sourceColumn: rider_capacity
+
+		annotation SummarizationSetBy = Automatic
+
+	column max_range_meters
+		dataType: int64
+		formatString: 0
+		lineageTag: 2f4cedb3-7af6-494a-bd7c-96379655dbc5
+		summarizeBy: sum
+		sourceColumn: max_range_meters
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_ebike
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7518d653-8c0b-49e7-8065-5dd52627510e
+		summarizeBy: none
+		sourceColumn: is_ebike
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at_local
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f0204524-610e-4434-ae62-b83145d6e96d
+		summarizeBy: none
+		sourceColumn: observed_at_local
+
+		variation Variation
+			isDefault
+			relationship: a5b4a450-21c2-410b-8c01-e3b7490fb496
+			defaultHierarchy: LocalDateTable_d6fa6492-f7b6-49f7-aa09-f856a27a458a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_vehicle_type_identity = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_vehicle_type.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
+				    #"Grouped Rows" = Table.Group(Source, {"vehicle_type_id"}, {{"observed_at_local", each List.Max([observed_at_local]), type nullable datetime}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Grouped Rows", {"vehicle_type_id", "observed_at_local"}, dim_vehicle_type, {"vehicle_type_id", "observed_at_local"}, "dim_vehicle_type", JoinKind.LeftOuter),
+				    #"Expanded dim_vehicle_type" = Table.ExpandTableColumn(#"Merged Queries", "dim_vehicle_type", {"name", "form_factor", "propulsion_type", "rider_capacity", "max_range_meters", "is_ebike"}, {"name", "form_factor", "propulsion_type", "rider_capacity", "max_range_meters", "is_ebike"}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Expanded dim_vehicle_type","Rower standardowy","Regular bike",Replacer.ReplaceText,{"name"})
+				in
+				    #"Replaced Value"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

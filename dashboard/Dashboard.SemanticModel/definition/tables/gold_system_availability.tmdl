@@ -1,0 +1,124 @@
+table gold_system_availability
+	lineageTag: d6ef3bf7-1c76-4da4-9b91-fd62d7582be2
+
+	column observed_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 2662cba2-e184-4e3e-bd64-c1c503a55310
+		summarizeBy: none
+		sourceColumn: observed_at
+
+		variation Variation
+			isDefault
+			relationship: 8dbccbb8-282b-4f2e-834c-75f4b9132179
+			defaultHierarchy: LocalDateTable_bbbb732a-6c2b-48d3-873c-2436c2d7dd81.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 4f2c362c-9c80-42ad-b512-2397d263b954
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column hour_of_day
+		dataType: int64
+		formatString: 0
+		lineageTag: d13d0502-b0b4-446d-95a8-8d003f738078
+		summarizeBy: sum
+		sourceColumn: hour_of_day
+
+		annotation SummarizationSetBy = Automatic
+
+	column station_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 15d83b93-7549-4d2c-aa0b-12e9fbade60a
+		summarizeBy: none
+		sourceColumn: station_count
+
+		annotation SummarizationSetBy = User
+
+	column empty_station_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 4d4dc7b3-f70e-445a-a2bc-6644b7b9fbc1
+		summarizeBy: none
+		sourceColumn: empty_station_count
+
+		annotation SummarizationSetBy = User
+
+	column available_station_bikes
+		dataType: int64
+		formatString: 0
+		lineageTag: d330a661-c630-450c-844c-77d658b90c0a
+		summarizeBy: sum
+		sourceColumn: available_station_bikes
+
+		annotation SummarizationSetBy = Automatic
+
+	column available_station_ebikes
+		dataType: int64
+		formatString: 0
+		lineageTag: 0700c55a-c839-4cc8-8b1b-9f45585ec392
+		summarizeBy: sum
+		sourceColumn: available_station_ebikes
+
+		annotation SummarizationSetBy = Automatic
+
+	column available_station_regular_bikes
+		dataType: int64
+		formatString: 0
+		lineageTag: 71987add-3242-4c9d-8d0f-0d4801584624
+		summarizeBy: sum
+		sourceColumn: available_station_regular_bikes
+
+		annotation SummarizationSetBy = Automatic
+
+	column available_free_bikes
+		dataType: int64
+		formatString: 0
+		lineageTag: 4a73decc-c707-4364-bd08-585c890cbcdc
+		summarizeBy: sum
+		sourceColumn: available_free_bikes
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_at_local
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 01a3aa2e-9fb1-4f55-be0b-ad98a2d40026
+		summarizeBy: none
+		sourceColumn: observed_at_local
+
+		variation Variation
+			isDefault
+			relationship: bfa273af-a276-4646-ae55-cfc33a664bd4
+			defaultHierarchy: LocalDateTable_0108501a-be20-4044-9f23-08a6cd6d9e77.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column available_stations
+		dataType: int64
+		formatString: 0
+		lineageTag: f5a1db36-55de-43e4-b6d9-b10ad2e875a7
+		summarizeBy: sum
+		sourceColumn: available_stations
+
+		annotation SummarizationSetBy = Automatic
+
+	partition gold_system_availability = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\gold_system_availability.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
