@@ -58,16 +58,6 @@ table _Measures
 		formatString: 0
 		lineageTag: e6f9b41d-43c4-4222-8338-764ae3455ac2
 
-	measure 'Empty stations' =
-			
-			SUM(gold_system_availability[empty_station_count])
-		formatString: 0
-		lineageTag: cd49e36e-b4dd-4440-9313-429c65fccdb5
-
-	measure 'Available Station Bikes' = SUM(fact_station_availability[num_bikes_available])
-		formatString: 0
-		lineageTag: 0608e56a-7c01-43e7-9fc6-f8fa2a7a24c2
-
 	measure 'Empty Station Observation Rate' =
 			DIVIDE(
 			    [Empty Observation Count],
@@ -75,40 +65,6 @@ table _Measures
 			)
 		formatString: 0.00%
 		lineageTag: 9da64a62-521d-4732-845b-50d241347f29
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
-
-	measure 'Available Station Bikes - Latest P2' =
-			
-			VAR LatestSnapshot =
-			    CALCULATE (
-			        MAX ( fact_station_availability[observed_at_local] )
-			    )
-			RETURN
-			    CALCULATE (
-			        SUM ( fact_station_availability[num_bikes_available] ),
-			        fact_station_availability[observed_at_local] = LatestSnapshot
-			    )
-		formatString: 0
-		lineageTag: 36b2e7f7-16db-4830-955b-a076b5327e2c
-
-	measure 'Average Bikes per Station - Latest' =
-			
-			VAR LatestSnapshot =
-			    CALCULATE (
-			        MAX ( fact_station_availability[observed_at_local] )
-			    )
-			RETURN
-			    CALCULATE (
-			        AVERAGEX (
-			            VALUES ( dim_station_identity[station_id] ),
-			            CALCULATE (
-			                MAX ( fact_station_availability[num_bikes_available] )
-			            )
-			        ),
-			        fact_station_availability[observed_at_local] = LatestSnapshot
-			    )
-		lineageTag: a0be57ea-8276-4ee6-b4ca-176c49380c65
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
@@ -176,53 +132,6 @@ table _Measures
 	measure 'Average Bikes per Station Observation' = AVERAGE(fact_station_availability[num_bikes_available])
 		formatString: 0.00
 		lineageTag: 0ee8a9ac-5448-478f-9531-ea78fb4a7f6e
-
-	measure 'Minimum Bikes per Snapshot' = MIN(fact_station_availability[num_bikes_available])
-		formatString: 0
-		lineageTag: 7b9864cc-07f9-4ee2-98ef-f4cd1ea7807a
-
-	measure 'Maximum Bikes per Snapshot' = MAX(fact_station_availability[num_bikes_available])
-		formatString: 0
-		lineageTag: c8f347e1-55d5-40b9-bf45-88b48971d862
-
-	measure 'P90-P10 Bikes Range' =
-			PERCENTILEX.INC(
-			    fact_station_availability,
-			    fact_station_availability[num_bikes_available],
-			    0.9
-			)
-			-
-			PERCENTILEX.INC(
-			    fact_station_availability,
-			    fact_station_availability[num_bikes_available],
-			    0.1
-			)
-		formatString: 0.00
-		lineageTag: 4f2f2f04-95c4-48da-a7e6-6770af8d30ca
-
-	measure 'PG3_Total Bikes at Stations' =
-			
-			SUM(
-			    fact_station_vehicle_type_availability[count]
-			)
-		formatString: 0
-		lineageTag: 65baf18e-3d7f-4737-8492-d68cf44390ee
-
-	measure 'PG3 Bikes outside stations time' = COUNTROWS(fact_free_bike_snapshot)
-		formatString: 0
-		lineageTag: 051327e6-d71d-4113-84c3-05a180015a23
-
-	measure 'PG3 Average Bikes Outside Stations' =
-			
-			AVERAGEX(
-			    VALUES(fact_free_bike_snapshot[observed_at]),
-			    CALCULATE(
-			        COUNTROWS(fact_free_bike_snapshot)
-			    )
-			)
-		lineageTag: cb1cc26c-943b-47c3-98e9-28e56fe70380
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	measure 'Ebike share' = DIVIDE([Available e-bikes], [Available e-bikes] + [Available regular bikes])
 		lineageTag: 26d7f7f1-7b1c-4e48-bb85-354711b4c172

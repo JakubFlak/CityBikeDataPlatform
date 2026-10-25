@@ -57,8 +57,8 @@
                 }
               },
               "queryRef": "_Measures.Average Bikes per Station Observation",
-              "nativeQueryRef": "Average bikes per station observation",
-              "displayName": "Average bikes per station observation"
+              "nativeQueryRef": "Average bikes per station",
+              "displayName": "Average bikes per station"
             }
           ]
         }
@@ -67,16 +67,16 @@
         "sort": [
           {
             "field": {
-              "Measure": {
+              "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "_Measures"
+                    "Entity": "dim_station_identity"
                   }
                 },
-                "Property": "Station Availability Rate"
+                "Property": "name"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ]
       }
@@ -101,7 +101,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "369.702159462927D"
+                  "Value": "319.05761341509475D"
                 }
               }
             }
@@ -115,7 +115,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "109.30049311071285D"
+                  "Value": "116.2163915791119D"
                 }
               }
             }
@@ -129,7 +129,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "94.73398211515713D"
+                  "Value": "132.11287163134173D"
                 }
               }
             }

@@ -19,6 +19,7 @@ table dim_station_identity
 
 	column short_name
 		dataType: string
+		isHidden
 		lineageTag: 0d30c7fa-0dc9-4796-ba55-2a5054629df0
 		summarizeBy: none
 		sourceColumn: short_name
@@ -47,6 +48,7 @@ table dim_station_identity
 
 	column region_id
 		dataType: string
+		isHidden
 		lineageTag: 83b6b2c0-ca21-4546-9ffa-9b1ec808218e
 		summarizeBy: none
 		sourceColumn: region_id

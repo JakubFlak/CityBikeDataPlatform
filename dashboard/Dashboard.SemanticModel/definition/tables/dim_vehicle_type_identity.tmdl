@@ -19,6 +19,7 @@ table dim_vehicle_type_identity
 
 	column form_factor
 		dataType: string
+		isHidden
 		lineageTag: f2a8a82d-8ca6-4ab8-be1f-81e9129192ba
 		summarizeBy: none
 		sourceColumn: form_factor
@@ -27,6 +28,7 @@ table dim_vehicle_type_identity
 
 	column propulsion_type
 		dataType: string
+		isHidden
 		lineageTag: e88320e6-4f21-42b2-96bd-eafb4e55edc8
 		summarizeBy: none
 		sourceColumn: propulsion_type
@@ -35,6 +37,7 @@ table dim_vehicle_type_identity
 
 	column rider_capacity
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: fa410d1a-a0d5-4596-b6e9-196dd2fd320a
 		summarizeBy: sum
@@ -44,6 +47,7 @@ table dim_vehicle_type_identity
 
 	column max_range_meters
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: 2f4cedb3-7af6-494a-bd7c-96379655dbc5
 		summarizeBy: sum
@@ -53,6 +57,7 @@ table dim_vehicle_type_identity
 
 	column is_ebike
 		dataType: boolean
+		isHidden
 		formatString: """TRUE"";""TRUE"";""FALSE"""
 		lineageTag: 7518d653-8c0b-49e7-8065-5dd52627510e
 		summarizeBy: none

@@ -5946,6 +5946,9 @@ cultureInfo en-US
 			        }
 			      },
 			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
 			      "Terms": [
 			        {
 			          "short name": {
@@ -6107,6 +6110,9 @@ cultureInfo en-US
 			        }
 			      },
 			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
 			      "Terms": [
 			        {
 			          "region id": {
@@ -6789,6 +6795,9 @@ cultureInfo en-US
 			        }
 			      },
 			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
 			      "Terms": [
 			        {
 			          "form factor": {
@@ -6918,6 +6927,9 @@ cultureInfo en-US
 			        }
 			      },
 			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
 			      "Terms": [
 			        {
 			          "propulsion type": {
@@ -7047,6 +7059,9 @@ cultureInfo en-US
 			        }
 			      },
 			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
 			      "Terms": [
 			        {
 			          "rider capacity": {
@@ -7176,6 +7191,9 @@ cultureInfo en-US
 			        }
 			      },
 			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
 			      "Terms": [
 			        {
 			          "max range meter": {
@@ -7311,6 +7329,9 @@ cultureInfo en-US
 			        }
 			      },
 			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
 			      "Terms": [
 			        {
 			          "is ebike": {
@@ -8292,140 +8313,30 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "entity__measure.regular_bikes": {
+			    "entity__measure.available_ebikes": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "Regular bikes"
+			          "ConceptualProperty": "Available e-bikes"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "regular bikes": {
+			          "available e-bikes": {
 			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "available e bikes": {
+			            "State": "Generated",
+			            "Weight": 0.97
 			          }
 			        },
 			        {
 			          "bikes": {
 			            "State": "Generated",
 			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "regular motorbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "regular scrambler": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "motorbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "scrambler": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "regular motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        },
-			        {
-			          "motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.476
-			          }
-			        },
-			        {
-			          "regular pushbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.475
-			          }
-			        },
-			        {
-			          "pushbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.466
-			          }
-			        },
-			        {
-			          "regular bicycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.461
-			          }
-			        },
-			        {
-			          "regular cycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.461
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.ebikes": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "E-bikes"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "e-bikes": {
-			            "State": "Generated"
 			          }
 			        },
 			        {
@@ -8435,13 +8346,27 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "bikes": {
-			            "State": "Generated",
-			            "Weight": 0.97
+			          "available e-motorbike": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
 			          }
 			        },
 			        {
-			          "e-motorbike": {
+			          "available e-scrambler": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "available e motorbike": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -8451,7 +8376,7 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "e-scrambler": {
+			          "available e scrambler": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -8481,7 +8406,17 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "e-motorcycle": {
+			          "available e-motorcycle": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "available e motorcycle": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -8509,172 +8444,20 @@ cultureInfo en-US
 			            },
 			            "Weight": 0.491
 			          }
-			        },
-			        {
-			          "e motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        },
-			        {
-			          "e-pushbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.482
-			          }
-			        },
-			        {
-			          "motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.476
-			          }
 			        }
 			      ]
 			    },
-			    "entity__measure.empty_stations": {
+			    "entity__measure.available_regular_bikes": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "Empty stations"
+			          "ConceptualProperty": "Available regular bikes"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "empty stations": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "stations": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "empty location": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "empty situation": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "empty status": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "location": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "situation": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "status": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "empty position": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        },
-			        {
-			          "empty place": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        },
-			        {
-			          "empty post": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        },
-			        {
-			          "empty posting": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.available_station_bikes": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "Available Station Bikes"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "available station bikes": {
+			          "available regular bikes": {
 			            "State": "Generated"
 			          }
 			        },
@@ -8685,13 +8468,7 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "station bikes": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "available station motorbike": {
+			          "available regular motorbike": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -8701,7 +8478,7 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "available station scrambler": {
+			          "available regular scrambler": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -8711,27 +8488,7 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "station motorbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "station scrambler": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "available station motorcycle": {
+			          "available regular motorcycle": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -8761,17 +8518,7 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "station motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        },
-			        {
-			          "available station pushbike": {
+			          "available regular pushbike": {
 			            "Type": "Noun",
 			            "State": "Suggested",
 			            "Source": {
@@ -8788,6 +8535,36 @@ cultureInfo en-US
 			              "Agent": "Thesaurus"
 			            },
 			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "available regular bicycle": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.468
+			          }
+			        },
+			        {
+			          "available regular cycle": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.468
+			          }
+			        },
+			        {
+			          "available regular tandem": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.468
 			          }
 			        }
 			      ]
@@ -8922,144 +8699,6 @@ cultureInfo en-US
 			              "Agent": "Thesaurus"
 			            },
 			            "Weight": 0.508
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.available_station_bikes__latest_P2": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "Available Station Bikes - Latest P2"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "available station bikes - latest P2": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "available station bikes latest P2": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "P2": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "latest P2": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "bikes latest P2": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "station bikes latest P2": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.average_bikes_per_station__latest": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "Average Bikes per Station - Latest"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "average bikes per station - latest": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "average bikes per station latest": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "average motorbike per station latest": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "average scrambler per station latest": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "average motorcycle per station latest": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.504
-			          }
-			        },
-			        {
-			          "average pushbike per station latest": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.494
-			          }
-			        },
-			        {
-			          "average bicycle per station latest": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.479
-			          }
-			        },
-			        {
-			          "average cycle per station latest": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.479
-			          }
-			        },
-			        {
-			          "average tandem per station latest": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.479
 			          }
 			        }
 			      ]
@@ -9487,767 +9126,15 @@ cultureInfo en-US
 			            },
 			            "Weight": 0.479
 			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.minimum_bikes_per_snapshot": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "Minimum Bikes per Snapshot"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "minimum bikes per snapshot": {
-			            "State": "Generated"
-			          }
 			        },
 			        {
-			          "bikes": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "minimum bikes": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "minimum motorbike per snapshot": {
-			            "Type": "Noun",
+			          "Average bikes per station": {
 			            "State": "Suggested",
 			            "Source": {
-			              "Agent": "Thesaurus"
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
 			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "minimum scrambler per snapshot": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "minimum motorbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "minimum scrambler": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "minimum motorcycle per snapshot": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.499
-			          }
-			        },
-			        {
-			          "motorbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "scrambler": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "minimum pushbike per snapshot": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.489
-			          }
-			        },
-			        {
-			          "minimum motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        },
-			        {
-			          "motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.476
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.maximum_bikes_per_snapshot": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "Maximum Bikes per Snapshot"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "maximum bikes per snapshot": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "bikes": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "maximum bikes": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "maximum motorbike per snapshot": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "maximum scrambler per snapshot": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "maximum motorbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "maximum scrambler": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
-			          }
-			        },
-			        {
-			          "maximum motorcycle per snapshot": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.499
-			          }
-			        },
-			        {
-			          "motorbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "scrambler": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.491
-			          }
-			        },
-			        {
-			          "maximum pushbike per snapshot": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.489
-			          }
-			        },
-			        {
-			          "maximum motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.485
-			          }
-			        },
-			        {
-			          "motorcycle": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.476
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.P90P10_bikes_range": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "P90-P10 Bikes Range"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "P90-P10 bikes range": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "P90 P10 bikes range": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "bikes range": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "P10 bikes range": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "p90-p10 bike variety": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "p90-p10 bike series": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "p90-p10 bike assortment": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "p90-p10 bike collection": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "p90-p10 bike gamut": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "p90-p10 bike selection": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "p90 p10 bike variety": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "p90 p10 bike series": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "p90 p10 bike assortment": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "p90 p10 bike collection": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.PG3_Total_bikes_at_stations": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "PG3_Total Bikes at Stations"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "PG3_Total bikes at stations": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "pg3_total motorbike at station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "pg3_total scrambler at station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "pg3_total motorcycle at station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.499
-			          }
-			        },
-			        {
-			          "pg3_total pushbike at station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.489
-			          }
-			        },
-			        {
-			          "pg3_total bicycle at station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.474
-			          }
-			        },
-			        {
-			          "pg3_total cycle at station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.474
-			          }
-			        },
-			        {
-			          "pg3_total tandem at station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.474
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.PG3_bikes_outside_stations_time": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "PG3 Bikes outside stations time"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "PG3 bikes outside stations time": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "stations time": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "outside stations time": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "bikes outside stations time": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "outside station duration": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.762
-			          }
-			        },
-			        {
-			          "outside station interval": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.762
-			          }
-			        },
-			        {
-			          "outside station moment": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.762
-			          }
-			        },
-			        {
-			          "station duration": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.75
-			          }
-			        },
-			        {
-			          "station interval": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.75
-			          }
-			        },
-			        {
-			          "station moment": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.75
-			          }
-			        },
-			        {
-			          "outside station period": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.739
-			          }
-			        },
-			        {
-			          "outside station timetable": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.739
-			          }
-			        },
-			        {
-			          "station period": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.727
-			          }
-			        },
-			        {
-			          "station timetable": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.727
-			          }
-			        }
-			      ]
-			    },
-			    "entity__measure.PG3_average_bikes_outside_stations": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "_Measures",
-			          "ConceptualProperty": "PG3 Average Bikes Outside Stations"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "PG3 average bikes outside stations": {
-			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "stations": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "outside stations": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "bikes outside stations": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "average bikes outside stations": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "bikes": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "PG3 average bikes": {
-			            "State": "Generated",
-			            "Weight": 0.97
-			          }
-			        },
-			        {
-			          "pg3 average motorbike outside station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "pg3 average scrambler outside station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.52
-			          }
-			        },
-			        {
-			          "average motorbike outside station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "average scrambler outside station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.514
-			          }
-			        },
-			        {
-			          "motorbike outside station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.508
-			          }
-			        },
-			        {
-			          "pg3 average motorbike": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.508
-			          }
-			        },
-			        {
-			          "scrambler outside station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.508
-			          }
-			        },
-			        {
-			          "pg3 average scrambler": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.508
-			          }
-			        },
-			        {
-			          "pg3 average motorcycle outside station": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.504
-			          }
-			        },
-			        {
-			          "outside location": {
-			            "Type": "Noun",
-			            "State": "Suggested",
-			            "Source": {
-			              "Agent": "Thesaurus"
-			            },
-			            "Weight": 0.5
+			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -11002,6 +9889,191 @@ cultureInfo en-US
 			    }
 			  },
 			  "Relationships": {
+			    "fact_station_availability_has_dim_region_identity1": {
+			      "Binding": {
+			        "ConceptualEntity": "fact_station_availability"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "fact_station_availability": {
+			          "Target": {
+			            "Entity": "fact_station_availability"
+			          }
+			        },
+			        "dim_region_identity": {
+			          "Target": {
+			            "Entity": "dim_region_identity"
+			          },
+			          "Nouns": [
+			            {
+			              "region": {
+			                "State": "Generated"
+			              }
+			            }
+			          ]
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "fact_station_availability"
+			            },
+			            "Object": {
+			              "Role": "dim_region_identity"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "fact_station_availabilities_have_dim_region_identities"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dim_region_identity"
+			            },
+			            "Object": {
+			              "Role": "fact_station_availability"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dim_region_identities_have_fact_station_availabilities"
+			        }
+			      ]
+			    },
+			    "date_period_selector_date_date_hierarchy_has_date_period_selector_date_day": {
+			      "Binding": {
+			        "ConceptualEntity": "Date Period Selector"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "date_period_selector.date.date_hierarchy": {
+			          "Target": {
+			            "Entity": "date_period_selector.date.date_hierarchy"
+			          }
+			        },
+			        "date_period_selector.date.day": {
+			          "Target": {
+			            "Entity": "date_period_selector.date.day"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date_period_selector.date.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "date_period_selector.date.day"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "date_hierarchies_have_days"
+			        }
+			      ]
+			    },
+			    "date_period_selector_date_date_hierarchy_has_date_period_selector_date_month": {
+			      "Binding": {
+			        "ConceptualEntity": "Date Period Selector"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "date_period_selector.date.date_hierarchy": {
+			          "Target": {
+			            "Entity": "date_period_selector.date.date_hierarchy"
+			          }
+			        },
+			        "date_period_selector.date.month": {
+			          "Target": {
+			            "Entity": "date_period_selector.date.month"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date_period_selector.date.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "date_period_selector.date.month"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "date_hierarchies_have_months"
+			        }
+			      ]
+			    },
+			    "date_period_selector_date_date_hierarchy_has_date_period_selector_date_quarter": {
+			      "Binding": {
+			        "ConceptualEntity": "Date Period Selector"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "date_period_selector.date.date_hierarchy": {
+			          "Target": {
+			            "Entity": "date_period_selector.date.date_hierarchy"
+			          }
+			        },
+			        "date_period_selector.date.quarter": {
+			          "Target": {
+			            "Entity": "date_period_selector.date.quarter"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date_period_selector.date.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "date_period_selector.date.quarter"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "date_hierarchies_have_quarters"
+			        }
+			      ]
+			    },
+			    "date_period_selector_date_date_hierarchy_has_date_period_selector_date_year": {
+			      "Binding": {
+			        "ConceptualEntity": "Date Period Selector"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "date_period_selector.date.date_hierarchy": {
+			          "Target": {
+			            "Entity": "date_period_selector.date.date_hierarchy"
+			          }
+			        },
+			        "date_period_selector.date.year": {
+			          "Target": {
+			            "Entity": "date_period_selector.date.year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "date_period_selector.date.date_hierarchy"
+			            },
+			            "Object": {
+			              "Role": "date_period_selector.date.year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "date_hierarchies_have_years"
+			        }
+			      ]
+			    },
 			    "date_period_selector_date_has_date_hierarchy": {
 			      "Binding": {
 			        "ConceptualEntity": "Date Period Selector"
@@ -12880,26 +11952,6 @@ cultureInfo en-US
 			          "State": "Generated",
 			          "Weight": 0.99,
 			          "ID": "dim_dates_have_date_period_selectors"
-			        },
-			        {
-			          "Verb": {
-			            "Subject": {
-			              "Role": "date_period_selector"
-			            },
-			            "Verbs": [
-			              {
-			                "select": {
-			                  "State": "Generated"
-			                }
-			              }
-			            ],
-			            "Object": {
-			              "Role": "dim_date"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.75,
-			          "ID": "date_period_selectors_select_dim_dates"
 			        }
 			      ]
 			    },
@@ -13176,59 +12228,6 @@ cultureInfo en-US
 			          "State": "Generated",
 			          "Weight": 0.99,
 			          "ID": "dim_station_identities_have_fact_station_availabilities"
-			        }
-			      ]
-			    },
-			    "fact_station_availability_has_dim_region_identity": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_station_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_station_availability": {
-			          "Target": {
-			            "Entity": "fact_station_availability"
-			          }
-			        },
-			        "dim_region_identity": {
-			          "Target": {
-			            "Entity": "dim_region_identity"
-			          },
-			          "Nouns": [
-			            {
-			              "region": {
-			                "State": "Generated"
-			              }
-			            }
-			          ]
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_station_availability"
-			            },
-			            "Object": {
-			              "Role": "dim_region_identity"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_station_availabilities_have_dim_region_identities"
-			        },
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_region_identity"
-			            },
-			            "Object": {
-			              "Role": "fact_station_availability"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_region_identities_have_fact_station_availabilities"
 			        }
 			      ]
 			    },
@@ -13535,204 +12534,6 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "fact_free_bike_snapshot_has_entity__measure_PG3_average_bikes_outside_stations": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_free_bike_snapshot"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_free_bike_snapshot": {
-			          "Target": {
-			            "Entity": "fact_free_bike_snapshot"
-			          }
-			        },
-			        "entity__measure.PG3_average_bikes_outside_stations": {
-			          "Target": {
-			            "Entity": "entity__measure.PG3_average_bikes_outside_stations"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_free_bike_snapshot"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.PG3_average_bikes_outside_stations"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_free_bike_snapshots_have_PG3_average_bikes_outside_stations"
-			        }
-			      ]
-			    },
-			    "fact_free_bike_snapshot_has_entity__measure_PG3_bikes_outside_stations_time": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_free_bike_snapshot"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_free_bike_snapshot": {
-			          "Target": {
-			            "Entity": "fact_free_bike_snapshot"
-			          }
-			        },
-			        "entity__measure.PG3_bikes_outside_stations_time": {
-			          "Target": {
-			            "Entity": "entity__measure.PG3_bikes_outside_stations_time"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_free_bike_snapshot"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.PG3_bikes_outside_stations_time"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_free_bike_snapshots_have_PG3_bikes_outside_stations_time"
-			        }
-			      ]
-			    },
-			    "fact_station_vehicle_type_availability_has_entity__measure_PG3_Total_bikes_at_stations": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_station_vehicle_type_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_station_vehicle_type_availability": {
-			          "Target": {
-			            "Entity": "fact_station_vehicle_type_availability"
-			          }
-			        },
-			        "entity__measure.PG3_Total_bikes_at_stations": {
-			          "Target": {
-			            "Entity": "entity__measure.PG3_Total_bikes_at_stations"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_station_vehicle_type_availability"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.PG3_Total_bikes_at_stations"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_station_vehicle_type_availabilities_have_PG3_Total_bikes_at_stations"
-			        }
-			      ]
-			    },
-			    "fact_station_availability_has_entity__measure_P90P10_bikes_range": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_station_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_station_availability": {
-			          "Target": {
-			            "Entity": "fact_station_availability"
-			          }
-			        },
-			        "entity__measure.P90P10_bikes_range": {
-			          "Target": {
-			            "Entity": "entity__measure.P90P10_bikes_range"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_station_availability"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.P90P10_bikes_range"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_station_availabilities_have_P90P10_bikes_range"
-			        }
-			      ]
-			    },
-			    "fact_station_availability_has_entity__measure_maximum_bikes_per_snapshot": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_station_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_station_availability": {
-			          "Target": {
-			            "Entity": "fact_station_availability"
-			          }
-			        },
-			        "entity__measure.maximum_bikes_per_snapshot": {
-			          "Target": {
-			            "Entity": "entity__measure.maximum_bikes_per_snapshot"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_station_availability"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.maximum_bikes_per_snapshot"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_station_availabilities_have_maximum_bikes_per_snapshot"
-			        }
-			      ]
-			    },
-			    "fact_station_availability_has_entity__measure_minimum_bikes_per_snapshot": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_station_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_station_availability": {
-			          "Target": {
-			            "Entity": "fact_station_availability"
-			          }
-			        },
-			        "entity__measure.minimum_bikes_per_snapshot": {
-			          "Target": {
-			            "Entity": "entity__measure.minimum_bikes_per_snapshot"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_station_availability"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.minimum_bikes_per_snapshot"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_station_availabilities_have_minimum_bikes_per_snapshot"
-			        }
-			      ]
-			    },
 			    "fact_station_availability_has_entity__measure_average_bikes_per_station_observation": {
 			      "Binding": {
 			        "ConceptualEntity": "fact_station_availability"
@@ -13964,105 +12765,6 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "fact_station_availability_has_entity__measure_average_bikes_per_station__latest": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_station_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_station_availability": {
-			          "Target": {
-			            "Entity": "fact_station_availability"
-			          }
-			        },
-			        "entity__measure.average_bikes_per_station__latest": {
-			          "Target": {
-			            "Entity": "entity__measure.average_bikes_per_station__latest"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_station_availability"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.average_bikes_per_station__latest"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_station_availabilities_have_average_bikes_per_station__latest"
-			        }
-			      ]
-			    },
-			    "dim_station_identity_has_entity__measure_average_bikes_per_station__latest": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_station_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_station_identity": {
-			          "Target": {
-			            "Entity": "dim_station_identity"
-			          }
-			        },
-			        "entity__measure.average_bikes_per_station__latest": {
-			          "Target": {
-			            "Entity": "entity__measure.average_bikes_per_station__latest"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_station_identity"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.average_bikes_per_station__latest"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_station_identities_have_average_bikes_per_station__latest"
-			        }
-			      ]
-			    },
-			    "fact_station_availability_has_entity__measure_available_station_bikes__latest_P2": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_station_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_station_availability": {
-			          "Target": {
-			            "Entity": "fact_station_availability"
-			          }
-			        },
-			        "entity__measure.available_station_bikes__latest_P2": {
-			          "Target": {
-			            "Entity": "entity__measure.available_station_bikes__latest_P2"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_station_availability"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.available_station_bikes__latest_P2"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_station_availabilities_have_available_station_bikes__latest_P2"
-			        }
-			      ]
-			    },
 			    "fact_station_availability_has_entity__measure_empty_station_observation_rate": {
 			      "Binding": {
 			        "ConceptualEntity": "fact_station_availability"
@@ -14096,40 +12798,7 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "fact_station_availability_has_entity__measure_available_station_bikes": {
-			      "Binding": {
-			        "ConceptualEntity": "fact_station_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "fact_station_availability": {
-			          "Target": {
-			            "Entity": "fact_station_availability"
-			          }
-			        },
-			        "entity__measure.available_station_bikes": {
-			          "Target": {
-			            "Entity": "entity__measure.available_station_bikes"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "fact_station_availability"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.available_station_bikes"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "fact_station_availabilities_have_available_station_bikes"
-			        }
-			      ]
-			    },
-			    "gold_system_availability_has_entity__measure_empty_stations": {
+			    "gold_system_availability_has_entity__measure_available_regular_bikes": {
 			      "Binding": {
 			        "ConceptualEntity": "gold_system_availability"
 			      },
@@ -14140,9 +12809,9 @@ cultureInfo en-US
 			            "Entity": "gold_system_availability"
 			          }
 			        },
-			        "entity__measure.empty_stations": {
+			        "entity__measure.available_regular_bikes": {
 			          "Target": {
-			            "Entity": "entity__measure.empty_stations"
+			            "Entity": "entity__measure.available_regular_bikes"
 			          }
 			        }
 			      },
@@ -14153,16 +12822,16 @@ cultureInfo en-US
 			              "Role": "gold_system_availability"
 			            },
 			            "Object": {
-			              "Role": "entity__measure.empty_stations"
+			              "Role": "entity__measure.available_regular_bikes"
 			            }
 			          },
 			          "State": "Generated",
 			          "Weight": 0.99,
-			          "ID": "gold_system_availabilities_have_empty_stations"
+			          "ID": "gold_system_availabilities_have_available_regular_bikes"
 			        }
 			      ]
 			    },
-			    "gold_system_availability_has_entity__measure_ebikes": {
+			    "gold_system_availability_has_entity__measure_available_ebikes": {
 			      "Binding": {
 			        "ConceptualEntity": "gold_system_availability"
 			      },
@@ -14173,9 +12842,9 @@ cultureInfo en-US
 			            "Entity": "gold_system_availability"
 			          }
 			        },
-			        "entity__measure.ebikes": {
+			        "entity__measure.available_ebikes": {
 			          "Target": {
-			            "Entity": "entity__measure.ebikes"
+			            "Entity": "entity__measure.available_ebikes"
 			          }
 			        }
 			      },
@@ -14186,45 +12855,12 @@ cultureInfo en-US
 			              "Role": "gold_system_availability"
 			            },
 			            "Object": {
-			              "Role": "entity__measure.ebikes"
+			              "Role": "entity__measure.available_ebikes"
 			            }
 			          },
 			          "State": "Generated",
 			          "Weight": 0.99,
-			          "ID": "gold_system_availabilities_have_ebikes"
-			        }
-			      ]
-			    },
-			    "gold_system_availability_has_entity__measure_regular_bikes": {
-			      "Binding": {
-			        "ConceptualEntity": "gold_system_availability"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "gold_system_availability": {
-			          "Target": {
-			            "Entity": "gold_system_availability"
-			          }
-			        },
-			        "entity__measure.regular_bikes": {
-			          "Target": {
-			            "Entity": "entity__measure.regular_bikes"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "gold_system_availability"
-			            },
-			            "Object": {
-			              "Role": "entity__measure.regular_bikes"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "gold_system_availabilities_have_regular_bikes"
+			          "ID": "gold_system_availabilities_have_available_ebikes"
 			        }
 			      ]
 			    },
@@ -14690,171 +13326,6 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "dim_vehicle_type_identity_has_is_ebike": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_vehicle_type_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_vehicle_type_identity": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity"
-			          }
-			        },
-			        "dim_vehicle_type_identity.is_ebike": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity.is_ebike"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_vehicle_type_identity"
-			            },
-			            "Object": {
-			              "Role": "dim_vehicle_type_identity.is_ebike"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_vehicle_type_identities_have_is_ebikes"
-			        }
-			      ]
-			    },
-			    "dim_vehicle_type_identity_has_max_range_meter": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_vehicle_type_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_vehicle_type_identity": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity"
-			          }
-			        },
-			        "dim_vehicle_type_identity.max_range_meter": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity.max_range_meter"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_vehicle_type_identity"
-			            },
-			            "Object": {
-			              "Role": "dim_vehicle_type_identity.max_range_meter"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_vehicle_type_identities_have_max_range_meters"
-			        }
-			      ]
-			    },
-			    "dim_vehicle_type_identity_has_rider_capacity": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_vehicle_type_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_vehicle_type_identity": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity"
-			          }
-			        },
-			        "dim_vehicle_type_identity.rider_capacity": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity.rider_capacity"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_vehicle_type_identity"
-			            },
-			            "Object": {
-			              "Role": "dim_vehicle_type_identity.rider_capacity"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_vehicle_type_identities_have_rider_capacities"
-			        }
-			      ]
-			    },
-			    "dim_vehicle_type_identity_has_propulsion_type": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_vehicle_type_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_vehicle_type_identity": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity"
-			          }
-			        },
-			        "dim_vehicle_type_identity.propulsion_type": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity.propulsion_type"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_vehicle_type_identity"
-			            },
-			            "Object": {
-			              "Role": "dim_vehicle_type_identity.propulsion_type"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_vehicle_type_identities_have_propulsion_types"
-			        }
-			      ]
-			    },
-			    "dim_vehicle_type_identity_has_form_factor": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_vehicle_type_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_vehicle_type_identity": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity"
-			          }
-			        },
-			        "dim_vehicle_type_identity.form_factor": {
-			          "Target": {
-			            "Entity": "dim_vehicle_type_identity.form_factor"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_vehicle_type_identity"
-			            },
-			            "Object": {
-			              "Role": "dim_vehicle_type_identity.form_factor"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_vehicle_type_identities_have_form_factors"
-			        }
-			      ]
-			    },
 			    "dim_vehicle_type_identity_has_name": {
 			      "Binding": {
 			        "ConceptualEntity": "dim_vehicle_type_identity"
@@ -14967,39 +13438,6 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "dim_station_identity_has_region_id": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_station_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_station_identity": {
-			          "Target": {
-			            "Entity": "dim_station_identity"
-			          }
-			        },
-			        "dim_station_identity.region_id": {
-			          "Target": {
-			            "Entity": "dim_station_identity.region_id"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_station_identity"
-			            },
-			            "Object": {
-			              "Role": "dim_station_identity.region_id"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_station_identities_have_region_ids"
-			        }
-			      ]
-			    },
 			    "dim_station_identity_has_lon": {
 			      "Binding": {
 			        "ConceptualEntity": "dim_station_identity"
@@ -15063,39 +13501,6 @@ cultureInfo en-US
 			          "State": "Generated",
 			          "Weight": 0.99,
 			          "ID": "dim_station_identities_have_lats"
-			        }
-			      ]
-			    },
-			    "dim_station_identity_has_short_name": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_station_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_station_identity": {
-			          "Target": {
-			            "Entity": "dim_station_identity"
-			          }
-			        },
-			        "dim_station_identity.short_name": {
-			          "Target": {
-			            "Entity": "dim_station_identity.short_name"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "dim_station_identity"
-			            },
-			            "Object": {
-			              "Role": "dim_station_identity.short_name"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_station_identities_have_short_names"
 			        }
 			      ]
 			    },
@@ -16292,51 +14697,6 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "dim_station_identity_in_region_id": {
-			      "Binding": {
-			        "ConceptualEntity": "dim_station_identity"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "dim_station_identity": {
-			          "Target": {
-			            "Entity": "dim_station_identity"
-			          }
-			        },
-			        "dim_station_identity.region_id": {
-			          "Target": {
-			            "Entity": "dim_station_identity.region_id"
-			          }
-			        }
-			      },
-			      "SemanticSlots": {
-			        "Where": {
-			          "Role": "dim_station_identity.region_id"
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Preposition": {
-			            "Subject": {
-			              "Role": "dim_station_identity"
-			            },
-			            "Prepositions": [
-			              {
-			                "in": {
-			                  "State": "Generated"
-			                }
-			              }
-			            ],
-			            "Object": {
-			              "Role": "dim_station_identity.region_id"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "dim_station_identities_are_in_region_ids"
-			        }
-			      ]
-			    },
 			    "dim_region_identity_in_region_id": {
 			      "Binding": {
 			        "ConceptualEntity": "dim_region_identity"
@@ -17033,138 +15393,6 @@ cultureInfo en-US
 			          "State": "Generated",
 			          "Weight": 0.99,
 			          "ID": "some_fact_station_availabilities_are_renting_fact_station_availabilities"
-			        }
-			      ]
-			    },
-			    "date_period_selector_date_date_hierarchy_has_date_period_selector_date_year": {
-			      "Binding": {
-			        "ConceptualEntity": "Date Period Selector"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "date_period_selector.date.date_hierarchy": {
-			          "Target": {
-			            "Entity": "date_period_selector.date.date_hierarchy"
-			          }
-			        },
-			        "date_period_selector.date.year": {
-			          "Target": {
-			            "Entity": "date_period_selector.date.year"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date_period_selector.date.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "date_period_selector.date.year"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "date_hierarchies_have_years"
-			        }
-			      ]
-			    },
-			    "date_period_selector_date_date_hierarchy_has_date_period_selector_date_quarter": {
-			      "Binding": {
-			        "ConceptualEntity": "Date Period Selector"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "date_period_selector.date.date_hierarchy": {
-			          "Target": {
-			            "Entity": "date_period_selector.date.date_hierarchy"
-			          }
-			        },
-			        "date_period_selector.date.quarter": {
-			          "Target": {
-			            "Entity": "date_period_selector.date.quarter"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date_period_selector.date.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "date_period_selector.date.quarter"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "date_hierarchies_have_quarters"
-			        }
-			      ]
-			    },
-			    "date_period_selector_date_date_hierarchy_has_date_period_selector_date_month": {
-			      "Binding": {
-			        "ConceptualEntity": "Date Period Selector"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "date_period_selector.date.date_hierarchy": {
-			          "Target": {
-			            "Entity": "date_period_selector.date.date_hierarchy"
-			          }
-			        },
-			        "date_period_selector.date.month": {
-			          "Target": {
-			            "Entity": "date_period_selector.date.month"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date_period_selector.date.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "date_period_selector.date.month"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "date_hierarchies_have_months"
-			        }
-			      ]
-			    },
-			    "date_period_selector_date_date_hierarchy_has_date_period_selector_date_day": {
-			      "Binding": {
-			        "ConceptualEntity": "Date Period Selector"
-			      },
-			      "State": "Generated",
-			      "Roles": {
-			        "date_period_selector.date.date_hierarchy": {
-			          "Target": {
-			            "Entity": "date_period_selector.date.date_hierarchy"
-			          }
-			        },
-			        "date_period_selector.date.day": {
-			          "Target": {
-			            "Entity": "date_period_selector.date.day"
-			          }
-			        }
-			      },
-			      "Phrasings": [
-			        {
-			          "Attribute": {
-			            "Subject": {
-			              "Role": "date_period_selector.date.date_hierarchy"
-			            },
-			            "Object": {
-			              "Role": "date_period_selector.date.day"
-			            }
-			          },
-			          "State": "Generated",
-			          "Weight": 0.99,
-			          "ID": "date_hierarchies_have_days"
 			        }
 			      ]
 			    }
