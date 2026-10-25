@@ -51,8 +51,8 @@
                 }
               },
               "queryRef": "CountNonNull(fact_free_bike_snapshot.date_key)",
-              "nativeQueryRef": "Number of hours outside station",
-              "displayName": "Number of hours outside station"
+              "nativeQueryRef": "Free-bike observations",
+              "displayName": "Free-bike observations"
             }
           ]
         },

@@ -224,7 +224,7 @@ table _Measures
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure 'Ebike share' = DIVIDE([E-bikes], [E-bikes] + [Regular bikes])
+	measure 'Ebike share' = DIVIDE([Available e-bikes], [Available e-bikes] + [Available regular bikes])
 		lineageTag: 26d7f7f1-7b1c-4e48-bb85-354711b4c172
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}

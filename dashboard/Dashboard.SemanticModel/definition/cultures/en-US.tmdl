@@ -9487,16 +9487,6 @@ cultureInfo en-US
 			            },
 			            "Weight": 0.479
 			          }
-			        },
-			        {
-			          "Average bikes": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },

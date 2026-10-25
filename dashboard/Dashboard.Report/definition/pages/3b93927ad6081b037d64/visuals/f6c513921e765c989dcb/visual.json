@@ -63,13 +63,6 @@
                 }
               }
             },
-            "endDate": {
-              "expr": {
-                "Literal": {
-                  "Value": "datetime'2026-10-24T12:01:32.823'"
-                }
-              }
-            },
             "mode": {
               "expr": {
                 "Literal": {
@@ -96,45 +89,21 @@
                 "Where": [
                   {
                     "Condition": {
-                      "And": {
+                      "Comparison": {
+                        "ComparisonKind": 2,
                         "Left": {
-                          "Comparison": {
-                            "ComparisonKind": 2,
-                            "Left": {
-                              "Column": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "g"
-                                  }
-                                },
-                                "Property": "observed_at_local"
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "g"
                               }
                             },
-                            "Right": {
-                              "Literal": {
-                                "Value": "datetime'2026-09-12T00:00:00'"
-                              }
-                            }
+                            "Property": "observed_at_local"
                           }
                         },
                         "Right": {
-                          "Comparison": {
-                            "ComparisonKind": 3,
-                            "Left": {
-                              "Column": {
-                                "Expression": {
-                                  "SourceRef": {
-                                    "Source": "g"
-                                  }
-                                },
-                                "Property": "observed_at_local"
-                              }
-                            },
-                            "Right": {
-                              "Literal": {
-                                "Value": "datetime'2026-10-25T00:00:00'"
-                              }
-                            }
+                          "Literal": {
+                            "Value": "datetime'2026-09-12T00:00:00'"
                           }
                         }
                       }

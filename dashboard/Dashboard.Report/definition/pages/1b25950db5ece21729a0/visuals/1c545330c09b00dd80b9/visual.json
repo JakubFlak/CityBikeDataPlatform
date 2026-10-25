@@ -66,6 +66,40 @@
               "nativeQueryRef": "lat"
             }
           ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_station_identity"
+                    }
+                  },
+                  "Property": "name"
+                }
+              },
+              "queryRef": "dim_station_identity.name",
+              "nativeQueryRef": "Station name",
+              "displayName": "Station name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_station_identity"
+                    }
+                  },
+                  "Property": "station_id"
+                }
+              },
+              "queryRef": "dim_station_identity.station_id",
+              "nativeQueryRef": "Station ID",
+              "displayName": "Station ID"
+            }
+          ]
         }
       }
     },
@@ -412,7 +446,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Empty stations map'"
+                  "Value": "'Empty-station observation rate (selected period)'"
                 }
               }
             },

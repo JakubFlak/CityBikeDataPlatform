@@ -57,8 +57,8 @@
                 }
               },
               "queryRef": "_Measures.Average Bikes per Station Observation",
-              "nativeQueryRef": "Average bikes",
-              "displayName": "Average bikes"
+              "nativeQueryRef": "Average bikes per station observation",
+              "displayName": "Average bikes per station observation"
             }
           ]
         }

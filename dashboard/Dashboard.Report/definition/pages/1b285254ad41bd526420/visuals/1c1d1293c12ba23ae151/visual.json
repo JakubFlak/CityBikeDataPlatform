@@ -42,11 +42,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Regular bikes"
+                  "Property": "Available regular bikes"
                 }
               },
               "queryRef": "_Measures.Available regular bikes",
-              "nativeQueryRef": "Regular bikes"
+              "nativeQueryRef": "Available regular bikes"
             }
           ]
         },
@@ -60,11 +60,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "E-bikes"
+                  "Property": "Available e-bikes"
                 }
               },
               "queryRef": "_Measures.Available e-bikes",
-              "nativeQueryRef": "E-bikes"
+              "nativeQueryRef": "Available e-bikes"
             }
           ]
         }
@@ -549,34 +549,6 @@
           }
         },
         "type": "Categorical"
-      },
-      {
-        "name": "a2828b025ff0f51de8e7",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Regular bikes"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "8bd35d3a1e54054f9690",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "E-bikes"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

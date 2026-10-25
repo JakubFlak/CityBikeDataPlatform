@@ -99,8 +99,8 @@ relationship 330908d4-97b2-4406-b4a6-a7b71ea21753
 	toColumn: LocalDateTable_f7732683-1bb4-4c21-bf21-59ca0a7d63af.Date
 
 relationship 81c10397-e7de-2235-cef4-af0db0920ad0
-	toCardinality: many
 	crossFilteringBehavior: bothDirections
+	toCardinality: many
 	fromColumn: dim_date.calendar_date
 	toColumn: 'Date Period Selector'.Date
 
