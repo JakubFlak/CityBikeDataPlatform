@@ -7,7 +7,7 @@
     "z": 10000,
     "height": 360,
     "width": 568,
-    "tabOrder": 6000
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "map",
@@ -28,6 +28,40 @@
               },
               "queryRef": "_Measures.Empty Station Observation Rate",
               "nativeQueryRef": "Empty Station Observation Rate"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_station_identity"
+                    }
+                  },
+                  "Property": "name"
+                }
+              },
+              "queryRef": "dim_station_identity.name",
+              "nativeQueryRef": "Station name",
+              "displayName": "Station name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_station_identity"
+                    }
+                  },
+                  "Property": "station_id"
+                }
+              },
+              "queryRef": "dim_station_identity.station_id",
+              "nativeQueryRef": "Station ID",
+              "displayName": "Station ID"
             }
           ]
         },
@@ -64,40 +98,6 @@
               },
               "queryRef": "Sum(dim_station_identity.lat)",
               "nativeQueryRef": "lat"
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "dim_station_identity"
-                    }
-                  },
-                  "Property": "name"
-                }
-              },
-              "queryRef": "dim_station_identity.name",
-              "nativeQueryRef": "Station name",
-              "displayName": "Station name"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "dim_station_identity"
-                    }
-                  },
-                  "Property": "station_id"
-                }
-              },
-              "queryRef": "dim_station_identity.station_id",
-              "nativeQueryRef": "Station ID",
-              "displayName": "Station ID"
             }
           ]
         }

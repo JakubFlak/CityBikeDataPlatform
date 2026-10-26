@@ -4,10 +4,10 @@
   "position": {
     "x": 32,
     "y": 144,
-    "z": 10000,
+    "z": 9000,
     "height": 256,
     "width": 648,
-    "tabOrder": 12000
+    "tabOrder": 10000
   },
   "visual": {
     "visualType": "lineChart",
@@ -533,23 +533,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "180bd1853fbc78c82f66",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "gold_system_availability"
-              }
-            },
-            "Property": "observed_at_local"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

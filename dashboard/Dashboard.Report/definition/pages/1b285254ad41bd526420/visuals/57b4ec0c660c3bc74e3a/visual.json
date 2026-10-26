@@ -4,10 +4,10 @@
   "position": {
     "x": 704,
     "y": 239.99999999999997,
-    "z": 9000,
+    "z": 8000,
     "height": 456,
     "width": 552,
-    "tabOrder": 3000
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "map",
@@ -672,67 +672,6 @@
           ]
         },
         "howCreated": "User"
-      },
-      {
-        "name": "a1cdfba283a53a3187f7",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "dim_vehicle_type_identity"
-              }
-            },
-            "Property": "name"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "9c398cd23a7fdd04300c",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "fact_free_bike_snapshot"
-                  }
-                },
-                "Property": "date_key"
-              }
-            },
-            "Function": 5
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "d592e0134c38e84538d6",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "fact_free_bike_snapshot"
-              }
-            },
-            "Property": "lon"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "68da48c34bb77aaa71d6",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "fact_free_bike_snapshot"
-              }
-            },
-            "Property": "lat"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

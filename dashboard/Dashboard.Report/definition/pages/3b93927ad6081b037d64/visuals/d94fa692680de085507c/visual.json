@@ -3,11 +3,11 @@
   "name": "d94fa692680de085507c",
   "position": {
     "x": 0,
-    "y": 72,
+    "y": 0,
     "z": 1000,
-    "height": 648,
+    "height": 720,
     "width": 1280,
-    "tabOrder": 3000
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "shape",
@@ -48,6 +48,26 @@
                 }
               }
             }
+          }
+        }
+      ],
+      "fill": [
+        {
+          "properties": {
+            "fillColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F2F5F9'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
           }
         }
       ]
