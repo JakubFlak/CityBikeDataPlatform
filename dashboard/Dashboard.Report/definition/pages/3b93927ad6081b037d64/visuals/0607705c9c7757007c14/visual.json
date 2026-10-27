@@ -4,10 +4,10 @@
   "position": {
     "x": 32,
     "y": 256,
-    "z": 5000,
+    "z": 7000,
     "height": 192,
     "width": 904,
-    "tabOrder": 1000
+    "tabOrder": 12000
   },
   "visual": {
     "visualType": "lineChart",
@@ -474,9 +474,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0.6
+                    "Literal": {
+                      "Value": "'#667085'"
                     }
                   }
                 }
@@ -524,7 +523,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "16D"
                 }
               }
             }

@@ -1,12 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
-  "name": "07d53c805c7607c86b23",
+  "name": "2a72f324a42a2d695e88",
   "position": {
-    "x": 0,
-    "y": 8,
-    "z": 9000,
-    "height": 56,
-    "width": 64
+    "x": 8,
+    "y": 4,
+    "z": 12000,
+    "height": 64,
+    "width": 72,
+    "tabOrder": 11000
   },
   "visual": {
     "visualType": "image",
@@ -19,7 +20,7 @@
                 "ResourcePackageItem": {
                   "PackageName": "RegisteredResources",
                   "PackageType": 1,
-                  "ItemName": "bike05961664205105399.png"
+                  "ItemName": "rower513906079650795167.png"
                 }
               }
             }

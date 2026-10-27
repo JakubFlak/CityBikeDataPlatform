@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
   "name": "f6c513921e765c989dcb",
   "position": {
-    "x": 800,
+    "x": 936,
     "y": 0,
-    "z": 13000,
-    "height": 104,
-    "width": 264,
-    "tabOrder": 10000
+    "z": 12000,
+    "height": 80,
+    "width": 168,
+    "tabOrder": 8000
   },
   "visual": {
     "visualType": "slicer",
@@ -63,6 +63,13 @@
                 }
               }
             },
+            "endDate": {
+              "expr": {
+                "Literal": {
+                  "Value": "datetime'2026-10-27T19:01:32.847'"
+                }
+              }
+            },
             "mode": {
               "expr": {
                 "Literal": {
@@ -89,21 +96,45 @@
                 "Where": [
                   {
                     "Condition": {
-                      "Comparison": {
-                        "ComparisonKind": 2,
+                      "And": {
                         "Left": {
-                          "Column": {
-                            "Expression": {
-                              "SourceRef": {
-                                "Source": "g"
+                          "Comparison": {
+                            "ComparisonKind": 2,
+                            "Left": {
+                              "Column": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "g"
+                                  }
+                                },
+                                "Property": "observed_at_local"
                               }
                             },
-                            "Property": "observed_at_local"
+                            "Right": {
+                              "Literal": {
+                                "Value": "datetime'2026-09-12T00:00:00'"
+                              }
+                            }
                           }
                         },
                         "Right": {
-                          "Literal": {
-                            "Value": "datetime'2026-09-12T00:00:00'"
+                          "Comparison": {
+                            "ComparisonKind": 3,
+                            "Left": {
+                              "Column": {
+                                "Expression": {
+                                  "SourceRef": {
+                                    "Source": "g"
+                                  }
+                                },
+                                "Property": "observed_at_local"
+                              }
+                            },
+                            "Right": {
+                              "Literal": {
+                                "Value": "datetime'2026-10-28T00:00:00'"
+                              }
+                            }
                           }
                         }
                       }
@@ -142,6 +173,17 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#667085'"
+                    }
+                  }
                 }
               }
             }

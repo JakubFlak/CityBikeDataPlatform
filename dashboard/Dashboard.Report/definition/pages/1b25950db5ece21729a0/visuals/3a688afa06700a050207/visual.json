@@ -3,11 +3,11 @@
   "name": "3a688afa06700a050207",
   "position": {
     "x": 32,
-    "y": 239.99999999999997,
-    "z": 9000,
-    "height": 296,
+    "y": 240,
+    "z": 7000,
+    "height": 280,
     "width": 632,
-    "tabOrder": 4000
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -100,6 +100,13 @@
       "categoryAxis": [
         {
           "properties": {
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Station name'"
+                }
+              }
+            },
             "show": {
               "expr": {
                 "Literal": {
@@ -125,13 +132,6 @@
               "expr": {
                 "Literal": {
                   "Value": "9D"
-                }
-              }
-            },
-            "titleText": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Station name'"
                 }
               }
             }
@@ -428,9 +428,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0.6
+                    "Literal": {
+                      "Value": "'#667085'"
                     }
                   }
                 }
@@ -478,7 +477,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "16D"
                 }
               }
             }

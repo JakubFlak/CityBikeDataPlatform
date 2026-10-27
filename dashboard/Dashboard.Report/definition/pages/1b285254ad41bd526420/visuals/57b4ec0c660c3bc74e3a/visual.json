@@ -3,11 +3,11 @@
   "name": "57b4ec0c660c3bc74e3a",
   "position": {
     "x": 704,
-    "y": 239.99999999999997,
-    "z": 8000,
-    "height": 456,
-    "width": 552,
-    "tabOrder": 1000
+    "y": 240,
+    "z": 6000,
+    "height": 448,
+    "width": 544,
+    "tabOrder": 13000
   },
   "visual": {
     "visualType": "map",
@@ -130,7 +130,14 @@
             "mapTheme": {
               "expr": {
                 "Literal": {
-                  "Value": "'canvasLight'"
+                  "Value": "'grayscale'"
+                }
+              }
+            },
+            "showLabels": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }
@@ -537,9 +544,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0.6
+                    "Literal": {
+                      "Value": "'#475467'"
                     }
                   }
                 }
@@ -582,7 +588,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "16D"
                 }
               }
             },
@@ -608,6 +614,31 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
                 }
               }
             }

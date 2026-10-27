@@ -4,10 +4,10 @@
   "position": {
     "x": 24,
     "y": 136,
-    "z": 12500,
+    "z": 11000,
     "height": 104,
     "width": 1232,
-    "tabOrder": 8000
+    "tabOrder": 6000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -142,7 +142,7 @@
             "rectangleRoundedCurve": {
               "expr": {
                 "Literal": {
-                  "Value": "16L"
+                  "Value": "6L"
                 }
               }
             },
@@ -270,7 +270,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "13D"
+                  "Value": "12D"
                 }
               }
             },
@@ -278,9 +278,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0.6
+                    "Literal": {
+                      "Value": "'#667085'"
                     }
                   }
                 }
@@ -352,7 +351,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Active stations'"
+                  "Value": "'Latest active stations'"
                 }
               }
             }
@@ -382,7 +381,7 @@
             "verticalSpacing": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "4D"
                 }
               }
             }
@@ -405,7 +404,7 @@
             "rectangleRoundedCurve": {
               "expr": {
                 "Literal": {
-                  "Value": "15L"
+                  "Value": "6L"
                 }
               }
             }
@@ -429,9 +428,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 0,
-                      "Percent": -0.1
+                    "Literal": {
+                      "Value": "'#E3E8EF'"
                     }
                   }
                 }
@@ -462,9 +460,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 0,
-                      "Percent": -0.1
+                    "Literal": {
+                      "Value": "'#E3E8EF'"
                     }
                   }
                 }
@@ -497,9 +494,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 0,
-                      "Percent": 0
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
                     }
                   }
                 }
@@ -516,9 +512,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 0,
-                      "Percent": 0
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
                     }
                   }
                 }

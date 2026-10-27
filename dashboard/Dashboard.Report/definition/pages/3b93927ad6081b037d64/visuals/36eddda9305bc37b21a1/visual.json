@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
   "name": "36eddda9305bc37b21a1",
   "position": {
-    "x": 64,
-    "y": 16,
-    "z": 8000,
-    "height": 48,
+    "x": 72,
+    "y": 8,
+    "z": 10000,
+    "height": 56,
     "width": 336,
-    "tabOrder": 12000
+    "tabOrder": 10000
   },
   "visual": {
     "visualType": "textbox",
@@ -22,8 +22,8 @@
                     "value": "Wrocław City Bike",
                     "textStyle": {
                       "fontWeight": "bold",
-                      "fontSize": "18pt",
-                      "color": "#4a8ddc"
+                      "fontSize": "24pt",
+                      "color": "#438be0"
                     }
                   }
                 ]

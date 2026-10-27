@@ -4,9 +4,10 @@
   "position": {
     "x": 32,
     "y": 416,
-    "z": 7000,
-    "height": 280,
-    "width": 648
+    "z": 5000,
+    "height": 272,
+    "width": 648,
+    "tabOrder": 9000
   },
   "visual": {
     "visualType": "lineChart",
@@ -73,6 +74,13 @@
       "categoryAxis": [
         {
           "properties": {
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Date'"
+                }
+              }
+            },
             "show": {
               "expr": {
                 "Literal": {
@@ -97,14 +105,7 @@
             "titleFontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
-                }
-              }
-            },
-            "titleText": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Date'"
+                  "Value": "9D"
                 }
               }
             }
@@ -114,6 +115,13 @@
       "valueAxis": [
         {
           "properties": {
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Available free bikes'"
+                }
+              }
+            },
             "showAxisTitle": {
               "expr": {
                 "Literal": {
@@ -124,14 +132,7 @@
             "titleFontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
-                }
-              }
-            },
-            "titleText": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Available free bikes'"
+                  "Value": "9D"
                 }
               }
             }
@@ -424,13 +425,19 @@
       "title": [
         {
           "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Available free bikes'"
+                }
+              }
+            },
             "fontColor": {
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0.6
+                    "Literal": {
+                      "Value": "'#667085'"
                     }
                   }
                 }
@@ -447,13 +454,6 @@
               "expr": {
                 "Literal": {
                   "Value": "11D"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Available free bikes'"
                 }
               }
             }
@@ -485,7 +485,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "16D"
                 }
               }
             }

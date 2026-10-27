@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
   "name": "fdf665b3606c20e7c3bb",
   "position": {
-    "x": 1048,
+    "x": 1104,
     "y": 8,
-    "z": 7000,
+    "z": 9000,
     "height": 64,
-    "width": 232,
-    "tabOrder": 11000
+    "width": 176,
+    "tabOrder": 9000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -150,6 +150,17 @@
                   "Value": "'center'"
                 }
               }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#667085'"
+                    }
+                  }
+                }
+              }
             }
           },
           "selector": {
@@ -161,7 +172,7 @@
             "bold": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             },
@@ -190,10 +201,28 @@
                   }
                 }
               }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''Segoe UI'', wf_segoe-ui_normal, helvetica, arial, sans-serif'"
+                }
+              }
             }
           },
           "selector": {
             "metadata": "Max(gold_system_availability.observed_at_local)"
+          }
+        },
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
           }
         }
       ],
@@ -332,9 +361,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 0,
-                      "Percent": -0.5
+                    "Literal": {
+                      "Value": "'#667085'"
                     }
                   }
                 }

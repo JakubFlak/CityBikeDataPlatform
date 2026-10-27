@@ -11,7 +11,7 @@
       "type": "SharedResources"
     },
     "customTheme": {
-      "name": "Classroom",
+      "name": "Urban Mobility",
       "reportVersionAtImport": {
         "visual": "2.1.0",
         "report": "2.1.0",
@@ -59,7 +59,7 @@
           "type": "BaseTheme"
         },
         {
-          "name": "Classroom",
+          "name": "Urban Mobility",
           "path": "BuiltInThemes/Classroom.json",
           "type": "CustomTheme"
         }
@@ -70,8 +70,8 @@
       "type": "RegisteredResources",
       "items": [
         {
-          "name": "bike05961664205105399.png",
-          "path": "bike05961664205105399.png",
+          "name": "rower513906079650795167.png",
+          "path": "rower513906079650795167.png",
           "type": "Image"
         }
       ]

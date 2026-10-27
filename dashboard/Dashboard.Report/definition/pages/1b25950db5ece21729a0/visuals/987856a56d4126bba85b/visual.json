@@ -3,11 +3,11 @@
   "name": "987856a56d4126bba85b",
   "position": {
     "x": 32,
-    "y": 544,
-    "z": 11000,
-    "height": 144,
+    "y": 536,
+    "z": 9000,
+    "height": 152,
     "width": 632,
-    "tabOrder": 15000
+    "tabOrder": 10000
   },
   "visual": {
     "visualType": "tableEx",
@@ -76,7 +76,7 @@
                 "Property": "name"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
         ]
       }
@@ -101,7 +101,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "319.05761341509475D"
+                  "Value": "334.12928953084497D"
                 }
               }
             }
@@ -115,7 +115,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "116.2163915791119D"
+                  "Value": "98.88814387792164D"
                 }
               }
             }
@@ -129,7 +129,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "132.11287163134173D"
+                  "Value": "135.56155146786034D"
                 }
               }
             }
@@ -175,9 +175,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0.6
+                    "Literal": {
+                      "Value": "'#667085'"
                     }
                   }
                 }
@@ -194,6 +193,13 @@
               "expr": {
                 "Literal": {
                   "Value": "11D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }
@@ -225,7 +231,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "16D"
                 }
               }
             }

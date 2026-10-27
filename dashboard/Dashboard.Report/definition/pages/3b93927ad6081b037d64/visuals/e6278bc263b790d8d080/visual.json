@@ -4,10 +4,10 @@
   "position": {
     "x": 952,
     "y": 256,
-    "z": 6000,
+    "z": 8000,
     "height": 432,
     "width": 296,
-    "tabOrder": 3000
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "donutChart",
@@ -423,9 +423,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0.6
+                    "Literal": {
+                      "Value": "'#667085'"
                     }
                   }
                 }
@@ -473,7 +472,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "16D"
                 }
               }
             }

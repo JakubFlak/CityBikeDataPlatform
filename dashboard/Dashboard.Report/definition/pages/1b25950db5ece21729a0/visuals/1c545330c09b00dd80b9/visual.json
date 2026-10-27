@@ -3,11 +3,11 @@
   "name": "1c545330c09b00dd80b9",
   "position": {
     "x": 680,
-    "y": 328,
-    "z": 10000,
-    "height": 360,
+    "y": 336,
+    "z": 8000,
+    "height": 352,
     "width": 568,
-    "tabOrder": 5000
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "map",
@@ -454,9 +454,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "ThemeDataColor": {
-                      "ColorId": 1,
-                      "Percent": 0.6
+                    "Literal": {
+                      "Value": "'#667085'"
                     }
                   }
                 }
@@ -504,7 +503,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "16D"
                 }
               }
             }
