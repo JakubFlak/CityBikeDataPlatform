@@ -249,6 +249,13 @@ services.
   documenting their limitations.
 - Maintaining CI and reproducible local project commands.
 
+## 📄 License
+
+My original project source code and documentation are released under the
+[MIT License](LICENSE). This license does not relicense third-party data,
+GBFS content, dependencies, Power BI map services, or other external assets;
+their respective owners' terms continue to apply.
+
 ## ⚠️ Scope & Limitations
 
 - This is a local portfolio prototype, not a production deployment.
