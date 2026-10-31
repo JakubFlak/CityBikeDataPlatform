@@ -1,70 +1,99 @@
 # Architecture
 
-## Current implementation
+## Implemented local v1.0
 
-The platform collects Wrocław Nextbike GBFS snapshots, preserves them as Raw
-Parquet, incrementally builds typed Silver Parquet tables, and generates Gold
-analytical Parquet tables for Power BI.
+The project is a local Python and Parquet data platform. It collects observed
+Wrocław Nextbike GBFS states and generates a Power BI-ready Gold model.
+Snapshots do not represent trips or utilization.
 
-```text
-Nextbike GBFS
-    -> Python ingestion
-    -> Raw Parquet + quality checks
-    -> incremental Raw-to-Silver
-    -> Silver Parquet
-    -> complete Silver-to-Gold projection
-    -> Gold Parquet
-    -> Power BI PBIP report
+```mermaid
+flowchart LR
+    GBFS[Nextbike GBFS]
+    Py[Python ingestion]
+    Raw[Raw Parquet]
+    QA[Raw quality validation]
+    Silver[Incremental Silver Parquet]
+    Gold[Gold Parquet projection]
+    BI[Power BI PBIP]
+    GBFS --> Py --> Raw --> QA --> Silver --> Gold --> BI
 ```
 
-Python implements ingestion and transformations. DuckDB, dbt, Docker, and
-Airflow are not part of the current runtime. The pipeline uses local files and
-is intentionally kept simple. See [incremental processing](INCREMENTAL_PROCESSING.md)
-and [orchestration](ORCHESTRATION.md) for operational details.
+The one-shot coordinator is `scripts/run_pipeline.py`. It performs ingestion,
+Raw validation, incremental Raw-to-Silver processing, complete
+Silver-to-Gold transformation, output row counts, and manifest completion.
+The relevant implementation is in `src/bike_data/`.
 
-## Data layers
+## Layer responsibilities
 
 ### Raw
 
-Raw preserves provider payloads and application `observed_at` timestamps as
-one Parquet snapshot per GBFS feed observation. It is append-oriented and
-supports reprocessing and audit. Generated Raw data is excluded from Git.
+Raw retains the original provider envelope and payload together with feed
+identity, source URL, and application-generated UTC `observed_at`. One file
+contains one row for one feed observation. Raw is append-oriented local
+history and can be reprocessed. It is not committed to Git.
 
 ### Silver
 
-Silver converts the six canonical GBFS feeds into typed tables and normalizes
-station vehicle-type availability and pricing tiers into child tables. The
-incremental manifest identifies completed snapshots; replay is idempotent and
-conflicting replays fail explicitly.
+Silver parses canonical `data_json` into typed, lineage-bearing tables.
+Snapshot history is preserved by entity-plus-observation keys.
+Station vehicle-type counts and pricing tiers are separate child tables.
+`data/silver/_incremental_state.json` records processed snapshot identities.
 
 ### Gold
 
-Gold is rebuilt as a deterministic analytical projection from the current
-Silver state. It contains snapshot-grained dimensions and facts plus the
-system-level availability aggregate. `observed_at` is canonical UTC identity;
-`observed_at_local` is the `Europe/Warsaw` presentation timestamp. A snapshot
-is an observed state, not a trip or utilization event. See [Gold model](GOLD_MODEL.md).
+Gold is a deterministic analytical projection rebuilt from all current Silver
+tables. It contains temporal snapshot dimensions, station availability,
+station/vehicle availability, visible-bike snapshots, and one system
+availability row per station-status observation time. `observed_at` is UTC
+identity; `observed_at_local` is its `Europe/Warsaw` presentation value.
 
 ### Power BI
 
-The PBIP project is in `dashboard/`. It contains System Overview, Station
-Analysis, and Bikes Analysis pages and consumes Gold Parquet directly. Power
-Query currently references local absolute Gold paths; the local report requires
-the expected files and path on the developer machine. See [Power BI model](POWER_BI_MODEL.md)
-for opening and refreshing it.
+The PBIP report imports Gold Parquet and has System Overview, Station
+Analysis, and Bikes Analysis pages. Its Power Query sources currently use
+absolute paths specific to the developer's checkout. See
+[the model guide](POWER_BI_MODEL.md) and
+[KPI semantics](POWER_BI_ANALYTICS.md).
 
-## Execution and retention
+## Data flow and temporal behavior
 
-`python scripts/run_pipeline.py` runs the one-shot pipeline locally. GitHub
-Actions runs it hourly at minute 17 and supports manual dispatch. Successful
-workflow artifacts preserve pipeline state for subsequent scheduled runs, but
-they expire after 14 days and are not durable historical storage. See
-[orchestration](ORCHESTRATION.md).
+```text
+GBFS discovery and six feeds
+  -> Raw snapshots and quality inspection
+  -> incremental Raw-to-Silver
+  -> complete Silver-to-Gold projection
+  -> Power BI import
+```
 
-## Future evolution
+Each feed is retrieved sequentially, so feed `observed_at` values in a
+collection cycle are not guaranteed to match exactly. Gold uses a nearest
+temporal join with a five-minute tolerance where feed alignment is required;
+missing, ambiguous, or out-of-tolerance matches fail explicitly. This is not
+event reconstruction.
 
-The future cloud migration is not implemented. When long-term retention,
-reliable refresh, or operational requirements justify it, evaluate durable
-object storage, backup/retention, alerting, and a Power BI-accessible refresh
-path. Preserve Raw/Silver/Gold boundaries and snapshot semantics during that
-migration; do not introduce infrastructure only to match a technology list.
+## Scheduling and reliability
+
+The pipeline itself is one-shot. The repository has an exported Windows Task
+Scheduler definition and a PowerShell wrapper that invokes it hourly and
+appends output to `logs/local_pipeline.log`. The export is tied to a machine
+path and account and does not prove that a task is registered on another
+computer.
+
+`.github/workflows/ci.yml` runs tests and Ruff on pushes and pull requests.
+There is no active GitHub Actions data-ingestion workflow. Data, state, and
+logs are local runtime outputs.
+
+## Deliberately not implemented
+
+The current runtime does not use DuckDB, dbt, Docker, Airflow, cloud storage,
+or a managed scheduler. It does not ingest Wrocław Open Data trips or infer
+rides from GBFS. These are not hidden runtime dependencies.
+
+## My v2.0 direction
+
+Cloud migration is not part of v1.0. For v2.0, I plan to evaluate durable
+object storage and its Raw/Silver/Gold layout, compute and orchestration
+based on measured scale, managed identity and secrets, monitoring and cost
+controls, a Power BI refresh path, and deployment automation. I also plan to
+keep GitHub for source, documentation, review, and CI/CD. See
+[my roadmap](../tasks/ROADMAP.md).

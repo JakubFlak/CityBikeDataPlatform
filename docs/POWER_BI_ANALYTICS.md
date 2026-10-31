@@ -1,447 +1,118 @@
-# Power BI Analytics
+# Power BI Analytics and KPI Semantics
 
-## Status
+## Scope and snapshot interpretation
 
-This document records analytical conventions and report guidance for the
-implemented PBIP report in `dashboard/`. Some sections describe design rules or
-candidate patterns; the current report visuals and measures are defined in the
-PBIR and TMDL files under `dashboard/`.
+The Power BI model is built on observed GBFS snapshots. It does not contain
+authoritative trips, demand, revenue, customers, or utilization. A state
+change between snapshots is not a trip event.
 
-The report must describe observed bike-sharing state honestly. GBFS provides
-periodic snapshots of what was visible at collection time; it does not provide
-authoritative rides, customers, revenue, or demand events.
+Gold's central station fact has grain `station_id + observed_at`. The system
+aggregate has one row per station-status observation timestamp. Free-bike
+facts have grain `bike_id + observed_at`. Adding values across timestamps
+usually adds repeated observed states; it does not produce a current system
+total unless the measure selects one timestamp.
 
-## 1. Analytical questions
+`observed_at` is UTC and remains the observation identity. `observed_at_local`
+is the same instant expressed in `Europe/Warsaw` for local presentation and
+calendar axes. Feed retrieval is sequential: all six feed records from one
+collection cycle do not necessarily share an exact timestamp. Gold aligns
+dependent observations to a nearest timestamp within five minutes and rejects
+missing, ambiguous, or out-of-tolerance matches. System rows are keyed by
+station-status time; free-bike rows outside stations are attributed to the
+nearest such observation.
 
-### Directly observed metrics
+## KPI catalogue
 
-These are fields or aggregates directly represented by the current Gold data:
+The definitions below follow the measures in
+`dashboard/Dashboard.SemanticModel/definition/tables/_Measures.tmdl` and the
+Gold generation in `src/bike_data/gold.py`. Filter context matters: report
+date, period, grain, region, and station selections affect measures where the
+model relationships permit those filters.
 
-- How many bikes were available at each station snapshot?
-- How many stations were represented in a system snapshot?
-- How many e-bikes were reported as available by station and timestamp?
-- Which vehicle types were available at a station snapshot?
-- Which publicly listed bikes were visible, and where were they located?
-- Which bikes were marked reserved or disabled in a snapshot?
-- How did availability differ between stations or regions in the observed
-  snapshots?
-- What were the observed availability totals by date and hour?
-
-### Derived metrics
-
-These are calculations from observed fields, with no claim that they represent
-trips:
-
-- E-bike composition of available bikes.
-- Empty-station snapshot count and rate.
-- Average, minimum, and maximum observed bikes per station across an explicitly
-  selected set of snapshots.
-- Change in a station's observed bike count between two ordered snapshots.
-- Snapshot coverage: number of timestamps and stations represented.
-- Distribution of publicly visible free bikes by station, vehicle type, or
-  coordinates.
-
-A change between snapshots is a state difference. It is not a ride, return,
-trip, turnover event, or utilization measurement.
-
-### Proxy metrics
-
-These can be useful operational indicators only when labelled as proxies:
-
-- Low-availability station snapshots, using an explicit bike-count threshold.
-- Empty-station-snapshot exposure, measured as the fraction of observed
-  station snapshots with zero available bikes.
-- Availability imbalance, such as the difference between the highest and
-  lowest observed bike counts in the same system period.
-- Possible state transition flags between adjacent observations.
-
-These proxies describe observed operational state. They do not establish
-customer demand, unmet demand, or service quality causality.
-
-### Impossible or misleading with current data
-
-Do not create measures for:
-
-- trips, rides, or completed rentals
-- trip duration, origin/destination, or route
-- revenue, fares paid, or customer counts
-- customer behavior or demand
-- actual utilization, turnover, rides per bike, or fleet productivity
-- station performance interpreted as demand without an authoritative event
-  source
-- total fleet availability inferred from absence in `free_bike_status`
-
-A bike disappearing from a later free-bike snapshot may mean it is in use, but
-could also reflect feed timing, maintenance, reservation, or other state. The
-absence is not a trip event.
-
-## 2. Snapshot KPI policy
-
-The target time contract has two representations of the same instant:
-
-- `observed_at` is canonical UTC and is used for snapshot identity, ordering,
-  relationships, and latest-snapshot measures.
-- `observed_at_local` is the IANA `Europe/Warsaw` representation and is used
-  for local time-series axes, tooltips, and detail presentation.
-- `date_key`, calendar attributes, and `hour_of_day` are derived from
-  `observed_at_local`.
-
-`observed_at_local` is loaded for local time-series presentation. It remains a
-presentation field, not a snapshot key, temporal join key, or incremental
-identity; those continue to use canonical UTC `observed_at`.
-
-The facts are periodic snapshot facts. A `SUM` across multiple `observed_at`
-values is generally a sum of repeated states, not a system total over the
-period. The v1 report therefore uses this simple policy:
-
-`FactSystemAvailability[available_stations]` is the Gold count of non-empty
-stations. The report may calculate `Station Availability %` as
-`SUM(available_stations) / SUM(station_count)` in DAX. The percentage is not
-stored in Gold or calculated in Power Query.
-
-1. **State KPI cards and point-in-time maps use the latest snapshot in the
-  current filter context.** A date/hour/station filter may narrow the context;
-  the measure then resolves the maximum available `observed_at` in that
-  context.
-2. **Target snapshot trend visuals place `observed_at_local` on the axis.** The measure is
-  evaluated independently for each timestamp, so each point is a snapshot
-  state rather than an accumulation.
-3. **Period summary visuals use explicitly named snapshot aggregations.** Use
-  `Average ... Per Snapshot`, `Minimum ... Per Snapshot`, `Maximum ... Per
-  Snapshot`, or `... Snapshot Count`; never present a raw multi-timestamp sum
-  as a current-state KPI.
-4. **A visual must declare its grain.** If it cannot show or select the
-  timestamp grain, it should use a snapshot aggregation or be removed.
-
-This avoids a card such as `Total Bikes Available = 1,500` when that number is
-actually 500 + 520 + 480 from three snapshots. It also keeps the model simple:
-no calculation groups or advanced time-intelligence layer is required.
-
-### Measures and behavior across multiple timestamps
-
-The following table is a metric catalogue, not a claim that every listed
-measure exists in the current report. Implemented measures are stored in
-`dashboard/Dashboard.SemanticModel/definition/tables/_Measures.tmdl`. The
-`Latest Snapshot` pattern means: find the maximum `observed_at` in the current
-fact filter context, then evaluate the inner expression only at that timestamp.
-
-| Measure | Single-snapshot meaning | More than one `observed_at` in context | Recommended definition |
+| Report measure | Definition and calculation | Unit / interpretation | Important limitations |
 | --- | --- | --- | --- |
-| `Station Bikes Available - Latest Snapshot` | Bikes available across the selected stations at one timestamp | Uses the latest timestamp; does not add snapshots | `SUM(num_bikes_available)` after filtering fact rows to latest `observed_at` |
-| `Station Count - Latest Snapshot` | Stations represented at one timestamp | Counts distinct stations only at the latest timestamp | `DISTINCTCOUNT(station_id)` at latest timestamp |
-| `Empty Station Count - Latest Snapshot` | Stations with zero bikes at one timestamp | Counts empty stations only at latest timestamp | Count station rows where bikes = 0 after latest filter |
-| `Empty Station Snapshot Count` | Number of empty station states | Counts empty station rows across all selected timestamps | `COUNTROWS` of station snapshots with bikes = 0; explicitly a state count |
-| `E-bikes Available - Latest Snapshot` | E-bikes reported at one timestamp | Uses latest timestamp; does not add repeated vehicle states | Sum vehicle-type `count` for `is_ebike = TRUE` at latest timestamp |
-| `E-bikes Available - Latest Snapshot` | E-bikes reported at one timestamp | Uses latest timestamp; does not add repeated vehicle states | Sum vehicle-type `count` for `is_ebike = TRUE` at latest timestamp |
-| `Average Station Bikes Available Per Snapshot` | Station bikes at the selected snapshots | Averages system `available_station_bikes`, one row per `observed_at` | Average of `FactSystemAvailability[available_station_bikes]` by timestamp |
-| `Minimum Station Bikes Available Per Snapshot` | Minimum observed station bikes | Minimum system `available_station_bikes` across selected timestamps | Minimum of system station bikes by timestamp |
-| `Maximum Station Bikes Available Per Snapshot` | Maximum observed station bikes | Maximum system `available_station_bikes` across selected timestamps | Maximum of system station bikes by timestamp |
-| `Visible Bikes - Latest Snapshot` | Distinct publicly visible bikes at one timestamp | Uses latest timestamp, so a bike seen repeatedly is counted once | `DISTINCTCOUNT(bike_id)` after latest timestamp filter |
-| `Visible Bike Observations` | One visible-bike row at one timestamp | Counts bike observations across timestamps; the same bike can count repeatedly | `COUNTROWS(FactFreeBikeSnapshot)`; label as observations |
-| `Distinct Bikes Observed In Period` | Same as visible bikes for one timestamp | Counts unique bike IDs seen at least once in the period, not simultaneous availability | `DISTINCTCOUNT(bike_id)` across the period; never call this available bikes |
-| `Reserved Visible Bikes - Latest Snapshot` | Distinct visible bikes marked reserved at one timestamp | Uses latest timestamp only | Distinct bike count filtered to `is_reserved = TRUE` |
-| `Reserved Bike Observations` | Reserved visible-bike rows at one timestamp | Counts reserved observations across timestamps | `COUNTROWS` filtered to reserved; label as observations |
-| `Disabled Visible Bikes - Latest Snapshot` | Distinct visible bikes marked disabled at one timestamp | Uses latest timestamp only | Distinct bike count filtered to `is_disabled = TRUE` |
-| `Disabled Bike Observations` | Disabled visible-bike rows at one timestamp | Counts disabled observations across timestamps | `COUNTROWS` filtered to disabled; label as observations |
-| `Observed System Snapshot Count` | One system timestamp | Counts distinct timestamps; does not count station rows | `DISTINCTCOUNT(FactSystemAvailability[observed_at])` |
-| `Station Snapshot Count` | One station state | Counts station state rows across selected timestamps | `COUNTROWS(FactStationAvailability)` |
-
-The deprecated `gold_station_availability_metrics` contained all-history
-station-level summaries. It is not suitable for date or hour-filtered KPIs
-because it has no `observed_at`, so it is not imported. Calculate period
-averages/minimums/maximums from the periodic fact or system aggregate, with the
-snapshot aggregation stated in the measure name.
-
-`gold_system_availability` is the preferred source for system-level snapshot
-state. Do not combine its state counts with station-fact counts in one visual
-unless the visual deliberately chooses one source.
-
-## Station Analysis measures
-
-The Station Analysis page answers:
-
-> Which stations have availability problems and how often do those problems occur?
-
-All measures in this section use `fact_station_availability` directly. They
-therefore respond to the current time, region, and station filter context
-through the existing `DimDate`, `DimRegionIdentity`, and
-`DimStationIdentity` relationships. They must not use
-`gold_system_availability`, which is aggregated at system and snapshot grain.
-
-| Measure | Definition and interpretation |
-| --- | --- |
-| `Empty Station Observation Rate` | `Empty Observation Count / Station Snapshot Count`, where an empty observation has `num_bikes_available = 0`. This is the share of station observations that were empty, not a percentage of elapsed time because snapshots are irregular. |
-| `Empty Observation Count` | Count of station observations with `num_bikes_available = 0`. |
-| `Station Snapshot Count` | Count of station observations in the current filter context. |
-| `Station Availability Rate` | Observations with `num_bikes_available > 0` divided by all station observations. |
-| `Average Bikes per Station Observation` | Direct average of `fact_station_availability[num_bikes_available]` in the current filter context. It is not an average of per-station maxima. |
-| `Minimum Bikes per Snapshot` | Minimum observed `num_bikes_available` in the current filter context. |
-| `Maximum Bikes per Snapshot` | Maximum observed `num_bikes_available` in the current filter context. |
-| `P90-P10 Bikes Range` | The 90th percentile minus the 10th percentile of observed `num_bikes_available`, describing availability variability. |
-
-These are observation/period summaries unless a visual supplies a single
-snapshot context. They must not be labelled as continuous-time metrics. In
-particular, empty observation rate must not be presented as the percentage of
-time a station was empty.
-
-## 3. Visual grain rules
-
-Every visual must use one of these declared grains:
-
-- **System snapshot:** one point or row per `FactSystemAvailability[observed_at]`.
-- **Station snapshot:** one station state per `station_id + observed_at`.
-- **Station/vehicle snapshot:** one station/vehicle state per
-  `station_id + vehicle_type_id + observed_at`.
-- **Free-bike snapshot:** one bike state per `bike_id + observed_at`.
-- **Period aggregation:** one row per selected date/hour/region/vehicle group,
-  with an explicit latest, average, minimum, maximum, or snapshot-count
-  definition.
-
-Station maps, ranked station bars, and current-state KPI cards must have a
-single selected/latest snapshot. If no timestamp is selected, they must use
-the latest-snapshot measures, never raw `SUM` across the date range. Free-bike
-maps follow the same rule: one point per visible bike at the selected/latest
-timestamp. A trend chart may contain multiple snapshots only when
-`observed_at` is its axis in the current report. A future migrated trend chart
-may use `observed_at_local` for display, while the underlying snapshot identity
-remains `observed_at`.
-
-## 4. Maximum three-page report
-
-### Page 1: System Availability
-
-**Purpose:** Monitor observed system bike availability and empty-station state
-through time.
-
-**KPI cards:**
-
-- Station Bikes Available - Latest Snapshot
-- Station Count - Latest Snapshot
-- Empty Stations - Latest Snapshot
-- Free Bikes Outside Stations - Latest Snapshot
-- Station E-bikes Available - Latest Snapshot
-
-Each card is a **system snapshot** KPI from `FactSystemAvailability` and uses
-the latest `observed_at` in the active date/hour context. It must display the
-selected/latest timestamp in a subtitle or tooltip.
-
-**Visuals:**
-
-- Line chart, grain **system snapshot**: one point per `observed_at`, showing
-  `available_station_bikes`, `available_station_regular_bikes`,
-  `available_station_ebikes`, `available_free_bikes`, and
-  `empty_station_count` from
-  `FactSystemAvailability`. This is a per-snapshot state trend, not a sum over
-  the selected period.
-- Column chart, grain **period aggregation by hour**: average station bikes and
-  empty stations per snapshot grouped by `hour_of_day`. Label the values as
-  averages, not totals.
-- Detail table, grain **system snapshot**: timestamp, station count, station
-  bikes, regular station bikes, station e-bikes, empty stations, and free bikes
-  outside stations. Do not use a card or chart that hides timestamp grain while
-  summing this table.
-
-**Slicers:** date, weekday/weekend, and hour. Region and vehicle-type slicers
-belong on the station and vehicle pages; they do not filter the already
-system-aggregated `FactSystemAvailability` in the v1 model.
-
-**Interactions:** selecting a date or hour filters the detail table and the
-system trend. Avoid mixing station-level facts into the system trend page.
-
-**Important limitation:** the current local sample has one system timestamp;
-the time charts become useful only after more scheduled snapshots accumulate.
-
-### Page 2: Station Availability
-
-**Purpose:** Compare observed station conditions and identify low-availability
-state, not demand.
-
-**KPI cards:**
-
-- Station Count - Latest Snapshot
-- Empty Stations - Latest Snapshot
-- Empty Station Observation Rate
-- Average Bikes per Station Observation
-- P90-P10 Bikes Range
-
-The first two are **station snapshot** state KPIs at the latest timestamp.
-The rate and low-availability count are explicitly named state/period metrics;
-their subtitle must state whether the context contains one timestamp or a
-period.
-
-**Visuals:**
-
-- Map, grain **station snapshot**: one point per station at the selected/latest
-  `observed_at`, sized by observed bikes available and marked when empty.
-- Ranked bar chart, grain **station snapshot**: one bar per station at the
-  selected/latest timestamp, ranked by observed bikes available.
-- Scatter plot, grain **station period aggregation**: one point per station,
-  with `Average Bikes per Station Observation` on one axis and
-  `Empty Observation Count` on the other. It must not imply current state.
-- Detail table, grain **station snapshot**: station, region, bikes,
-  `observed_at`, and renting/returning flags.
-
-**Slicers:** date, hour, station, region, virtual-station flag, renting and
-returning status.
-
-**Interactions:** selecting a station filters its detail and the tooltip. A
-date/hour selection must filter the station fact, not the all-history station
-metrics helper.
-
-**Tooltip/drill-through:** a station tooltip can show the latest selected
-station state plus explicitly labelled minimum/maximum bikes per snapshot and
-empty station snapshot count for the selected period. A station drill-through
-is justified if the collected history becomes large enough; it should remain a
-station-state timeline, not a trip report.
-
-### Page 3: Vehicle and Free-Bike State
-
-**Purpose:** Compare observed vehicle composition and the spatial state of
-publicly visible bikes. This page is not a pricing or miscellaneous metadata
-page.
-
-**KPI cards:**
-
-- Visible Bikes - Latest Snapshot
-- E-bikes Available - Latest Snapshot
-- E-bike Share - Latest Snapshot
-- Reserved Visible Bikes - Latest Snapshot
-- Disabled Visible Bikes - Latest Snapshot
-
-**Visuals:**
-
-- Stacked column, grain **station/vehicle snapshot**: count by vehicle type
-  for the selected/latest timestamp. Do not sum vehicle rows from multiple
-  timestamps into a current-state visual.
-- Bar chart, grain **vehicle-type snapshot**: latest visible-bike count by
-  vehicle type, with a separate tooltip for `Distinct Bikes Observed In
-  Period` when a period is intentionally selected.
-- Map, grain **free-bike snapshot**: one point per visible bike at the
-  selected/latest timestamp, colored by e-bike/reserved/disabled state.
-- Detail table, grain **free-bike snapshot**: bike ID, `observed_at`, station,
-  vehicle type, reserved, disabled, and optional fuel/range. Pricing plan is
-  supporting context, not a page-level analytical focus.
-
-**Slicers:** date, hour, station, vehicle type, e-bike flag, reserved/disabled
-flags, pricing plan if the hidden pricing helper is later exposed.
-
-**Interactions:** vehicle type selection filters both vehicle-type availability
-and free-bike state. Keep station-level totals out of the vehicle-type fact
-visual to avoid grain multiplication. All current-state cards and the map use
-the same selected/latest timestamp policy.
-
-**Limitation:** `free_bike_status` covers publicly visible bikes, not bikes that
-may be in use or otherwise absent from the feed.
-
-## 5. Data access strategy
-
-### Direct Parquet
-
-**Advantages:**
-
-- matches the implemented Gold output directly
-- no new runtime dependency or database
-- preserves the local Raw/Silver/Gold separation
-- easy to inspect and reproduce
-- suitable for the current small output files
-
-**Costs:**
-
-- Power BI Desktop refresh depends on local file paths
-- scheduled Power BI Service refresh would need a gateway or a future hosted
-  file location
-- Power Query must create identity helper tables and avoid unsafe snapshot
-  relationships
-- GitHub Actions artifacts are not a durable Power BI source
-
-### DuckDB intermediate layer
-
-**Advantages:**
-
-- convenient SQL over many Parquet files
-- could provide a stable database endpoint or views
-- useful if Gold grows beyond a comfortable import/query size
-
-**Costs now:**
-
-- DuckDB is not implemented or locked in this repository
-- it would add deployment, refresh, and connection decisions without solving a
-  current data-volume problem
-- Power BI would still need a gateway or accessible hosted database for cloud
-  refresh
-- it would blur the current simple Gold-as-Parquet contract
-
-### Recommendation for v1
-
-Use direct Gold Parquet import in Power BI Desktop. Import only the recommended
-Gold tables, create the identity helper queries in Power Query, and keep the
-model Import-based. Treat the local path as a development/portfolio source.
-Do not introduce DuckDB for this report. Reconsider it only when file count,
-refresh duration, concurrent consumers, or a stable SQL serving requirement
-creates a concrete problem.
-
-## 6. Roadmap review and proposed revision
-
-### Inconsistencies in the current roadmap
-
-- Phase 3 marks Docker, Airflow, and an ingestion DAG as incomplete, but the
-  implemented project deliberately uses a one-shot Python job plus GitHub
-  Actions scheduling. Those technologies are not required by the current
-  workload and should remain deferred rather than treated as missing work.
-- Phase 3 scheduling, retries, failure handling, and basic monitoring are
-  implemented and correctly marked complete.
-- Phase 4 marks `Incremental processing` incomplete even though restartable
-  incremental Silver/Gold processing and tests are implemented. It should be
-  marked complete or renamed to distinguish local incremental processing from
-  future dbt incremental models.
-- Phase 4 lists DuckDB, dbt, and staging models as planned, but none is
-  implemented and the current Python Silver/Gold layers already provide the
-  needed transformation contract. They should be deferred, not introduced for
-  the sake of the roadmap.
-- Phase 4 dimensions, facts, analytical aggregations, and incremental local
-  processing are implemented. The documentation should distinguish those
-  Python/Parquet models from dbt models.
-- Phase 5 is appropriately incomplete, but its first bounded task should be
-  review of this design followed by a small Power BI model, not a full platform
-  redesign.
-- Phase 6 remains the real operational gap: durable retention, backup, and
-  reliable long-term collection are not solved by 14-day GitHub artifacts.
-- Existing `DATA_MODEL.md` contains older conceptual names such as
-  `fact_station_snapshot` and `fact_bike_snapshot`; the implemented Gold names
-  in `GOLD_MODEL.md` are authoritative for the future report.
-
-### Proposed revised roadmap
-
-This is a proposal only; `tasks/ROADMAP.md` is intentionally not modified by
-this design task.
-
-1. **Foundation:** keep complete.
-2. **GBFS ingestion and Raw/Silver:** keep complete.
-3. **Lightweight orchestration:** keep scheduling, retries, failure handling,
-   and basic run observability complete. Move Docker, Airflow, and ingestion DAG
-   to a deferred/future-infrastructure section.
-4. **Local analytics engineering:** mark Gold dimensions, facts, aggregations,
-   and local incremental processing complete. Keep DuckDB, dbt, dbt staging,
-   and dbt tests deferred until scale or SQL-model governance requires them.
-5. **Power BI consumption:** design review; build the direct-Parquet semantic
-   model; create the measures; build the three-page report; validate the
-   snapshot/non-trip messaging. Add Gold relationship keys only if historical
-   snapshot slicing is a required acceptance criterion.
-6. **Continuous collection and durability:** run a dedicated collector,
-   establish retention and backups, replace temporary GitHub artifacts with
-   durable storage, and add alerting/operational monitoring.
-7. **Future authoritative trip analytics:** only after an authoritative trip
-   source is acquired; keep inferred GBFS state transitions separate.
-
-## 7. Current limitations and acceptance criteria
-
-The design is ready for review, not implementation. Before building the report,
-confirm:
-
-- whether the first report should use current identity helpers or wait for Gold
-  snapshot relationship keys;
-- the required collection history and retention period;
-- whether Power BI Desktop-only refresh is acceptable for v1;
-- whether region and pricing analysis are in scope for the first report;
-- that all report labels say `observed`, `available`, or `snapshot` where
-  `utilization` or `demand` could otherwise be inferred.
+| `Available station bikes - latest` | Finds the maximum `gold_system_availability[observed_at_local]` in the current filter context and returns `MAX(available_station_bikes)` at that timestamp. Gold sums `station_status.num_bikes_available` across observed station rows. | Bikes reported at stations in one selected/latest system snapshot. | Not a trip count or a period sum. Null station bike counts contribute zero to the Gold total. Latest uses a local, timezone-naive timestamp. |
+| `Available free bikes - latest` | At the maximum system `observed_at_local` in the current context, returns `MAX(available_free_bikes)`. Gold counts `free_bike_status` rows with null `station_id`, matched to a system observation. | Bikes reported outside stations in that snapshot. | This is not the number of bikes docked at stations and not a fleet-wide total. Not evidence of trips or usage. |
+| `Stations - latest` | Finds maximum system `observed_at` (UTC) in context and returns `station_count` at that timestamp. | Number of station-status rows represented in one snapshot. | Missing station records are not synthesized into the denominator. This latest measure uses UTC, unlike some bike latest measures that use local time. |
+| `Empty Stations - latest` | At maximum system `observed_at` in context, returns the aggregate `empty_station_count`. Gold counts station rows whose `num_bikes_available` is exactly zero. | Count of observed station rows with zero reported bikes. | A station with no record is not an empty station. Null bike counts are not counted as exactly zero. |
+| `Station Availability %` | `SUM(available_stations) / SUM(station_count)` over the selected system observations. At each timestamp Gold calculates `available_stations = station_count - empty_station_count`. | Share of represented station observations treated as available in the selected system snapshots. | Across a period this is a ratio of summed observations, weighted by station-row counts per snapshot, not an average of timestamp percentages or elapsed-time availability. Gold's subtraction treats null bike counts as non-empty; see caveat below. |
+| `Station Availability Rate` | On `fact_station_availability`, counts rows with `num_bikes_available > 0` and divides by `Station Snapshot Count` (`COUNTROWS` of station fact rows). | Share of observed station-state rows with more than zero bikes; for one timestamp, share of represented station rows available. | Across a period it is an observation-weighted rate, not percent of elapsed time. Null-count rows remain in the denominator but not the positive numerator. |
+| `Empty Station Observation Rate` | `Empty Observation Count / Station Snapshot Count`; empty means exactly `num_bikes_available = 0`. | Share of observed station-state rows classified as empty. | Not percentage of time empty. No station row means no observation and does not enter numerator or denominator. |
+| `Average Bikes per Station Observation` | DAX `AVERAGE(fact_station_availability[num_bikes_available])` across station fact rows in the current context. Each non-blank station observation has equal weight. | Mean reported bikes per station observation. | Not an average of unique stations or station maxima. Stations represented in more snapshots contribute more rows; blanks are ignored by `AVERAGE`. |
+| `Available e-bikes` | `SUM(gold_system_availability[available_station_ebikes])` over the current context. The Gold value sums station-status vehicle-type counts classified as e-bikes. | E-bikes reported at stations, summed over selected system snapshots. | Across multiple timestamps, the same state is counted repeatedly. Not latest unless the visual/filter context is one timestamp. Does not include free bikes outside stations. |
+| `Available regular bikes` | `SUM(gold_system_availability[available_station_regular_bikes])` over the current context. Gold calculates it as total station bikes minus station e-bikes. | Non-e-bike station availability by snapshot, summed over the selected context. | Across multiple timestamps this is a sum of repeated states. It is derived, not a separately classified vehicle count. |
+| `Ebike share` | `Available e-bikes / (Available e-bikes + Available regular bikes)` using the two sums above. | E-bike share of station-bike observations in the current context. | On one timestamp it is a composition ratio for that state. Over a period it is a ratio of sums, not the mean of per-snapshot shares. It excludes free bikes outside stations and depends on source `propulsion_type` classification. |
+| `Available regular station bikes - latest` | At the maximum `observed_at_local`, returns the Gold regular-bike value. | Non-e-bike station count in one latest/selected system snapshot. | Local naive timestamp determines latest. |
+| `Available regular station ebikes - latest` | Despite its name, its DAX returns `available_station_ebikes` at maximum `observed_at_local`. | The result is an e-bike count, not regular bikes. | The name is inconsistent with the expression and may mislabel the Bikes Analysis donut. It is documented, not silently corrected here. |
+| `Average Free Bikes Outside Stations` | Iterates distinct `fact_free_bike_snapshot[observed_at]` values; counts rows with blank `station_id` at each time and averages those counts. | Average outside-station bike rows per represented free-bike observation timestamp. | Not a count of distinct bikes over a period. The imported free-bike fact is filtered in Power Query to latitudes 51 through 51.23 and vehicle IDs `183` or `71`, so this measure may reflect that filtered import rather than all source rows. |
+
+### Availability and missing observations
+
+The station fact contains one row per station state that was actually present
+in `station_status`. A missing row does not imply zero availability and is
+not counted as an empty station. In the Gold system aggregate, a row is empty
+only when its bike count equals zero. `available_stations` is calculated as
+all station rows minus those exact-zero rows; consequently a row whose bike
+count is null is counted as non-empty by that aggregate. The station-level
+`Station Availability Rate`, by contrast, counts only values greater than
+zero as available while retaining all station rows in its denominator.
+
+The table schemas allow nullable source values, so these two availability
+measures can differ if null counts occur. No DAX or pipeline semantics have
+been changed as part of this documentation task. Whether null station counts
+should be excluded from denominators is an unresolved model decision.
+
+### E-bike classification
+
+Gold marks a vehicle type as e-bike when the lowercased
+`propulsion_type` is `electric` or `electric_assist`. System e-bike counts
+come from `station_status.vehicle_types_available` rows classified by the
+matching vehicle type observation. The report's share denominator is the
+sum of e-bike and regular station-bike counts, not all bikes in
+`free_bike_status`. It is therefore a snapshot composition proxy, not fleet
+composition or usage.
+
+## Period and Grain selector
+
+`Date Period Selector` is a calculated table containing Current/Previous
+Day, Week, Month, and Year periods, anchored to the maximum date in
+`dim_date`. Its `Date` relationship filters `dim_date`; `Period` and `Grain`
+select date ranges and categories. They do not change the underlying fact
+grain, interpolate missing dates, resample snapshots, or alter measure
+formulas. Local `date_key` and `hour_of_day` are derived from
+`observed_at_local`; a trend point remains an observed timestamp when that
+timestamp is on the axis.
+
+The report's System Overview also has a timestamp range slicer. Keep the
+selected period in mind: latest measures resolve the maximum timestamp inside
+the current date/hour filter context rather than necessarily the latest file
+in the repository.
+
+## Pages in the current report
+
+### System Overview
+
+Shows latest station bike count, outside-station free bikes, station count,
+and empty stations; system availability over local observation time; and a
+station-bike composition donut. The trend uses snapshot timestamps, not a
+period sum. The donut includes the measure named
+`Available regular station ebikes - latest`, whose expression actually
+returns the e-bike count.
+
+### Station Analysis
+
+Compares station-level availability rates over the selected time context,
+using a map, time trend, station comparison, and station table. Region,
+station, period, and grain selectors filter the station-level context where
+relationships allow. `Station Availability Rate` is the proportion of
+observed station rows with positive bike counts; its meaning changes from a
+single-snapshot share to a period observation rate when several timestamps
+are selected.
+
+### Bikes Analysis
+
+Shows e-bike share and average outside-station bike observations, trends for
+station regular/e-bike totals and outside-station bikes, plus a bike map.
+The map uses the Power Query-filtered free-bike fact (latitude range 51–51.23
+and vehicle IDs `183` and `71`); do not read it as an unfiltered full-fleet
+map. Series shown across multiple timestamps are snapshot values.

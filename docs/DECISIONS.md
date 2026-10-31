@@ -1,219 +1,80 @@
 # Architecture Decisions
 
-## ADR-001 — Raw data stored as Parquet
+This file preserves the project's decision history while distinguishing
+implemented choices from proposals that were never adopted.
 
-Status: Accepted
+## ADR-001 — Preserve Raw snapshots in Parquet
 
-### Context
+**Status: Accepted and implemented.**
 
-The project collects high-frequency GBFS snapshots.
-
-The raw layer should be efficient for append-heavy storage and analytical processing while remaining simple to operate locally.
-
-### Decision
-
-Raw snapshots will initially be stored as Parquet files.
-
-### Reasoning
-
-- columnar format
-- compression
-- efficient analytical reads
-- works naturally with DuckDB
-- suitable for partitioned historical data
-- keeps raw storage independent from the analytical database
-
-### Alternatives
-
-- PostgreSQL
-- JSON
-- CSV
-
----
+Raw observations are stored as Parquet snapshots to preserve source payloads
+and support deterministic local reprocessing without requiring a database.
+Parquet is a file format here; it does not imply DuckDB is used.
 
 ## ADR-002 — Start with local infrastructure
 
-Status: Accepted
+**Status: Accepted and implemented for v1.0.**
 
-### Context
+The pipeline uses local Python and Parquet because the portfolio project does
+not require cloud-scale infrastructure. Local data/state durability, machine
+availability, and Power BI path portability remain limitations.
 
-The project is primarily a portfolio and learning project.
+## ADR-003 — Use Python for GBFS ingestion and transformations
 
-There is no current requirement for cloud-scale infrastructure.
+**Status: Accepted and implemented.**
 
-### Decision
+Python handles feed discovery, HTTP retrieval, envelope validation, snapshot
+storage, quality checks, and Raw/Silver/Gold transformations. `uv` manages
+dependencies; `pytest` and Ruff provide validation.
 
-The first version will run locally.
+## ADR-004 — Approximately one-minute GBFS polling
 
-### Reasoning
+**Status: Proposed; not the implemented schedule.**
 
-- lower operational complexity
-- lower cost
-- faster development
-- easier debugging
-- sufficient for the expected initial data volume
-
-Infrastructure should become more complex only when there is a concrete requirement.
-
-### Alternatives
-
-- cloud-first architecture
-- managed data warehouse
-- VPS from the beginning
-
----
-
-## ADR-003 — Use Python for ingestion
-
-Status: Accepted
-
-### Context
-
-GBFS is exposed through HTTP/JSON feeds and requires periodic collection.
-
-### Decision
-
-Python will be used for the ingestion layer.
-
-### Reasoning
-
-- strong HTTP/JSON ecosystem
-- good testing support
-- suitable for scheduled data collection
-- integrates naturally with the rest of the project
-- provides useful engineering experience
-
----
-
-## ADR-004 — Use one-minute initial polling for GBFS
-
-Status: Accepted
-
-### Context
-
-GBFS feeds are updated approximately every 60 seconds.
-
-Short bike trips may not be visible if snapshots are collected too infrequently.
-
-### Decision
-
-The initial continuous collector will target approximately one-minute polling.
-
-### Reasoning
-
-This maximises temporal resolution during the initial data-collection experiment.
-
-The actual data volume and usefulness of the additional resolution should be measured.
-
-### Important
-
-One-minute polling does not guarantee complete trip reconstruction.
-
-GBFS is snapshot-based rather than event-based.
-
-### Alternatives
-
-- 5-minute polling
-- 10-minute polling
-- 15-minute polling
-
-The polling interval may be changed later based on observed data volume and analytical requirements.
-
----
+One-minute polling was considered because feeds can refresh frequently, but
+the checked-in Windows Task Scheduler export is configured for hourly runs.
+The actual task registration and current collection cadence depend on the
+local Windows machine. GBFS polling cadence does not guarantee trip
+reconstruction.
 
 ## ADR-005 — DuckDB as initial analytical database
 
-Status: Accepted
+**Status: Not implemented; superseded by local Parquet transformations.**
 
-### Context
-
-The project requires an analytical SQL engine for local development.
-
-### Decision
-
-DuckDB will be used for the initial analytical layer.
-
-### Reasoning
-
-- excellent analytical performance
-- native Parquet support
-- simple local operation
-- SQL interface
-- easy integration with Python
-- appropriate for the project's initial scale
-
----
+The current code reads and writes Parquet through Python/PyArrow and does not
+use DuckDB. Retaining this historical proposal does not make DuckDB a
+dependency or a current architecture decision.
 
 ## ADR-006 — dbt for analytical transformations
 
-Status: Accepted
+**Status: Not implemented; superseded by Python transformations.**
 
-### Context
+The current project does not use dbt. Typed Silver and deterministic Gold
+transformations are implemented in Python. A future SQL transformation tool
+would require an explicit need and a documented design decision.
 
-The project should demonstrate a modern analytics engineering workflow with explicit transformations, testing and documentation.
+## ADR-007 — Do not treat GBFS snapshots as authoritative trips
 
-### Decision
+**Status: Accepted and implemented as a scope rule.**
 
-dbt will be used for analytical transformations on top of DuckDB.
+Snapshots cannot establish exact trip starts, ends, routes, or completed
+rentals. Authoritative trip reporting requires a trustworthy trip source.
+Any future inferred trip dataset must remain explicitly separate from
+authoritative source facts.
 
-### Reasoning
+## ADR-008 — Keep source and analytical data separate
 
-- SQL-based transformations
-- dependency management between models
-- data quality tests
-- documentation
-- clear separation between ingestion and transformation
+**Status: Accepted and implemented.**
 
----
+Raw preserves source snapshots, Silver contains typed source records, and
+Gold contains analytical tables. This separation supports auditability and
+reprocessing without overwriting the original provider payload.
 
-## ADR-007 — Do not treat GBFS snapshots as authoritative trip data
+## Future decisions
 
-Status: Accepted
-
-### Context
-
-GBFS provides snapshots of current system state, not completed rental events.
-
-### Decision
-
-Trips will not be considered authoritative when inferred solely from GBFS snapshots.
-
-### Reasoning
-
-A bike can disappear from one snapshot and later appear elsewhere without providing complete information about:
-
-- exact trip start
-- exact trip end
-- actual rental event
-- intermediate locations
-- whether the bike was temporarily unavailable for another reason
-
-Authoritative trip data should come from the Wrocław Open Data historical trip source when available.
-
-### Consequence
-
-If trip reconstruction is implemented later, inferred trips must be clearly separated from authoritative trips.
-
----
-
-## ADR-008 — Keep raw data separate from analytical models
-
-Status: Accepted
-
-### Context
-
-The project needs reproducibility and the ability to reprocess historical data.
-
-### Decision
-
-Raw source data and transformed analytical data will be stored separately.
-
-### Reasoning
-
-This allows:
-
-- reprocessing
-- debugging
-- testing transformation logic
-- changing analytical models without recollecting source data
-- preserving source history
+No Azure/Fabric service or cloud runtime has been selected. v2.0 must evaluate
+storage, compute/orchestration, identity and secrets, monitoring, costs,
+Power BI refresh, and deployment automation against concrete requirements.
+GitHub remains a potential code, documentation, review, and CI/CD platform
+even if runtime and datasets move to cloud services. See
+[the roadmap](../tasks/ROADMAP.md).

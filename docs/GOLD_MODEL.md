@@ -1,134 +1,98 @@
 # Gold Analytical Model
 
-The Gold layer is a deterministic analytical projection of Silver Parquet tables.
-It preserves snapshot semantics: `observed_at` is the authoritative UTC
-observation timestamp, while `observed_at_local` is the same instant represented
-in `Europe/Warsaw`. Calendar attributes are derived from the local timestamp.
-Provider `last_updated` and Silver lineage remain available in the source layer.
-A row observed twice is two states, not a trip.
+Gold is a deterministic analytical projection of Silver Parquet. Its tables
+represent observed states and are not rides, trips, utilization, or customer
+events.
 
-## Supported analytical questions
+## Time semantics
 
-The model supports:
-
-- observed system and station bike availability over time
-- station-level empty-state and availability-pattern indicators
-- availability by date, weekday/weekend, and hour of day
-- e-bike counts and composition of observed available bikes
-- station and free-bike geographic distribution
-- availability comparisons by region
-- pricing-plan configuration associated with free-bike snapshots
-- vehicle-type availability at a station and time
-
-The model does not support rides, trip duration, origin/destination flows,
-revenue, customer behavior, actual utilization, or authoritative turnover.
-Changes between snapshots can be reported, but they do not prove a rental or
-return. Absence from `free_bike_status` is not proof that a bike started a trip.
+`observed_at` is the canonical UTC observation timestamp for identity,
+ordering, and matching. `observed_at_local` is the same instant converted
+using the IANA `Europe/Warsaw` timezone. Gold derives `date_key`,
+`hour_of_day`, and the `dim_date` calendar attributes from local time;
+midnight and CET/CEST transitions are handled using timezone rules.
 
 ## Dimensions
 
-All entity dimensions are **snapshot dimensions**, with a composite business key
-of entity identifier plus `observed_at`. This is a simple temporal approach: it
-preserves changing station capacity, coordinates, names, regions, vehicle
-metadata, and pricing configuration without implementing SCD Type 2 surrogate
-keys. A future curated current-state view can select the latest row explicitly.
+All entity dimensions are snapshot dimensions keyed by entity ID plus UTC
+`observed_at`. They preserve attributes as observed rather than applying a
+latest-only or SCD Type 2 model.
 
-| Table | Grain | Key attributes |
-| --- | --- | --- |
-| `dim_station` | station + observed_at | name, coordinates, region, capacity, virtual flag |
-| `dim_vehicle_type` | vehicle type + observed_at | form factor, propulsion, range, `is_ebike` |
-| `dim_region` | region + observed_at | region name |
-| `dim_pricing_plan` | plan + observed_at | name, currency, base price, tax flag |
-| `dim_pricing_plan_tier` | plan + tier index + observed_at | start, interval, rate, end |
-| `dim_date` | calendar date | year, quarter, month, ISO week, weekday, weekend flag |
+| Table | Grain |
+| --- | --- |
+| `dim_station` | Station + `observed_at`. |
+| `dim_vehicle_type` | Vehicle type + `observed_at`; includes `is_ebike`. |
+| `dim_region` | Region + `observed_at`. |
+| `dim_pricing_plan` | Plan + `observed_at`. |
+| `dim_pricing_plan_tier` | Plan + tier index + `observed_at`. |
+| `dim_date` | Local calendar date represented by Gold facts. |
 
-`dim_date` is generated only for local dates present in the facts. `hour_of_day`
-is the local hour on facts because a separate time dimension would add no useful
-attributes yet. The UTC and local timestamps both remain available.
-
-## Facts
+## Facts and system aggregate
 
 ### `fact_station_availability`
 
-**Grain:** station + observed_at. This is the central periodic snapshot fact.
-
-Measures and attributes include the observed bike count, source dock and
-capacity fields, station status flags, and `last_reported`. Dock and capacity
-fields remain available for source lineage but are not report-facing metrics.
-Foreign keys are the temporal station key (`station_id`, `observed_at`),
-`region_id` from the matching station snapshot, and the local `date_key`.
-
-Station-level measures are not repeated once per vehicle type. Ratios are not
-stored here: they can be calculated from these direct measures with explicit
-zero/null denominator handling.
+**Grain:** one station state per `station_id + observed_at`. It carries
+`num_bikes_available`, source dock/capacity fields, status flags,
+`last_reported`, and date/region attributes. Power BI currently removes some
+lineage columns from its import.
 
 ### `fact_station_vehicle_type_availability`
 
-**Grain:** station + vehicle_type + observed_at. It contains the source
-`count` and `is_ebike`, with temporal station and vehicle-type foreign keys.
-Keeping it separate preserves grain clarity and prevents many-to-many
-multiplication of station measures.
+**Grain:** one station, vehicle type, and `observed_at`. It contains the
+source count and e-bike classification. It is separate from the station fact
+to avoid multiplying station-level measures.
 
 ### `fact_free_bike_snapshot`
 
-**Grain:** bike + observed_at. It contains location, station association,
-vehicle type, pricing plan, reserved/disabled state, and optional range/fuel
-measures. A bike can occur in many snapshots. This fact enables spatial
-availability and state analysis, but it is not a trip or movement fact.
-
-## Derived Gold models
+**Grain:** one publicly listed bike per `bike_id + observed_at`. It contains
+location, optional station association, vehicle type, pricing plan, and
+state/range attributes. It does not provide authoritative ride history.
 
 ### `gold_system_availability`
 
-**Grain:** exactly one system observation per `observed_at`. It contains
-`observed_at_local`, `date_key`, `hour_of_day`, `station_count`,
-`empty_station_count`, `available_station_bikes`,
-`available_station_ebikes`, `available_station_regular_bikes`, and
-`available_free_bikes`. Station bike totals
-are sums of station observations; e-bike totals come from the matched
-station-vehicle availability rows, and regular bikes are the difference. Free
-bikes count only rows with a null `station_id`, which is the Silver-layer
-outside-station indicator. These are observed state counts; they are not
-demand, utilization, rides, or inferred fleet totals.
+**Grain:** one system row per distinct `station_status` observation time.
+`station_count` counts station-status rows at that observation;
+`empty_station_count` counts rows whose `num_bikes_available` is exactly
+zero; `available_stations` is `station_count - empty_station_count`.
+`available_station_bikes` sums station bike counts, treating null counts as
+zero for this sum. E-bike totals sum matching station vehicle-type counts.
+Regular bikes are total station bikes minus those e-bike counts.
 
-`available_stations` is the count of non-empty station observations:
-`station_count - empty_station_count`. Gold stores this count as an integer;
-availability percentages are calculated later as Power BI measures and are not
-materialized in Gold.
+`available_free_bikes` counts `free_bike_status` rows with a null
+`station_id`; these are outside-station observations, not the total number of
+bikes at stations. Free-bike observations are matched to the nearest system
+observation within five minutes.
 
-Station history metrics are intentionally not materialized as a separate Gold
-table. Snapshot counts, averages, minimums, maximums, and empty-state counts
-can be calculated from `fact_station_availability` after selecting the desired
-date, hour, station, or region context. This preserves timestamp-grain
-analytical value and avoids an all-history table that cannot be filtered by
-observation time.
+These are observed state counts. The model excludes capacity-, dock-,
+demand-, utilization-, revenue-, and trip-based KPIs.
 
-## Temporal and quality rules
+## Join and quality behavior
 
-- Every fact and snapshot dimension is keyed with `observed_at`; the local
-  timestamp is never part of a key or temporal join.
-- `observed_at_local` is computed with the IANA `Europe/Warsaw` timezone. No
-  fixed one- or two-hour offset is applied, so CET/CEST transitions are handled
-  by timezone rules.
-- Local calendar fields can cross midnight relative to UTC. This is intentional:
-  `date_key`, `year`, `quarter`, `month`, `week`, `day_of_week`, `day_name`,
-  `is_weekend`, and `hour_of_day` describe the local observation time.
-- Gold performs nearest temporal joins between feeds within a five-minute
-  tolerance because one collection cycle can produce slightly different
-  `observed_at` values per feed. Missing entities, duplicate keys, ambiguous
-  nearest matches, and matches outside that tolerance fail the transform
-  rather than silently mismatching states.
-- Duplicate dimension keys and missing temporal foreign keys fail the transform.
-- Outputs are sorted and overwritten deterministically, so rerunning the same
-  Silver inputs produces identical Parquet tables.
-- Counts are observed availability counts. They are not transaction counts.
+Gold aligns related feed rows to the nearest matching observation within a
+five-minute tolerance. Missing entities, duplicate keys, ambiguous nearest
+matches, and matches outside the tolerance raise errors. Feed observations
+do not need identical timestamps, but their match must be unambiguous and
+within tolerance.
 
-## Transformation
+Rows are sorted deterministically and output tables are written as a complete
+projection from Silver. The incremental coordinator stages and validates the
+candidate Gold tables before replacing existing outputs.
 
-```text
-python scripts/transform_to_gold.py
+## Running Gold transformations
+
+The normal full pipeline is:
+
+```powershell
+uv run python scripts/run_pipeline.py
 ```
 
-The command reads `data/silver/*.parquet` and writes runtime-generated tables
-under `data/gold/`. No dbt, DuckDB, cloud storage, orchestration, or BI model
-is introduced by this layer.
+For an explicit Gold rebuild from existing Silver:
+
+```powershell
+uv run python scripts/transform_to_gold.py
+```
+
+The standalone transform is not incremental; it reads `data/silver/*.parquet`
+and writes the tables under `data/gold/`. The complete table list and grain
+are in [the data model](DATA_MODEL.md); Power BI interpretations are in
+[Power BI analytics](POWER_BI_ANALYTICS.md).

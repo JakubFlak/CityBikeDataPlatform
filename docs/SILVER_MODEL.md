@@ -1,7 +1,7 @@
 # Silver/Staging Model
 
-This document defines the implemented boundary between raw GBFS snapshots and
-future analytical models. Silver reads only the canonical `data_json` payload
+This document defines the implemented boundary between Raw GBFS snapshots
+and Gold analytical models. Silver reads only the canonical `data_json` payload
 from raw Parquet. `source_payload_json` remains an audit representation and is
 not parsed by the Silver transformation.
 
@@ -134,10 +134,13 @@ the transformation does not invent values for omitted GBFS fields.
 The repeatable local transformation command is:
 
 ```text
-python scripts/transform_to_silver.py
+uv run python scripts/transform_to_silver.py
 ```
 
 It reads every `data/raw/**/*.parquet` file and overwrites the deterministic
 table files under `data/silver/`. The output directory is runtime-generated and
 ignored by Git. Re-running the command over the same raw files produces the
-same table rows and schemas.
+same table rows and schemas. This command is a full transformation tool, not
+the normal incremental pipeline; run `uv run python scripts/run_pipeline.py`
+for the complete ingestion, quality, and incremental Raw-to-Silver-to-Gold
+workflow.

@@ -1,7 +1,7 @@
-# Lightweight Orchestration
+# Local Orchestration
 
-The project runs one complete pipeline job and exits. Scheduling is provided
-by the caller, not by a long-running Python process.
+The implemented Python pipeline is a one-shot job. Scheduling is external;
+the pipeline does not run as a daemon.
 
 ## Execution graph
 
@@ -10,91 +10,76 @@ GBFS discovery and ingestion
     -> Raw Parquet snapshots
     -> Raw quality validation
     -> incremental Raw -> Silver
-    -> incremental Silver -> Gold
-    -> Gold schema validation
-    -> Parquet output row-count validation and run summary
+    -> incremental Silver -> Gold projection
+    -> output row counts and completion-state update
 ```
 
-`python scripts/run_pipeline.py` is the local one-command entrypoint. It
-constructs the existing GBFS ingestor, validates every Raw file, then calls
-the existing incremental transformation functions. It does not duplicate
-transformation logic.
+The repository-root entrypoint is:
 
-Ingestion, quality validation, Silver, and Gold are critical stages. Any
-exception stops the run and the command exits with status 1. Silver remains an
-incremental, key-deduplicated layer; Gold is rebuilt as a complete projection
-of the current Silver state. Both outputs use staged writes and validation
-before replacement. The Raw-to-Silver manifest is written only after Silver
-commits, with a `silver_complete` status. The coordinator changes that status
-to `complete` only after Gold commits, so a failed Silver or Gold run retries
-its snapshots on the next run.
+```powershell
+uv run python scripts/run_pipeline.py
+```
 
-## Scheduling and manual runs
+Any critical-stage exception stops the run and produces a non-zero exit
+status. Silver and Gold writes are staged before replacement. Snapshots are
+marked complete only after successful Gold output.
 
-`.github/workflows/data-pipeline.yml` runs hourly at minute 17 (`17 * * * *`).
-This is conservative for a portfolio polling job and avoids unnecessary API
-load while remaining more frequent than a daily refresh. The workflow also
-supports `workflow_dispatch` for a manual run from the GitHub Actions UI.
+## Local Windows Task Scheduler
 
-The CI workflow is separate in `.github/workflows/ci.yml`; it runs tests and
-Ruff but never calls the public GBFS service.
+The repository contains:
 
-## GitHub Actions persistence
+- `scripts/run_local_pipeline.ps1`, a wrapper around the local `.venv`
+  Python executable;
+- `scripts/CityBikeDataPlatform - Local Pipeline.xml`, an exported Windows
+  task definition configured for hourly repetition.
 
-GitHub-hosted runners are ephemeral. Before running the pipeline,
-`data-pipeline.yml` queries successful runs of the same workflow with the
-GitHub CLI, selects the most recent successful run, and downloads its
-`pipeline-state` artifact into the workspace. The workflow grants `actions: read`
-for this lookup. The restore helper also accepts the previous
-`pipeline-output-<run_id>` naming for the first deployment of this fix.
+The wrapper sets the project root as the working directory, creates `logs/`,
+waits 30 seconds, invokes `scripts/run_pipeline.py`, and appends stdout/stderr
+to `logs/local_pipeline.log`. It exits with the Python pipeline's status.
+The XML export contains an absolute working directory and local task
+principal, so it must be reviewed and customized before reuse. A checked-in
+export does not tell us whether the task is currently registered, enabled, or
+running on any particular host.
 
-If no successful run exists, the download step is skipped and the job starts
-with an empty `data/` directory. Once a run succeeds, the complete `data/`
-directory, including Raw, Silver, Gold, and
-`data/silver/_incremental_state.json`, is uploaded as the new `pipeline-state`
-artifact. The next run restores it before ingestion, so completed snapshot
-identities remain recognized and new snapshots are appended.
+## CI
 
-The successful-state upload runs only when the pipeline succeeds. A failed run
-can upload a separate `pipeline-failure-<run_id>` diagnostic artifact, but it
-cannot replace `pipeline-state`; downstream failures therefore leave the last
-known-good state available for the next run.
+`.github/workflows/ci.yml` runs on pushes and pull requests. It sets up
+Python 3.12 and `uv`, installs the locked development dependencies, and runs
+pytest, Ruff lint, and Ruff format checks. CI does not call the live GBFS
+service and does not schedule data collection.
 
-The workflow runs the repository version of the pipeline on every scheduled or
-manual job. Before publishing `pipeline-state`, it validates every Gold table
-against the current `GOLD_SCHEMAS`, including `observed_at_local` on snapshot
-tables. This prevents an old restored artifact from being republished with a
-stale Gold schema after a model change.
+There is no active `data-pipeline.yml` workflow or GitHub Actions data
+artifact persistence in the current repository. Local generated data and the
+incremental manifest remain excluded from Git.
 
 ## Configuration
 
-Settings are loaded from environment variables with local defaults:
+`src/bike_data/config.py` reads these environment variables, with the shown
+defaults:
 
-- `BIKE_DATA_ENV`
-- `BIKE_DATA_LOG_LEVEL`
-- `BIKE_DATA_RAW_DIR`
-- `BIKE_DATA_SILVER_DIR`
-- `BIKE_DATA_GOLD_DIR`
-- `BIKE_DATA_GBFS_DISCOVERY_URL`
-- `BIKE_DATA_HTTP_TIMEOUT`
+| Variable | Default |
+| --- | --- |
+| `BIKE_DATA_ENV` | `development` |
+| `BIKE_DATA_LOG_LEVEL` | `INFO` |
+| `BIKE_DATA_RAW_DIR` | `data/raw` |
+| `BIKE_DATA_SILVER_DIR` | `data/silver` |
+| `BIKE_DATA_GOLD_DIR` | `data/gold` |
+| `BIKE_DATA_GBFS_DISCOVERY_URL` | `https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_pl/gbfs.json` |
+| `BIKE_DATA_HTTP_TIMEOUT` | `30` seconds |
 
-The current public GBFS endpoint requires no credentials or secrets.
+The current public endpoint requires no credentials.
 
-## Artifacts and observability
+## Logs and limitations
 
-Generated Raw, Silver, Gold, and the incremental manifest remain ignored by
-Git. GitHub Actions artifacts are temporary portfolio-v1 persistence with a
-14-day retention period, not production-grade historical storage. A future
-object store can replace this without changing the pipeline stages.
+The PowerShell wrapper appends a timestamped run boundary, project path,
+pipeline output, and process exit code to `logs/local_pipeline.log`. Python
+logging additionally records pipeline stage and row-count events.
 
-Each run logs start and success/failure events, discovered/new/skipped Raw
-snapshot counts, and row counts for every Silver and Gold output table.
+The local schedule depends on the Windows host, account, network, installed
+`.venv`, and local paths. There is no durable remote storage, backup/retention
+service, external alerting, monitoring dashboard, or managed orchestration.
+The hourly configuration is a local task export, not a guarantee of
+continuous collection.
 
-## Limitations
-
-- GitHub Actions artifacts are temporary operational outputs, not durable
-  historical storage.
-- The workflow has no external alerting or dashboard.
-- Local Parquet tables are rewritten during incremental commits.
-- The hourly schedule is not a substitute for a dedicated collection service
-  when long-term retention or higher polling frequency is required.
+See [incremental processing](INCREMENTAL_PROCESSING.md) and the
+[v2.0 roadmap](../tasks/ROADMAP.md).

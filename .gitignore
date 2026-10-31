@@ -1,6 +1,18 @@
 data/
 __pycache__/
 logs/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.py[cod]
+.coverage
+.coverage.*
+htmlcov/
+.env
+.env.*
+!.env.example
 
 # Power BI Desktop local state and model cache
 dashboard/**/.pbi/
