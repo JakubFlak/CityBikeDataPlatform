@@ -1,129 +1,191 @@
-# Project Overview — CityBikeDataPlatform local v1.0
+# CityBikeDataPlatform — analiza dostępności Wrocławskiego Roweru Miejskiego
 
-## The analytical problem
+## Od snapshotów GBFS do pytań operacyjnych
 
-Public bike-sharing feeds publish snapshots of system state, not a history of
-completed rentals. A single live view is not enough to compare how station
-availability changes over time, where bikes are observed, or how often a
-station has no bike in the collected observations.
+Zbudowałem lokalną platformę danych, która zbiera obserwacje systemu
+Wrocławskiego Roweru Miejskiego udostępniane przez Nextbike w feedach GBFS.
+Zamiast patrzeć tylko na pojedynczy stan systemu, mogę porównywać dostępność
+rowerów i stacji pomiędzy zebranymi snapshotami oraz wskazywać miejsca
+warte dalszej weryfikacji.
 
-This project collects repeated Nextbike GBFS observations for Wrocław,
-preserves the provider payload, and models the observed states so a user can
-inspect station and vehicle availability over time. It deliberately does not
-turn a bike disappearing from the feed into a trip.
+Projekt jest demonstratorem analitycznym, nie wdrożonym narzędziem
+operacyjnym. Nie dowodzi, dlaczego stacja jest pusta, czy występuje tam
+niezaspokojony popyt ani czy zmiana rozmieszczenia rowerów poprawi wyniki.
+Pokazuje natomiast, jak dane o obserwowanym stanie można zamienić w
+konkretne hipotezy do sprawdzenia przez miasto, operatora i Nextbike.
 
-## Decisions this report can support
+## Co może zyskać miasto i Wydział Inżynierii Miejskiej
 
-The report can help an analyst:
+Miasto może wykorzystać taką analizę jako dodatkowy kontekst przy ocenie
+rozmieszczenia stacji i planowaniu przestrzeni:
 
-- identify stations whose observed bike counts are repeatedly low or zero;
-- compare station availability patterns by selected region and period;
-- see how station-bike and e-bike counts vary between collected snapshots;
-- distinguish bikes reported at stations from bikes whose GBFS
-  `station_id` is null;
-- inspect the visible bike locations and vehicle categories represented by
-  the Power BI map.
+- porównać, które stacje były puste w większej części zebranych obserwacji;
+- sprawdzić, czy rowery zgłaszane poza stacjami skupiają się w określonych
+  rejonach;
+- wskazać lokalizacje do wizji terenowej, konsultacji z mieszkańcami lub
+  rozmowy z operatorem;
+- porównać przyszłe warianty lokalizacji stacji po zebraniu dłuższej historii
+  i dodatkowych danych.
 
-These observations can guide follow-up analysis or operational questions.
-They do not prove demand, unmet demand, trips, customer behavior, or causal
-service effects, and the project has no measured savings or production
-deployment claims.
+To może pomóc ustalić, **gdzie warto zadać następne pytanie**. Sama analiza
+GBFS nie wystarcza do decyzji inwestycyjnej ani do stwierdzenia, że dana
+lokalizacja wymaga nowej stacji.
 
-## The three report pages
+## Co może zyskać zespół Wrocławskiego Roweru Miejskiego i operator
 
-### System Overview
+Dla zespołu operacyjnego raport może być punktem wyjścia do przeglądu
+rozmieszczenia rowerów i planowania testów:
 
-Summarizes the selected/latest system state with station-bike, outside-
-station-bike, station, and empty-station counts. Snapshot trends show station
-availability and a station-bike composition view. Counts across several
-timestamps are repeated observations, not period totals.
+- wytypować stacje do sprawdzenia pod kątem częstego braku rowerów;
+- porównać stany stacji między wybranymi okresami i obszarami;
+- sprawdzić, czy obserwacje poza stacjami powtarzają się w tych samych
+  rejonach;
+- zaplanować ograniczony test relokacji lub uzupełniania rowerów, a następnie
+  porównać obserwacje przed i po teście.
 
-### Station Analysis
+Takie działania są hipotezami operacyjnymi. Snapshoty nie zawierają
+informacji o zgłoszeniach użytkowników, przejazdach, przyczynach braku
+roweru ani o wykonanych relokacjach.
 
-Compares station-level availability rates and bike counts using the selected
-date/period/grain and available station/region filters. The map, time trend,
-ranking, and station table can help locate observations that merit attention.
-`Station Availability Rate` is the share of observed station rows with a
-positive bike count, not percentage of elapsed time.
+## Lokalizacje do sprawdzenia
 
-### Bikes Analysis
+Wstępna analiza zebranych obserwacji wskazała następujące stacje jako
+kandydatów do sprawdzenia pod kątem częstego stanu zerowej dostępności:
 
-Shows an e-bike share, average outside-station bike observations, and
-snapshot trends for regular/e-bike station counts and outside-station bikes.
-The map is intentionally limited by Power Query to latitudes 51–51.23 and
-vehicle IDs `183` and `71`; it is not an unfiltered map of every GBFS bike.
+1. Kosmonautów / Fieldorfa, szpital wojewódzki
+2. Kołłątaja / Podwale
+3. 3M
+4. Gajowicka
+5. Aleja Bielany
 
-## KPI interpretation matters
+To lista priorytetów do weryfikacji, a nie stwierdzenie, że te stacje zawsze
+są puste lub że brakuje tam rowerów z powodu popytu. Przed zmianą operacyjną
+warto porównać liczbę pustych obserwacji z liczbą wszystkich obserwacji danej
+stacji, sprawdzić pokrycie czasowe oraz rozbić wynik na dni i pory dnia.
 
-- **Available station bikes** is the sum of `station_status` bike counts at
-  stations for one snapshot when using the latest measure.
-- **Free bikes** in the system KPI means `free_bike_status` records whose
-  `station_id` is null, matched to a nearby station-status timestamp. It is
-  not the number available at stations.
-- **Empty stations** are observed station rows with `num_bikes_available = 0`.
-  An absent station observation is not automatically an empty station.
-- **Station availability rates** count station observations. The System
-  Overview `Station Availability %` and Station Analysis
-  `Station Availability Rate` use different measures and have a null-value
-  caveat.
-- **E-bike share** is based on station-bike observation sums, not all
-  visible bikes and not usage.
-- Some latest measures use local timestamps while others use UTC, and a DAX
-  measure is named as regular station e-bikes although it returns the e-bike
-  field. These model caveats are reported in
-  [the KPI catalogue](POWER_BI_ANALYTICS.md); they were not altered in this
-  documentation-only scope.
+W danych `free_bike_status` występują też obserwacje rowerów z pustym
+`station_id`. Wskazane rejony mogą być kandydatami do terenowego sprawdzenia,
+czy przydałaby się tam oficjalna stacja lub inne rozwiązanie parkowania:
 
-## What is implemented and tested
+- okolice ul. Kwiatkowskiego;
+- ul. Wyścigowa;
+- okolice ul. Balonowej;
+- Wrocławski Park Przemysłowy (budynki B1/D1);
+- ul. Tęczowa;
+- ul. Mieszczańska (Kępa Mieszczańska);
+- okolice przystanku Kromera (Czajkowskiego).
 
-The repository includes GBFS discovery and validation, Raw Parquet
-preservation, quality checks, typed Silver tables, incremental snapshot
-processing with a restartable manifest, deterministic Gold tables, and a
-three-page Power BI PBIP report. Tests cover HTTP/ingestion behavior,
-configuration, logging, data quality, state management, incremental
-processing, Silver/Gold schemas and transformations, and pipeline
-coordination. The current suite has 56 tests; all passed locally on Python
-3.14.4. CI runs pytest and Ruff on Python 3.12.
+Pusty `station_id` oznacza wyłącznie, że feed nie przypisał obserwowanego
+roweru do stacji. Nie dowodzi, że rower został nieprawidłowo zaparkowany,
+że jest tam stały popyt ani że lokalizacja spełnia warunki techniczne lub
+prawne. Lista wymaga sprawdzenia na mapie i w terenie; warto też potwierdzić
+ją z operatorem i mieszkańcami.
 
-The data platform is a local portfolio implementation. The repository does
-not demonstrate a measured business outcome, a live production deployment,
-or authoritative trip analytics.
+## Przykładowe działania, które można przetestować
 
-## Engineering competencies demonstrated
+### 1. Pilotaż uzupełniania stacji
 
-- API discovery, validation, retries, and error handling;
-- preserving source data separately from typed and analytical outputs;
-- explicit table grain, keys, lineage, and UTC/local timestamp semantics;
-- idempotent incremental processing and staged output commits;
-- data quality checks, reproducible transformations, and automated tests;
-- dimensional and snapshot-fact modeling for Power BI;
-- documenting KPI filters, denominators, and interpretation limitations.
+Na wybranych stacjach z listy można przetestować czasowe zwiększenie liczby
+rowerów lub zmianę planu relokacji. Przed testem warto uzgodnić z operatorem
+okres, dostępne zasoby, miernik sukcesu i stacje porównawcze. Wynik należy
+oceniać na podstawie porównywalnych okien czasowych, nie pojedynczych
+snapshotów.
 
-## Limitations
+### 2. Wizja lokalna dla skupisk rowerów poza stacjami
 
-- No authoritative Wrocław trip history is ingested; no trips, utilization,
-  demand, fares, or customer measures are supported.
-- Data and incremental state are local Parquet/JSON files, with no durable
-  backup, retention, alerting, or managed runtime.
-- The checked-in Windows Task Scheduler export is machine-specific, and its
-  local registration cannot be verified from the repository.
-- Power BI imports Gold through hard-coded local absolute paths and requires
-  path edits on another machine.
-- The free-bike map is filtered to a limited coordinate range and two vehicle
-  type IDs.
-- DAX has known metric-name, null-count, and local-versus-UTC latest-time
-  caveats; details are documented rather than silently corrected.
+Operator i miasto mogą zweryfikować wskazane rejony: warunki postoju,
+dostępność przestrzeni publicznej, istniejące stacje, połączenia piesze i
+rowerowe oraz możliwość bezpiecznego serwisu. Dopiero po takim przeglądzie
+można rozważyć pilotaż nowej stacji lub innego rozwiązania.
 
-## v2.0: my planned cloud evolution
+### 3. Wspólny przegląd miejsc o niskiej dostępności
 
-For v2.0, I plan to evaluate durable cloud storage and the Raw/Silver/Gold
-layout; select Azure/Fabric services based on integration, scale, operational
-ownership, and cost; run and orchestrate the existing Python transformations
-in a managed environment; manage secrets and identity; add monitoring,
-failure handling, retention, and cost controls; reconnect Power BI to the
-chosen model; and add deployment automation.
+Miasto, zespół Wrocławskiego Roweru Miejskiego i Nextbike mogą wspólnie
+przejrzeć listę miejsc, zakres i jakość danych, a następnie uzgodnić, które
+lokalizacje wymagają danych uzupełniających, inspekcji lub testu
+operacyjnego. Raport może służyć jako wspólny punkt startowy do rozmowy, nie
+jako automatyczny system dyspozytorski.
 
-These are my plans, not implemented services or final architecture decisions.
-I plan to keep using GitHub for source code, documentation, review, and CI/CD
-if I migrate the runtime or data to cloud services. See
-[my v2.0 roadmap](../tasks/ROADMAP.md).
+### 4. Rozszerzenie analizy danymi o przejazdach i operacjach
+
+Jeśli dostępne będą wiarygodne dane, warto połączyć snapshoty z historią
+wypożyczeń, zgłoszeniami awarii i zapisami relokacji. Pozwoliłoby to
+sprawdzić, czy powtarzające się puste stany współwystępują z dużą liczbą
+wypożyczeń, czy rowery poza stacjami wiążą się z określonymi zakończeniami
+przejazdów i czy pilotaż zmienił uzgodnione wskaźniki. Takich analiz obecna
+wersja jeszcze nie obsługuje.
+
+## Co pokazuje raport
+
+Raport Power BI ma trzy strony:
+
+- **System Overview** — stan systemu w wybranym/najnowszym snapshotcie:
+  liczbę rowerów zgłoszonych na stacjach, liczbę obserwowanych stacji,
+  puste stacje i rowery zgłoszone poza stacjami oraz trendy snapshotów.
+- **Station Analysis** — porównanie dostępności obserwacji stacji, z
+  możliwością filtrowania według stacji, regionu i wybranego okresu.
+- **Bikes Analysis** — obserwowane rowery i typy pojazdów, udział e-bike’ów
+  w rowerach stacyjnych oraz mapę rowerów widocznych w ograniczonym zakresie
+  lokalizacji i typów.
+
+„Dostępny rower” oznacza tu wartość raportowaną przez feed w chwili
+obserwacji. „Pusta stacja” oznacza obserwowany rekord stacji z liczbą
+dostępnych rowerów równą zero. Brak rekordu nie jest liczony jako pusta
+stacja. „Free bike” z pustym `station_id` nie jest tym samym co rower
+dostępny na stacji. Wskaźniki okresowe są oparte na obserwacjach, a nie na
+ciągłym pomiarze każdej minuty ani na przejazdach. Szczegóły definicji
+znajdują się w [katalogu KPI](POWER_BI_ANALYTICS.md).
+
+## Jakie kompetencje pokazuje projekt
+
+Zbudowałem rozwiązanie end-to-end, obejmujące:
+
+- pobieranie i walidację API GBFS, obsługę błędów HTTP i ponawianie
+  przejściowych żądań;
+- zachowanie źródłowych snapshotów w Raw oraz typowanie i modelowanie danych
+  w warstwach Silver i Gold;
+- projektowanie ziarnistości tabel, kluczy, lineage i semantyki czasu UTC
+  oraz `Europe/Warsaw`;
+- przyrostowe, idempotentne przetwarzanie ze stanem pipeline’u i bezpiecznym
+  zapisem wyników;
+- kontrole jakości danych oraz testy jednostkowe i integracyjne;
+- model analityczny i raport Power BI z miarami DAX;
+- CI dla testów i Ruff oraz dokumentację uruchamiania i ograniczeń.
+
+Implementacja używa Python, PyArrow/Parquet, pytest, Ruff, GitHub Actions i
+Power BI. Obecna wersja jest lokalnym projektem portfolio, a nie wdrożeniem
+produkcyjnym. Testy weryfikują zachowanie kodu na przygotowanych przypadkach;
+nie są dowodem trwałego monitoringu ani wyników operacyjnych miasta lub
+operatora.
+
+## Zakres i ograniczenia — ważne przed decyzją
+
+- GBFS opisuje stany widoczne w feedzie; nie zawiera autorytatywnej historii
+  przejazdów, popytu, klientów, przychodów ani faktycznego wykorzystania.
+- Dane i stan pipeline’u są przechowywane lokalnie; nie ma trwałego backupu,
+  monitoringu produkcyjnego ani alertów.
+- Eksport harmonogramu Windows jest skonfigurowany godzinowo, ale jego
+  faktyczna rejestracja i historia uruchomień zależą od lokalnej maszyny.
+  Taki interwał nie pokazuje zmian zachodzących między pobraniami.
+- Raport Power BI korzysta z lokalnych, bezwzględnych ścieżek do plików Gold
+  i wymaga dostosowania na innym komputerze.
+- Mapa rowerów ma filtry Power Query na zakres szerokości geograficznej i
+  dwa identyfikatory typu pojazdu; nie przedstawia pełnego, nieprzefiltrowanego
+  zbioru floty.
+- Bieżące wskaźniki wymagają przeglądu semantycznego przed użyciem jako
+  formalnych KPI. Niektóre miary różnią się obsługą wartości null, a jedna
+  miara e-bike ma niespójną nazwę. Szczegóły opisuję w
+  [dokumentacji KPI](POWER_BI_ANALYTICS.md).
+
+## Mój dalszy plan — v2.0
+
+W v2.0 planuję najpierw ustalić wymagania dotyczące częstotliwości,
+retencji, dostępności i kosztów, a następnie ocenić chmurowe przechowywanie
+danych i uruchamianie pipeline’u. Chcę też przygotować monitoring, obsługę
+błędów, bezpieczną konfigurację, połączenie Power BI z docelowym modelem
+oraz automatyzację wdrożeń. Wybór usług Azure/Fabric uzależnię od tych
+wymagań — nie jest jeszcze decyzją architektoniczną.
+
+GitHub nadal może służyć do wersjonowania kodu i dokumentacji, review oraz
+CI/CD, nawet jeśli runtime i dane zostaną przeniesione do chmury. Szczegóły
+planu są w [roadmapie v2.0](../tasks/ROADMAP.md).
