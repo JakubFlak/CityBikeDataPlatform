@@ -2,7 +2,9 @@
 
 A local data-engineering and analytics-engineering project for Wrocław
 bike-sharing observations from Nextbike GBFS. Wrocław Open Data trip
-ingestion is not implemented.
+ingestion is not implemented. See the [business summary](README_BUSINESS.md)
+for stakeholder value, potential actions, and the portfolio story.
+
 The implemented release is **local v1.0**: a Python pipeline collects GBFS
 snapshots, preserves source data in Raw, incrementally materializes Silver,
 builds analytical Gold Parquet tables, and supplies a Power BI PBIP report.

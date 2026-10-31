@@ -153,16 +153,16 @@ Zbudowałem rozwiązanie end-to-end, obejmujące:
 - CI dla testów i Ruff oraz dokumentację uruchamiania i ograniczeń.
 
 Implementacja używa Python, PyArrow/Parquet, pytest, Ruff, GitHub Actions i
-Power BI. Obecna wersja jest lokalnym projektem portfolio, a nie wdrożeniem
-produkcyjnym. Testy weryfikują zachowanie kodu na przygotowanych przypadkach;
+Power BI. Obecna wersja jest lokalnym projektem portfolio, nie jest jeszcze wdrożeniem
+produkcyjnym. Testy weryfikują zachowanie kodu na przygotowanych przypadkach, 
 nie są dowodem trwałego monitoringu ani wyników operacyjnych miasta lub
 operatora.
 
 ## Zakres i ograniczenia — ważne przed decyzją
 
-- GBFS opisuje stany widoczne w feedzie; nie zawiera autorytatywnej historii
+- GBFS opisuje stany widoczne w feedzie, nie zawiera autorytatywnej historii
   przejazdów, popytu, klientów, przychodów ani faktycznego wykorzystania.
-- Dane i stan pipeline’u są przechowywane lokalnie; nie ma trwałego backupu,
+- Dane i stan pipeline’u są przechowywane lokalnie, nie ma trwałego backupu,
   monitoringu produkcyjnego ani alertów.
 - Eksport harmonogramu Windows jest skonfigurowany godzinowo, ale jego
   faktyczna rejestracja i historia uruchomień zależą od lokalnej maszyny.
