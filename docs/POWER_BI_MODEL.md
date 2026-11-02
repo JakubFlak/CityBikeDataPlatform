@@ -79,11 +79,11 @@ definitions and the exact implementation are documented in
 
 The current report pages are:
 
-1. **System Overview** — latest system snapshot cards, availability trend,
+1. **System Overview** - latest system snapshot cards, availability trend,
    and station-bike composition.
-2. **Station Analysis** — station availability map/trend/comparison and
+2. **Station Analysis** - station availability map/trend/comparison and
    station-level measures over selected periods.
-3. **Bikes Analysis** — station vehicle-type trends, e-bike share,
+3. **Bikes Analysis** - station vehicle-type trends, e-bike share,
    outside-station bike averages, and a filtered bike map.
 
 Page calculations reflect the actual measure expressions, not merely visual

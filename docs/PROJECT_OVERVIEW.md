@@ -1,4 +1,4 @@
-# CityBikeDataPlatform — analiza dostępności Wrocławskiego Roweru Miejskiego
+# CityBikeDataPlatform - analiza dostępności Wrocławskiego Roweru Miejskiego
 
 ## Od snapshotów GBFS do pytań operacyjnych
 
@@ -119,12 +119,12 @@ wersja jeszcze nie obsługuje.
 
 Raport Power BI ma trzy strony:
 
-- **System Overview** — stan systemu w wybranym/najnowszym snapshotcie:
+- **System Overview** - stan systemu w wybranym/najnowszym snapshotcie:
   liczbę rowerów zgłoszonych na stacjach, liczbę obserwowanych stacji,
   puste stacje i rowery zgłoszone poza stacjami oraz trendy snapshotów.
-- **Station Analysis** — porównanie dostępności obserwacji stacji, z
+- **Station Analysis** - porównanie dostępności obserwacji stacji, z
   możliwością filtrowania według stacji, regionu i wybranego okresu.
-- **Bikes Analysis** — obserwowane rowery i typy pojazdów, udział e-bike’ów
+- **Bikes Analysis** - obserwowane rowery i typy pojazdów, udział e-bike’ów
   w rowerach stacyjnych oraz mapę rowerów widocznych w ograniczonym zakresie
   lokalizacji i typów.
 
@@ -158,7 +158,7 @@ produkcyjnym. Testy weryfikują zachowanie kodu na przygotowanych przypadkach,
 nie są dowodem trwałego monitoringu ani wyników operacyjnych miasta lub
 operatora.
 
-## Zakres i ograniczenia — ważne przed decyzją
+## Zakres i ograniczenia - ważne przed decyzją
 
 - GBFS opisuje stany widoczne w feedzie, nie zawiera autorytatywnej historii
   przejazdów, popytu, klientów, przychodów ani faktycznego wykorzystania.
@@ -177,14 +177,14 @@ operatora.
   miara e-bike ma niespójną nazwę. Szczegóły opisuję w
   [dokumentacji KPI](POWER_BI_ANALYTICS.md).
 
-## Mój dalszy plan — v2.0
+## Mój dalszy plan - v2.0
 
 W v2.0 planuję najpierw ustalić wymagania dotyczące częstotliwości,
 retencji, dostępności i kosztów, a następnie ocenić chmurowe przechowywanie
 danych i uruchamianie pipeline’u. Chcę też przygotować monitoring, obsługę
 błędów, bezpieczną konfigurację, połączenie Power BI z docelowym modelem
 oraz automatyzację wdrożeń. Wybór usług Azure/Fabric uzależnię od tych
-wymagań — nie jest jeszcze decyzją architektoniczną.
+wymagań - nie jest jeszcze decyzją architektoniczną.
 
 GitHub nadal może służyć do wersjonowania kodu i dokumentacji, review oraz
 CI/CD, nawet jeśli runtime i dane zostaną przeniesione do chmury. Szczegóły

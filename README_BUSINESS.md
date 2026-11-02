@@ -1,4 +1,4 @@
-# CityBikeDataPlatform — Business Summary
+# CityBikeDataPlatform - Business Summary
 
 ## 📌 Project Overview
 
@@ -166,12 +166,12 @@ flowchart LR
 ### Gold layer
 
 - Snapshot dimensions for stations, vehicle types, regions, and pricing.
-- `fact_station_availability` — one station state per station and
+- `fact_station_availability` - one station state per station and
   observation timestamp.
-- `fact_station_vehicle_type_availability` — one station/vehicle-type count
+- `fact_station_vehicle_type_availability` - one station/vehicle-type count
   per timestamp.
-- `fact_free_bike_snapshot` — one publicly visible bike state per timestamp.
-- `gold_system_availability` — system-level counts for each station-status
+- `fact_free_bike_snapshot` - one publicly visible bike state per timestamp.
+- `gold_system_availability` - system-level counts for each station-status
   observation timestamp.
 
 `observed_at` is the canonical UTC observation identity. Local calendar
@@ -183,11 +183,11 @@ timestamps; Gold aligns related observations within a five-minute tolerance.
 
 The Power BI report has three pages:
 
-- **System Overview** — latest system snapshot cards and trends for station
+- **System Overview** - latest system snapshot cards and trends for station
   bikes, empty stations, station counts, and bikes reported outside stations.
-- **Station Analysis** — station availability comparisons and trends with
+- **Station Analysis** - station availability comparisons and trends with
   date, period, station, and region context.
-- **Bikes Analysis** — station e-bike composition, outside-station bike
+- **Bikes Analysis** - station e-bike composition, outside-station bike
   observations, snapshot trends, and a filtered bike map.
 
 Potential analysis includes:
@@ -222,13 +222,13 @@ The report is included as a Power BI project at
 
 ## 🛠️ Tech Stack
 
-- **Python** — GBFS ingestion, validation, and pipeline coordination
-- **PyArrow / Parquet** — local Raw, Silver, and Gold storage
-- **Power BI / DAX** — semantic model, measures, and interactive report
-- **pytest** — unit and integration testing
-- **Ruff** — linting and formatting checks
-- **GitHub Actions** — CI for tests and code-quality checks
-- **Windows Task Scheduler** — optional local hourly execution via the
+- **Python** - GBFS ingestion, validation, and pipeline coordination
+- **PyArrow / Parquet** - local Raw, Silver, and Gold storage
+- **Power BI / DAX** - semantic model, measures, and interactive report
+- **pytest** - unit and integration testing
+- **Ruff** - linting and formatting checks
+- **GitHub Actions** - CI for tests and code-quality checks
+- **Windows Task Scheduler** - optional local hourly execution via the
   repository's machine-specific task export
 
 The project does not currently use DuckDB, dbt, Docker, Airflow, or cloud
