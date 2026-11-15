@@ -30,7 +30,7 @@ def write_raw_snapshot(
     path = (
         raw_root
         / feed_name
-        / f"{observed_at.strftime('%Y%m%dT%H%M%S')}"
+        / f"observed_at={observed_at.strftime('%Y%m%dT%H%M%S')}"
         / "snapshot.parquet"
     )
     path.parent.mkdir(parents=True)
@@ -206,3 +206,54 @@ def test_silver_transformation_is_repeatable(tmp_path):
         second = read_table(second_paths, table_name)
         assert first.schema == second.schema
         assert first.to_pylist() == second.to_pylist()
+
+
+def test_silver_reads_hive_partitioned_raw_file_without_partition_inference(
+    tmp_path, monkeypatch
+):
+    raw_root = tmp_path / "raw"
+    observed_at = datetime(2026, 9, 12, 10, tzinfo=UTC)
+    write_raw_snapshot(
+        raw_root,
+        "station_status",
+        observed_at,
+        {
+            "stations": [
+                {
+                    "station_id": "S1",
+                    "num_bikes_available": 4,
+                    "num_docks_available": 8,
+                }
+            ]
+        },
+    )
+    raw_path = next(raw_root.rglob("snapshot.parquet"))
+    assert raw_path.parent.name.startswith("observed_at=")
+    assert (
+        pq.ParquetFile(raw_path).schema_arrow.field("observed_at").type == pa.string()
+    )
+
+    original_read_table = pq.read_table
+
+    def fail_hive_partition_read(source, *args, **kwargs):
+        if Path(source) == raw_path:
+            raise pa.ArrowTypeError(
+                "Field observed_at has incompatible types: string vs "
+                "dictionary<values=string, indices=int32, ordered=0>"
+            )
+        return original_read_table(source, *args, **kwargs)
+
+    monkeypatch.setattr(pq, "read_table", fail_hive_partition_read)
+
+    paths = transform_raw_to_silver(raw_root, tmp_path / "silver")
+    rows = pq.ParquetFile(paths["station_status"]).read().to_pylist()
+
+    assert len(rows) == 1
+    assert rows[0]["station_id"] == "S1"
+    assert rows[0]["num_bikes_available"] == 4
+    assert rows[0]["num_docks_available"] == 8
+    assert rows[0]["observed_at"] == observed_at.replace(tzinfo=None)
+    assert (
+        pq.ParquetFile(paths["station_status"]).schema_arrow
+        == TABLE_SCHEMAS["station_status"]
+    )

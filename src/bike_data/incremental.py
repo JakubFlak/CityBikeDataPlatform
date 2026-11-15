@@ -111,7 +111,7 @@ def incremental_silver_to_gold(
 
 
 def _snapshot_metadata(path: Path) -> dict[str, Any]:
-    row = pq.read_table(path).to_pylist()[0]
+    row = pq.ParquetFile(path).read().to_pylist()[0]
     observed_at = row["observed_at"]
     identity = f"{row['feed_name']}|{observed_at}"
     payload_hash = hashlib.sha256(row["data_json"].encode("utf-8")).hexdigest()
@@ -134,7 +134,7 @@ def _validate_snapshot_metadata(snapshots: list[dict[str, Any]]) -> None:
 
 
 def _read_existing(path: Path) -> list[dict[str, Any]]:
-    return pq.read_table(path).to_pylist() if path.exists() else []
+    return pq.ParquetFile(path).read().to_pylist() if path.exists() else []
 
 
 def _validate_gold_candidate(candidate: dict[str, Path]) -> None:

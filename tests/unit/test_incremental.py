@@ -1,9 +1,12 @@
+import json
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 from test_gold import _populate_raw, _write_raw_snapshot
+from test_silver import write_raw_snapshot
 
 from bike_data import incremental as incremental_module
 from bike_data.gold import GOLD_SCHEMAS, GOLD_TABLES, transform_silver_to_gold
@@ -11,7 +14,7 @@ from bike_data.incremental import (
     incremental_raw_to_silver,
     incremental_silver_to_gold,
 )
-from bike_data.silver import transform_raw_to_silver
+from bike_data.silver import TABLE_SCHEMAS, transform_raw_to_silver
 
 
 def _append_snapshot(raw_root, minute):
@@ -261,3 +264,59 @@ def test_incremental_rejects_conflicting_duplicate_identity(tmp_path):
     pq.write_table(table, duplicate)
     with pytest.raises(ValueError, match="conflicting raw snapshot identity"):
         incremental_raw_to_silver(raw_root, silver_root)
+
+
+def test_incremental_reads_hive_partitioned_raw_file_without_partition_inference(
+    tmp_path, monkeypatch
+):
+    raw_root = tmp_path / "raw"
+    silver_root = tmp_path / "silver"
+    observed_at = datetime(2026, 9, 12, 10, tzinfo=UTC)
+    write_raw_snapshot(
+        raw_root,
+        "station_status",
+        observed_at,
+        {
+            "stations": [
+                {
+                    "station_id": "S1",
+                    "num_bikes_available": 4,
+                    "num_docks_available": 8,
+                }
+            ]
+        },
+    )
+    raw_path = next(raw_root.rglob("snapshot.parquet"))
+    assert raw_path.parent.name.startswith("observed_at=")
+    assert (
+        pq.ParquetFile(raw_path).schema_arrow.field("observed_at").type == pa.string()
+    )
+
+    original_read_table = pq.read_table
+
+    def fail_hive_partition_read(source, *args, **kwargs):
+        if Path(source) == raw_path:
+            raise pa.ArrowTypeError(
+                "Field observed_at has incompatible types: string vs "
+                "dictionary<values=string, indices=int32, ordered=0>"
+            )
+        return original_read_table(source, *args, **kwargs)
+
+    monkeypatch.setattr(pq, "read_table", fail_hive_partition_read)
+
+    paths = incremental_raw_to_silver(raw_root, silver_root)
+    rows = pq.ParquetFile(paths["station_status"]).read().to_pylist()
+
+    assert len(rows) == 1
+    assert rows[0]["station_id"] == "S1"
+    assert rows[0]["num_bikes_available"] == 4
+    assert rows[0]["num_docks_available"] == 8
+    assert rows[0]["observed_at"] == observed_at.replace(tzinfo=None)
+    assert (
+        pq.ParquetFile(paths["station_status"]).schema_arrow
+        == TABLE_SCHEMAS["station_status"]
+    )
+
+    state = json.loads((silver_root / "_incremental_state.json").read_text())
+    identity = f"station_status|{observed_at.isoformat()}"
+    assert state["raw_snapshots"][identity]["status"] == "silver_complete"

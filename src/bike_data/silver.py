@@ -145,7 +145,7 @@ def transform_raw_to_silver(raw_root: Path, silver_root: Path) -> dict[str, Path
 def _append_snapshot_records(
     records: dict[str, list[dict[str, Any]]], path: Path
 ) -> None:
-    raw_table = pq.read_table(path)
+    raw_table = pq.ParquetFile(path).read()
     for row in raw_table.to_pylist():
         feed_name = row["feed_name"]
         observed_at = _parse_observed_at(row["observed_at"])
