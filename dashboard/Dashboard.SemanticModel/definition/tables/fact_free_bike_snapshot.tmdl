@@ -103,8 +103,15 @@ table fact_free_bike_snapshot
 		mode: import
 		source =
 				let
-				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\fact_free_bike_snapshot.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
-				    #"Removed Columns" = Table.RemoveColumns(Source,{"is_reserved", "is_disabled", "current_fuel_percent", "current_range_meters"}),
+				    Source = AzureStorage.DataLake(
+				        "https://onelake.dfs.fabric.microsoft.com/CityBike-Dev/lh_citybike.Lakehouse/Files/gold/fact_free_bike_snapshot.parquet"
+				    ),
+				    FileContent = Source{0}[Content],
+				    Parquet = Parquet.Document(
+				        FileContent,
+				        [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]
+				    ),
+				    #"Removed Columns" = Table.RemoveColumns(Parquet,{"is_reserved", "is_disabled", "current_fuel_percent", "current_range_meters"}),
 				    #"Filtered Rows" = Table.SelectRows(#"Removed Columns", each [lat] >= 51 and [lat] <= 51.23),
 				    #"Filtered Rows1" = Table.SelectRows(#"Filtered Rows", each ([vehicle_type_id] = "183" or [vehicle_type_id] = "71"))
 				in

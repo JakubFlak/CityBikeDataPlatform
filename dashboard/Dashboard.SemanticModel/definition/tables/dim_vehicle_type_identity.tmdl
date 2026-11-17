@@ -83,8 +83,15 @@ table dim_vehicle_type_identity
 		mode: import
 		source =
 				let
-				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_vehicle_type.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
-				    #"Grouped Rows" = Table.Group(Source, {"vehicle_type_id"}, {{"observed_at_local", each List.Max([observed_at_local]), type nullable datetime}}),
+				    Source = AzureStorage.DataLake(
+				        "https://onelake.dfs.fabric.microsoft.com/CityBike-Dev/lh_citybike.Lakehouse/Files/gold/dim_vehicle_type.parquet"
+				    ),
+				    FileContent = Source{0}[Content],
+				    Parquet = Parquet.Document(
+				        FileContent,
+				        [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]
+				    ),
+				    #"Grouped Rows" = Table.Group(Parquet, {"vehicle_type_id"}, {{"observed_at_local", each List.Max([observed_at_local]), type nullable datetime}}),
 				    #"Merged Queries" = Table.NestedJoin(#"Grouped Rows", {"vehicle_type_id", "observed_at_local"}, dim_vehicle_type, {"vehicle_type_id", "observed_at_local"}, "dim_vehicle_type", JoinKind.LeftOuter),
 				    #"Expanded dim_vehicle_type" = Table.ExpandTableColumn(#"Merged Queries", "dim_vehicle_type", {"name", "form_factor", "propulsion_type", "rider_capacity", "max_range_meters", "is_ebike"}, {"name", "form_factor", "propulsion_type", "rider_capacity", "max_range_meters", "is_ebike"}),
 				    #"Replaced Value" = Table.ReplaceValue(#"Expanded dim_vehicle_type","Rower standardowy","Regular bike",Replacer.ReplaceText,{"name"})

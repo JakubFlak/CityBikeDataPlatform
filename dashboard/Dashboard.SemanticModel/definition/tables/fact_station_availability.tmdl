@@ -103,8 +103,15 @@ table fact_station_availability
 		mode: import
 		source =
 				let
-				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\fact_station_availability.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
-				    #"Removed Columns" = Table.RemoveColumns(Source,{"capacity", "num_docks_available", "is_installed"})
+				    Source = AzureStorage.DataLake(
+				        "https://onelake.dfs.fabric.microsoft.com/CityBike-Dev/lh_citybike.Lakehouse/Files/gold/fact_station_availability.parquet"
+				    ),
+				    FileContent = Source{0}[Content],
+				    Parquet = Parquet.Document(
+				        FileContent,
+				        [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]
+				    ),
+				    #"Removed Columns" = Table.RemoveColumns(Parquet,{"capacity", "num_docks_available", "is_installed"})
 				in
 				    #"Removed Columns"
 

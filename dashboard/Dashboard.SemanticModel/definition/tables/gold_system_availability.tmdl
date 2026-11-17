@@ -114,9 +114,16 @@ table gold_system_availability
 		mode: import
 		source =
 				let
-				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\gold_system_availability.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null])
+				    Source = AzureStorage.DataLake(
+				        "https://onelake.dfs.fabric.microsoft.com/CityBike-Dev/lh_citybike.Lakehouse/Files/gold/gold_system_availability.parquet"
+				    ),
+				    FileContent = Source{0}[Content],
+				    Parquet = Parquet.Document(
+				        FileContent,
+				        [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]
+				    )
 				in
-				    Source
+				    Parquet
 
 	annotation PBI_NavigationStepName = Navigation
 

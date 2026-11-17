@@ -73,8 +73,15 @@ table dim_station_identity
 		mode: import
 		source =
 				let
-				    Source = Parquet.Document(File.Contents("C:\Users\WIZBOX\Desktop\Projects\CityBikeDataPlatform\data\gold\dim_station.parquet"), [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]),
-				    #"Grouped Rows" = Table.Group(Source, {"station_id"}, {{"observed_at_local", each List.Max([observed_at_local]), type nullable datetime}}),
+				    Source = AzureStorage.DataLake(
+				        "https://onelake.dfs.fabric.microsoft.com/CityBike-Dev/lh_citybike.Lakehouse/Files/gold/dim_station.parquet"
+				    ),
+				    FileContent = Source{0}[Content],
+				    Parquet = Parquet.Document(
+				        FileContent,
+				        [Compression=null, LegacyColumnNameEncoding=false, MaxDepth=null]
+				    ),
+				    #"Grouped Rows" = Table.Group(Parquet, {"station_id"}, {{"observed_at_local", each List.Max([observed_at_local]), type nullable datetime}}),
 				    #"Merged Queries" = Table.NestedJoin(#"Grouped Rows", {"station_id", "observed_at_local"}, dim_station, {"station_id", "observed_at_local"}, "dim_station", JoinKind.LeftOuter),
 				    #"Expanded dim_station" = Table.ExpandTableColumn(#"Merged Queries", "dim_station", {"name", "short_name", "lat", "lon", "region_id", "capacity", "is_virtual_station"}, {"name", "short_name", "lat", "lon", "region_id", "capacity", "is_virtual_station"}),
 				    #"Removed Columns" = Table.RemoveColumns(#"Expanded dim_station",{"is_virtual_station", "capacity"})
