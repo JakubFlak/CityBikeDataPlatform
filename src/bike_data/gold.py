@@ -1,5 +1,6 @@
 """Deterministic analytical Gold models built from Silver Parquet tables."""
 
+from bisect import bisect_left
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -302,17 +303,82 @@ def transform_silver_to_gold(silver_root: Path, gold_root: Path) -> dict[str, Pa
 
 def _index(
     rows: list[dict[str, Any]], identifier: str
-) -> dict[Any, list[dict[str, Any]]]:
-    result: dict[Any, list[dict[str, Any]]] = {}
+) -> dict[Any, tuple[list[datetime], list[dict[str, Any]]]]:
+    """Index snapshots by entity ID and keep their timestamps sorted."""
+    rows_by_identifier: dict[Any, list[dict[str, Any]]] = {}
+    seen_timestamps: dict[Any, set[datetime]] = {}
+
     for row in rows:
-        key = _snapshot_key(row, identifier)
-        candidates = result.setdefault(key[0], [])
-        if any(candidate["observed_at"] == key[1] for candidate in candidates):
-            raise ValueError(f"duplicate Gold dimension key: {identifier}={key}")
-        candidates.append(row)
-    for candidates in result.values():
+        identifier_value, observed_at = _snapshot_key(row, identifier)
+
+        seen = seen_timestamps.setdefault(identifier_value, set())
+
+        if observed_at in seen:
+            raise ValueError(
+                f"duplicate Gold dimension key: "
+                f"{identifier}={(identifier_value, observed_at)}"
+            )
+
+        seen.add(observed_at)
+        rows_by_identifier.setdefault(identifier_value, []).append(row)
+
+    result = {}
+
+    for identifier_value, candidates in rows_by_identifier.items():
         candidates.sort(key=lambda row: row["observed_at"])
+
+        timestamps = [
+            row["observed_at"]
+            for row in candidates
+        ]
+
+        result[identifier_value] = (timestamps, candidates)
+
     return result
+
+def _nearest_timestamp_index(
+    observed_at: datetime,
+    timestamps: list[datetime],
+    *,
+    tolerance_error: str,
+    ambiguous_error: str,
+) -> int:
+    """Find the unique nearest timestamp in an already sorted list."""
+    position = bisect_left(timestamps, observed_at)
+
+    # In a sorted list, the nearest value can only be the immediate
+    # predecessor or successor of the insertion position.
+    candidate_indices = []
+
+    if position > 0:
+        candidate_indices.append(position - 1)
+
+    if position < len(timestamps):
+        candidate_indices.append(position)
+
+    distances = [
+        (index, abs(timestamps[index] - observed_at))
+        for index in candidate_indices
+    ]
+
+    nearest_distance = min(
+        distance
+        for _, distance in distances
+    )
+
+    if nearest_distance > TEMPORAL_JOIN_TOLERANCE:
+        raise ValueError(tolerance_error)
+
+    nearest_indices = [
+        index
+        for index, distance in distances
+        if distance == nearest_distance
+    ]
+
+    if len(nearest_indices) > 1:
+        raise ValueError(ambiguous_error)
+
+    return nearest_indices[0]
 
 
 def _snapshot_key(row: dict[str, Any], identifier: str) -> tuple[Any, Any]:
@@ -320,19 +386,28 @@ def _snapshot_key(row: dict[str, Any], identifier: str) -> tuple[Any, Any]:
 
 
 def _required_snapshot(index, key, table_name):
-    candidates = index.get(key[0], [])
-    if not candidates:
-        raise ValueError(f"missing temporal foreign key in {table_name}: {key}")
-    distances = [abs(row["observed_at"] - key[1]) for row in candidates]
-    nearest_distance = min(distances)
-    if nearest_distance > TEMPORAL_JOIN_TOLERANCE:
+    indexed = index.get(key[0])
+
+    if indexed is None:
         raise ValueError(
-            f"temporal foreign key outside tolerance in {table_name}: {key}"
+            f"missing temporal foreign key in {table_name}: {key}"
         )
-    if distances.count(nearest_distance) > 1:
-        raise ValueError(f"ambiguous temporal foreign key in {table_name}: {key}")
-    match = candidates[distances.index(nearest_distance)]
-    return match
+
+    timestamps, candidates = indexed
+
+    match_index = _nearest_timestamp_index(
+        key[1],
+        timestamps,
+        tolerance_error=(
+            f"temporal foreign key outside tolerance in {table_name}: {key}"
+        ),
+        ambiguous_error=(
+            f"ambiguous temporal foreign key in {table_name}: {key}"
+        ),
+    )
+
+    return candidates[match_index]
+
 
 
 def _local_time_fields(observed_at: datetime) -> dict[str, Any]:
@@ -396,7 +471,7 @@ def _system_metrics(station_rows, vehicle_rows, free_bike_rows):
                 ebikes.get(row["observed_at"], 0) + row["count"]
             )
     free_bikes = {}
-    system_observations = list(grouped)
+    system_observations = sorted(grouped)
     for row in free_bike_rows:
         if row["station_id"] is not None:
             continue
@@ -428,15 +503,19 @@ def _system_metrics(station_rows, vehicle_rows, free_bike_rows):
 
 
 def _nearest_observation(observed_at, candidates):
-    distances = [abs(candidate - observed_at) for candidate in candidates]
-    nearest_distance = min(distances)
-    if nearest_distance > TEMPORAL_JOIN_TOLERANCE:
-        raise ValueError(
+    match_index = _nearest_timestamp_index(
+        observed_at,
+        candidates,
+        tolerance_error=(
             f"free-bike observation outside system tolerance: {observed_at}"
-        )
-    if distances.count(nearest_distance) > 1:
-        raise ValueError(f"ambiguous system observation for free-bike: {observed_at}")
-    return candidates[distances.index(nearest_distance)]
+        ),
+        ambiguous_error=(
+            f"ambiguous system observation for free-bike: {observed_at}"
+        ),
+    )
+
+    return candidates[match_index]
+
 
 
 def _sort_row(row):

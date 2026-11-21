@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: city-bike-data-platform
-Version: 0.1.0
+Version: 0.1.1
 Summary: Local data platform for Wroclaw bike-sharing data.
 Requires-Python: >=3.11
 Description-Content-Type: text/markdown
